@@ -1,0 +1,6 @@
+    m_home_user = getenv("HOME");
+    m_filedb = "appname.db";
+    m_userdir = m_home_user + "/.config/appname";
+    m_user_filedb = m_home_user + "/.config/appname/" + m_filedb; // for
+
+

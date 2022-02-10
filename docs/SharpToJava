@@ -1,0 +1,24 @@
+DateTime -> LocalDateTime
+//formatting datetime
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("cccc, dd LLLL yyyy'г. 'HH:mm:ss", BigCommandSemanticAnalyser.RuCulture);
+        return dtf.format(dt);
+        
+Dictionary -> HashMap
+
+        // проверяем элементы первого уровня Агрегации
+        // if (this.m_AggregationSubClasses.ContainsKey(nameOfType))
+        if (this.m_AggregationSubClasses.containsKey(nameOfType))
+            // return this.m_AggregationSubClasses[nameOfType];
+            return this.m_AggregationSubClasses.get(nameOfType);
+        else
+        {
+            // проверяем элементы нижнего уровня
+            // foreach (KeyValuePair<String, EntityType> kvp in this.m_AggregationSubClasses)
+            for (Map.Entry<String, EntityType> kvp : this.m_AggregationSubClasses.entrySet())
+            {
+                // EntityType res = kvp.Value.ContainsType(nameOfType);
+                EntityType res = kvp.getValue().ContainsType(nameOfType);
+                if (res != null) return res;
+            }
+        }       
+        
