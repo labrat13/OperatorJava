@@ -2,7 +2,7 @@
  * @author Pavel Seliakov
  *         Copyright Pavel M Seliakov 2014-2021
  *         Created: Feb 6, 2022 4:59:55 AM
- *         State: Feb 6, 2022 4:59:55 AM - TODO: указать состояние файла здесь.
+ *         State: Готов к отладке.
  */
 package OperatorEngine;
 
@@ -244,47 +244,48 @@ public class Procedure extends Item
     // }
 
     // #endregion
-    /**
-     * Предикат сортировки списка процедур
-     *
-     */
-    public static int SortByVes(Procedure p1, Procedure p2)
-    { // TODO: сортировка тут
-        // if p1 > p2 return 1
-        if (p1 == null)
-        {
-            if (p2 == null)
-            {
-                return 0;
-            }
-            else
-            {
-                return -1;
-            }
-        }
-        else
-        {
-            if (p2 == null)
-            {
-                return 1;
-            }
-            else
-            {
-                if (p1.m_ves > p2.m_ves)
-                {
-                    return 1;
-                }
-                else if (p1.m_ves < p2.m_ves)
-                {
-                    return -1;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-        }
-    }
+    
+//    /**
+//     * Предикат сортировки списка процедур
+//     *
+//     */
+//    public static int SortByVes(Procedure p1, Procedure p2)
+//    { 
+//        // if p1 > p2 return 1
+//        if (p1 == null)
+//        {
+//            if (p2 == null)
+//            {
+//                return 0;
+//            }
+//            else
+//            {
+//                return -1;
+//            }
+//        }
+//        else
+//        {
+//            if (p2 == null)
+//            {
+//                return 1;
+//            }
+//            else
+//            {
+//                if (p1.m_ves > p2.m_ves)
+//                {
+//                    return 1;
+//                }
+//                else if (p1.m_ves < p2.m_ves)
+//                {
+//                    return -1;
+//                }
+//                else
+//                {
+//                    return 0;
+//                }
+//            }
+//        }
+//    }
 
     /**
      * NT-Проверить на допустимость значение Вес Процедуры, введенное

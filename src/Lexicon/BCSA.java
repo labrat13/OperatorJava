@@ -103,7 +103,7 @@ public class BCSA // BigCommandSemanticAnalyser - такое длинное на
     /// <returns></returns>
     private static boolean IsRussianLetter(char p)
     {
-        int pi = (int) p;// TODO: test it
+        int pi = (int) p;
         return ((RussianAlphabet.indexOf(pi) != -1) || (RussianAlphabetShift.indexOf(pi) != -1));
     }
     // #endregion

@@ -2,16 +2,19 @@
  * @author Pavel Seliakov
  *         Copyright Pavel M Seliakov 2014-2021
  *         Created: Feb 6, 2022 4:59:55 AM
- *         State: Feb 6, 2022 4:59:55 AM - TODO: указать состояние файла здесь.
+ *         State:  Требуется код сортировки
  */
 package OperatorEngine;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Абстрактный класс для Процедур и Мест Оператора
  * 
  * @author 1
  */
-public class Item
+public class Item implements Comparable<Item>
 {
     // #region Fields
 
@@ -156,7 +159,9 @@ public class Item
         return sb.toString();
     }
 
-    // TODO: узнать как сортируются списки по предикатам
+    // Сортировка
+    
+
 
     /**
      * Сортировать список по Названию
@@ -165,9 +170,10 @@ public class Item
      *            Item object
      * @param y
      *            Item object
-     * @return
+     * @return 
+     *              Returns: -1 if x<y; 0 if x=y; 1 if x>y;
      */
-    public static int SortByTitle(Item x, Item y)
+    public static int CompareByTitle(Item x, Item y)
     {
         if (x == null)
         {
@@ -188,6 +194,15 @@ public class Item
 
             }
         }
+    }
+
+    /**
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(Item o)
+    {
+        return Item.CompareByTitle(this, o);
     }
 
 }

@@ -2,7 +2,7 @@
  * @author Pavel Seliakov
  *         Copyright Pavel M Seliakov 2014-2021
  *         Created: Feb 6, 2022 4:59:55 AM
- *         State: Feb 6, 2022 4:59:55 AM - TODO: указать состояние файла здесь.
+ *         State: Feb 6, 2022 4:59:55 AM - Допилить тодо.
  */
 package Lexicon;
 
@@ -26,13 +26,9 @@ public class DialogConsole
 {
     // TODO: тут надо переделать работу с цветами под новую консоль, но пока
     // непонятно, как это устроено.
-    // 1. форматирование даты под русскую локаль
-    // 2. Подключить класс JTerminal.Terminal - легко, он статический
-    // 2.1 Доделать и отладить в нем функции терминала - а то сейчас они не все
-    // работают.
 
-    // 4. Сделать болванки внешних классов с их наследованием, чтобы тут все
-    // компилировалось.
+    // 2.1 Доделать и отладить функции Terminal терминала - а то сейчас они не все
+    // работают.
     // 5. Удалить лишние переменные и функции (закомментить пока), заменить
     // обратно видимость с public на package (вместо internal)
 
@@ -395,17 +391,16 @@ public class DialogConsole
      */
     public void PrintListOfPlaces()
     {
-        // TODO: Удобство - если строк много, вывести порциями по 20 штук с
-        // перерывом на Enter
-
         this.SureConsoleCursorStart();
         // получить список мест
-        LinkedList<Place> places = this.m_Engine.Database.GetAllPlaces();// TODO:
-                                                                         // database
-                                                                         // here
+        LinkedList<Place> places = this.m_Engine.Database.GetAllPlaces();
+        // TODO: database here
         // сортировать список мест по алфавиту
-        places.sort(Place.SortByTitle);// TODO: sorting Comparator here
+        Collections.sort(places); //Sort by Title over interface Comparable
         // вывести на экран одни только названия мест
+        //TODO: перенести формирование строки в объект Места
+        //TODO: Удобство - если строк много, вывести порциями по 20 штук с
+        // перерывом на Enter
         for (Place p : places)
             this.PrintTextLine(String.format("%s [%s]", p.get_Title(), p.get_Path()), EnumDialogConsoleColor.Сообщение);
 
@@ -418,18 +413,16 @@ public class DialogConsole
      */
     public void PrintListOfProcedures()
     {
-        // TODO: Удобство - если строк много, вывести порциями по 20 штук с
-        // перерывом на Enter
-
         this.SureConsoleCursorStart();
         // получить список процедур
-        LinkedList<Procedure> procedures = this.m_Engine.Database.GetAllProcedures();// TODO:
-                                                                                     // database
-                                                                                     // here
+        LinkedList<Procedure> procedures = this.m_Engine.Database.GetAllProcedures();
+        // TODO: database here
         // сортировать список мест по алфавиту
-        procedures.sort(Procedure.SortByTitle);// TODO: sorting Comparator here
-
+        Collections.sort(procedures); //Sort by Title over interface Comparable
         // вывести на экран одни только названия процедур
+        //TODO: перенести формирование строки в объект Места
+        //TODO: Удобство - если строк много, вывести порциями по 20 штук с
+        // перерывом на Enter
         for (Procedure p : procedures)
             this.PrintTextLine(String.format("%s [%s]", p.get_Title(), p.get_Description()), EnumDialogConsoleColor.Сообщение);
 
@@ -457,7 +450,7 @@ public class DialogConsole
     public void PrintProcedureForm(Procedure p)
     {
         this.SureConsoleCursorStart();
-        // TODO: тут надо вывести описание свойств Процедуры в виде
+        //тут надо вывести описание свойств Процедуры в виде
         // многострочной формы или списка свойств.
         String[] sar = new String[8];
         sar[0] = String.format("Свойства Команды \"%s\":", p.get_Title());

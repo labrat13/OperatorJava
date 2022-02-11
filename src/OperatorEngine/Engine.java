@@ -2,9 +2,12 @@
  * @author Pavel Seliakov
  *         Copyright Pavel M Seliakov 2014-2021
  *         Created: Feb 6, 2022 4:59:55 AM
- *         State: Feb 6, 2022 4:59:55 AM - TODO: указать состояние файла здесь.
+ *         State: Feb 6, 2022 4:59:55 AM - В процессе портирования.
  */
 package OperatorEngine;
+
+import Lexicon.BCSA;
+import Lexicon.DialogConsole;
 
 // Консоль Оператора:
 // Функции доступа к консоли из сборок процедур сейчас перенесены в класс
@@ -29,7 +32,8 @@ public class Engine
     /// <summary>
     /// Писатель файла лога
     /// </summary>
-    private StreamWriter       logWriter;
+    private StreamWriter  logWriter;  
+    //TODO: Завести класс лога для всех операций с ним.
 
     /// <summary>
     /// Объект адаптера БД Оператора
@@ -50,7 +54,7 @@ public class Engine
     private DialogConsole      m_OperatorConsole;
 
     /// <summary>
-    /// Constructor
+    /// NR-Constructor
     /// </summary>
     /// <param name="log">Initialized Log writer</param>
     public Engine(StreamWriter log)
@@ -62,29 +66,28 @@ public class Engine
         this.m_OperatorConsole = new DialogConsole(this);
 
         return;
-    }#
+    }
+    //#region   Properties
 
-    region   Properties
 
-    /// <summary>
-    /// Объект адаптера БД Оператора
-    /// </summary>
-    /// <remarks>
-    /// Не должен быть доступен из сторонних сборок.
-    /// </remarks>
-    internal CachedDbAdapter Database
+    /**
+     * Объект адаптера БД Оператора. Не должен быть доступен из сторонних сборок.
+     * @return
+     */
+    public CachedDbAdapter get_Database()
     {
-            get { return m_db; }
-        }
+            return this.m_db; 
+    }
 
-    /// <summary>
-    /// Объект консоли Оператора
-    /// </summary>
-    /// <remarks>Должен быть доступен из сторонних сборок.</remarks>
-    public DialogConsole OperatorConsole
+
+    /**
+     * Объект консоли Оператора. Должен быть доступен из сторонних сборок.
+     * @return
+     */
+    public DialogConsole get_OperatorConsole()
     {
-            get { return m_OperatorConsole; }
-        }
+           return this.m_OperatorConsole; 
+    }
     // #endregion
 
     // #region Функции инициализации и завершения движка
@@ -124,11 +127,11 @@ public class Engine
                     oleDbAdapter.Close();
                     sqliteDbAdapter.Open();
                     sqliteDbAdapter.TransactionBegin();
-                    foreach (Place p in allPlaces)
+                    for (Place p : allPlaces)
                         sqliteDbAdapter.AddPlace(p);
                     sqliteDbAdapter.TransactionCommit();
                     sqliteDbAdapter.TransactionBegin();
-                    foreach (Procedure p in allProcedures)
+                    for (Procedure p : allProcedures)
                         sqliteDbAdapter.AddProcedure(p);
                     sqliteDbAdapter.TransactionCommit();
                     sqliteDbAdapter.Close();
@@ -142,11 +145,9 @@ public class Engine
         }
 
     /// <summary>
-    /// NT-Подготовка к завершению работы механизма
+    /// NR-Подготовка к завершению работы механизма
     /// </summary>
-    internal
-
-    void Exit()
+    public void Exit()
         {
             //Закрыть БД если еще не закрыта
             if (this.m_db != null)
@@ -154,16 +155,13 @@ public class Engine
             //но не обнулять ссылку, так как объект БД создается в конструкторе, а не в Init()
             //Хотя вряд ли объект будет еще раз инициализирован и использован, но не надо путать слои.
             return;
-        }#endregion
+        }
+    //#endregion
 
-    #
-
-    region Основной
-
-    цикл   исполнения механизма
+    //#region Основной цикл   исполнения механизма
 
     /// <summary>
-    /// NT-Основной цикл исполнения механизма
+    /// NR-Основной цикл исполнения механизма
     /// </summary>
     public ProcedureResult ProcessLoop()
     {
@@ -181,10 +179,10 @@ public class Engine
 
             // Операторы: return закрывает Оператор, а continue - переводит на
             // следующий цикл приема команды
-
+            if (String.IsNullOrEmpty(query)) continue;
+            
             // триммим из запроса пробелы всякие лишние сразу же
             // если строка пустая, начинаем новый цикл приема команды
-            if (String.IsNullOrEmpty(query)) continue;
             query = query.Trim();// query теперь может оказаться пустой строкой
             if (String.IsNullOrEmpty(query)) continue;
             // а если нет - обрабатываем запрос
@@ -209,7 +207,8 @@ public class Engine
             else if (Dialogs.isExitReloadCommand(query) == true)
                 return ProcedureResult.ExitAndReload;// закрытие приложения и
                                                      // перезагрузка машины
-            else if (Dialogs.isExitLogoffCommand(query) == true) return ProcedureResult.ExitAndLogoff;// закрытие
+            else if (Dialogs.isExitLogoffCommand(query) == true) 
+                return ProcedureResult.ExitAndLogoff;// закрытие
                                                                                                       // приложения
                                                                                                       // и
                                                                                                       // завершение
@@ -229,9 +228,10 @@ public class Engine
             // вывести сообщение-подтверждение результата процедуры
             describeProcedureResult(result);
 
-            // TODO: Режимы сна: если прочие программы не завершаются при
+            // Режимы сна: если прочие программы не завершаются при
             // засыпании, то и завершать работу здесь не нужно.
-            if ((result == ProcedureResult.Exit) || (result == ProcedureResult.ExitAndReload) // перезагрузка
+            if ((result == ProcedureResult.Exit) 
+                    || (result == ProcedureResult.ExitAndReload) // перезагрузка
                                                                                               // компьютера
                     || (result == ProcedureResult.ExitAndShutdown)// выключение
                                                                   // компьютера
@@ -249,22 +249,22 @@ public class Engine
     }
 
     /// <summary>
-    /// NT-Обработчик события "Поступила новая команда"
+    /// NR-Обработчик события "Поступила новая команда"
     /// </summary>
     /// <param name="query">Текст запроса команды</param>
     /// <returns></returns>
-    private ProcedureResult EventCommandArrived(String query)
+    private EnumProcedureResult EventCommandArrived(String query)
     {
         // сейчас тупо исполним весь запрос целиком
         // result = DoQuery(query);
 
-        ProcedureResult result = CommandAnalyser.ProcessQuery(this, query);
+        EnumProcedureResult result = Lexicon.BCSA.ProcessQuery(this, query);
 
         return result;
     }
 
     /// <summary>
-    /// NT-вывести сообщение-подтверждение результата процедуры
+    /// NR-вывести сообщение-подтверждение результата процедуры
     /// Играть звуковой сигнал, если результат - ошибка.
     /// Подтверждение не выводится, если завершение процедуры - успешное.
     /// </summary>
@@ -324,7 +324,7 @@ public class Engine
     }
 
     /// <summary>
-    /// NT-обрабатываем запрос пользователя.
+    /// NR-обрабатываем запрос пользователя.
     /// Возвращаем false для завершения работы приложения
     /// </summary>
     /// <param name="cmdline">Текст запроса</param>
@@ -337,13 +337,13 @@ public class Engine
 
         // 22052020 - фича: если запрос не русскоязычный, то передать его в
         // терминал. Иначе - исполнять.
-        if (BigCommandSemanticAnalyser.IsNotRussianFirst(query)) return ExecuteWithTerminal(query);
-
+        if (BCSA.IsNotRussianFirst(query)) return ExecuteWithTerminal(query);
+        //для каждой процедуры из списка процедур из кеша БД:
         for (Procedure p : this.m_db.Procedures.Procedures)
         {
             // собрать нормальный регекс для процедуры
             // TODO: optimization - можно же это сделать после загрузки регекса
-            // из БД как часть процесса распаковки данных,
+            // из БД как часть процесса распаковки данных, записав в объект Процедуры как служебное поле.
             // а не при каждом исполнении команды от пользователя.
             regex = MakeNormalRegex(p);
             // выполнить регекс и определить, является ли процедура пригодной
@@ -370,13 +370,13 @@ public class Engine
     }
 
     /// <summary>
-    /// NT-Обработать событие "Не удалось подобрать процедуру для исполнения
+    /// NR-Обработать событие "Не удалось подобрать процедуру для исполнения
     /// запроса"
     /// </summary>
     private void EventCommandNotExecuted()
     {
         // выводим сообщение что для запроса не удалось подобрать процедуру
-        this.OperatorConsole.PrintTextLine("Я такое не умею", DialogConsoleColors.Сообщение);
+        this.OperatorConsole.PrintTextLine("Я такое не умею", EnumDialogConsoleColor.Сообщение);
 
         // вообще же тут можно выполнять другую обработку, наверно...
 
@@ -384,46 +384,47 @@ public class Engine
     }
 
     /// <summary>
-    /// NT-Открыть запрос в Терминале Виндовс
+    /// NR-Открыть запрос в Терминале Виндовс
     /// </summary>
     /// <param name="query">Строка запроса</param>
     /// <returns></returns>
-    private ProcedureResult ExecuteWithTerminal(string query)
+    private EnumProcedureResult ExecuteWithTerminal(String query)
     {
-        ProcedureResult result = ProcedureResult.Success;
+        //TODO: переделать на условия Линукс.
+        EnumProcedureResult result = EnumProcedureResult.Success;
         try
         {
             // cmd.exe /K query
 
-            String app = "cmd.exe";
+            String app = "cmd.exe";//TODO: путь к терминалу и аргументы получить из настроек Оператора специально для терминала.
             String args = "/K " + query;
             PowerManager.ExecuteApplication(app, args);
         }
         catch (Exception e)
         {
             PrintExceptionToConsole(e);
-            result = ProcedureResult.Error;// флаг что процедура не годится
+            result = EnumProcedureResult.Error;// флаг что процедура не годится
         }
 
         return result;
     }
 
     /// <summary>
-    /// NT- Собрать нормальный регекс для процедуры
+    /// NR- Собрать нормальный регекс для процедуры
     /// </summary>
     /// <param name="p"></param>
     /// <returns></returns>
-    private string MakeNormalRegex(Procedure p)
+    private String MakeNormalRegex(Procedure p)
     {
         String rx = null;
         // получить тип регекса
-        RegexType rt = RegexManager.determineRegexType(p.Regex);
+        EnumRegexType rt = RegexManager.determineRegexType(p.get_Regex());
         // конвертировать регекс в пригодный для исполнения
-        if (rt == RegexType.NormalRegex)
+        if (rt == EnumRegexType.NormalRegex)
         {
-            rx = String.Copy(p.Regex);
+            rx = String.Copy(p.get_Regex());
         }
-        else if (rt == RegexType.SimpleString)
+        else if (rt == EnumRegexType.SimpleString)
         {
             rx = RegexManager.ConvertSimpleToRegex2(p.Regex);
         }
@@ -433,7 +434,7 @@ public class Engine
     }
 
     /// <summary>
-    /// NT-Должна вернуть облом при неподходящих параметрах, успех при
+    /// NR-Должна вернуть облом при неподходящих параметрах, успех при
     /// исполнении, выход если требуется завершение работы приложения или
     /// компьютера
     /// </summary>
@@ -442,14 +443,15 @@ public class Engine
     /// <param name="p">Объект процедуры</param>
     /// <param name="args">Коллекция аргументов</param>
     /// <returns></returns>
-    private ProcedureResult Execute(string command, string regex, Procedure p, ArgumentCollection args)
+    private EnumProcedureResult Execute(String command, String regex, Procedure p, ArgumentCollection args)
     {
         // и еще нужно этим аргументам сопоставить типы мест хотя бы
         TryAssignPlaces(args);
 
         // надо определить, путь исполнения это путь к процедуре или к
         // приложению.
-        bool AssemblyCodePath = RegexManager.IsAssemblyCodePath(p.Path);
+        //TODO:оптимизация: сделать это при загрузке Процедуры из БД и сохранить в служебном поле Процедуры 
+        boolean AssemblyCodePath = RegexManager.IsAssemblyCodePath(p.get_Path());
         if (AssemblyCodePath == false)
         {
             // если к приложению, его надо запустить и вернуть стандартное
@@ -466,7 +468,7 @@ public class Engine
     }
 
     /// <summary>
-    /// RT- Запустить функцию из локальной сборки
+    /// NR- Запустить функцию из локальной сборки
     /// </summary>
     /// <param name="command">Команда пользователя</param>
     /// <param name="p">Объект процедуры</param>
@@ -480,7 +482,7 @@ public class Engine
             // получить имена частей пути. в порядке: сборка, класс, функция,
             // аргументы по порядку следования если они есть
             string[] names = RegexManager.ParseAssemblyCodePath(p.Path);
-            // TODO: тут аргументы уже должны быть заполнены значениями и типами
+            // тут аргументы уже должны быть заполнены значениями и типами
             // и местами и готовы к выполнению.
             result = p.invokeProcedure(command, names, this, args);
         }
@@ -507,16 +509,16 @@ public class Engine
     }
 
     /// <summary>
-    /// NT-Запустить команду через механизм ShellExecute
+    /// NR-Запустить команду через механизм ShellExecute
     /// </summary>
     /// <param name="p">Объект процедуры</param>
     /// <param name="args">Коллекция аргументов</param>
     /// <returns>Возвращается результат выполнения процедуры</returns>
-    private ProcedureResult RunShellExecute(Procedure p, ArgumentCollection args)
+    private EnumProcedureResult RunShellExecute(Procedure p, ArgumentCollection args)
     {
         // типы мест определять здесь не имеет смысла - они все равно не
         // учитываются в запускаемом приложении
-        ProcedureResult result = ProcedureResult.Success;
+        EnumProcedureResult result = EnumProcedureResult.Success;
         try
         {
             // вставить аргументы в командную строку приложения
@@ -537,7 +539,7 @@ public class Engine
             // например, когда выключился спящий режим, команда спать просто
             // выводила сообщение я не умею.
             this.OperatorConsole.PrintExceptionMessage(e);
-            result = ProcedureResult.WrongArguments;// флаг что процедура не
+            result = EnumProcedureResult.WrongArguments;// флаг что процедура не
                                                     // годится
         }
         // вернуть результат
@@ -545,7 +547,7 @@ public class Engine
     }
 
     /// <summary>
-    /// NT-Сопоставить данные аргументов и места из коллекции мест, насколько
+    /// NR-Сопоставить данные аргументов и места из коллекции мест, насколько
     /// это возможно.
     /// </summary>
     /// <param name="args"></param>
@@ -573,7 +575,7 @@ public class Engine
         }
 
     /// <summary>
-    /// NT-Вывести на консоль информацию об исключении
+    /// NR-Вывести на консоль информацию об исключении
     /// </summary>
     /// <param name="e"></param>
     private void PrintExceptionToConsole(Exception e)
@@ -588,23 +590,15 @@ public class Engine
         return;
     }
 
-    #endregion
+    //#endregion
 
-    #
-
-    region  Функции
-
-    доступа к
-
-    БД      из
-
-    сборок  процедур
+    //#region  Функции доступа к БД из сборок  процедур
     // вынесены сюда, так как нельзя давать сторонним сборкам доступ к БД (не
     // знаю пока, как получится)
     // Названия функций должны начинаться с Db...
 
     /// <summary>
-    /// NT-Добавить Место в БД
+    /// NR-Добавить Место в БД
     /// </summary>
     /// <param name="p">Заполненный объект</param>
     public void DbInsertPlace(Place p)
@@ -616,7 +610,7 @@ public class Engine
     }
 
     /// <summary>
-    /// NT-Добавить несколько Мест в БД
+    /// NR-Добавить несколько Мест в БД
     /// </summary>
     /// <param name="places">Список заполненных Мест</param>
     public void DbInsertPlace(List<Place> places)
@@ -633,7 +627,7 @@ public class Engine
     }
 
     /// <summary>
-    /// NT-Добавить Процедуру в БД
+    /// NR-Добавить Процедуру в БД
     /// </summary>
     /// <param name="p">Заполненный объект</param>
     public void DbInsertProcedure(Procedure p)
@@ -645,7 +639,7 @@ public class Engine
     }
 
     /// <summary>
-    /// NT-Добавить несколько Процедур в БД
+    /// NR-Добавить несколько Процедур в БД
     /// </summary>
     /// <param name="procedures">Список заполненных Процедур</param>
     public void DbInsertProcedure(List<Procedure> procedures)
@@ -662,7 +656,7 @@ public class Engine
     }
 
     /// <summary>
-    /// NT-Выбрать из БД Места по названию, без учета регистра символов
+    /// NR-Выбрать из БД Места по названию, без учета регистра символов
     /// </summary>
     /// <param name="placeTitle">Название места</param>
     /// <returns>Возвращает список мест с указанным названием</returns>
@@ -676,7 +670,7 @@ public class Engine
     }
 
     /// <summary>
-    /// NT-Выбрать из БД Процедуры по названию, без учета регистра символов
+    /// NR-Выбрать из БД Процедуры по названию, без учета регистра символов
     /// </summary>
     /// <param name="title">Название Процедуры</param>
     /// <returns>Возвращает список Процедур с указанным названием</returns>
@@ -687,7 +681,7 @@ public class Engine
             return this.m_db.Procedures.getByTitle(title);
         }
 
-#endregion
+//#endregion
 
 //
 
@@ -705,3 +699,5 @@ public class Engine
 // //вернуть флаг продолжения работы
 // return ProcedureResult.Success;
 // }
+    
+}

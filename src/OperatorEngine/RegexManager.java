@@ -2,9 +2,11 @@
  * @author Pavel Seliakov
  *         Copyright Pavel M Seliakov 2014-2021
  *         Created: Feb 6, 2022 4:59:55 AM
- *         State: Feb 6, 2022 4:59:55 AM - TODO: указать состояние файла здесь.
+ *         State: Feb 6, 2022 4:59:55 AM - TODO: требуется регекс и переделка класса под него.
  */
 package OperatorEngine;
+
+import java.util.LinkedList;
 
 /**
  * Класс-контейнер для регекс-операций
@@ -107,9 +109,8 @@ public class RegexManager
      * @param arguments
      * @return
      */
-    public static String ConvertApplicationCommandString(String cmdline, ArgumentCollection arguments)// TODO:
-                                                                                                      // Regex
-    {
+    public static String ConvertApplicationCommandString(String cmdline, ArgumentCollection arguments)
+    {   // TODO: Regex
         // распарсить строку вида: my app.exe -t -d%arg1%[56*4765] -c"%arg2"
         // аргумент начинается с % и содержит буквы или цифры, но не знаки или
         // пробелы
@@ -270,22 +271,21 @@ public class RegexManager
      */
     public static String[] ParseAssemblyCodePath(String path)
     {
-
+        //тут не проверяем формат входной строки, так как регекс 
+        //уже все проверил ранее в IsAssemblyCodePath()
         LinkedList<String> lis = new LinkedList<String>();
         String p = path.trim();
-        String[] sar1 = Utility.StringSplit(p, "(", true); // p.Split(new char[]
-                                                           // { '(' },
-                                                           // StringSplitOptions.RemoveEmptyEntries);
+     // p.Split(new char[] { '(' }, StringSplitOptions.RemoveEmptyEntries);
+        String[] sar1 = Utility.StringSplit(p, "(", true); 
+        
         String names = sar1[0];
         String args = sar1[1];
 
-        String[] sar2 = Utility.StringSplit(names, ".", true); // names.Split(
-                                                               // new char[] {
-                                                               // '.'},
-                                                               // StringSplitOptions.RemoveEmptyEntries);
-        lis.Add(sar2[0]);// assembly name
-        lis.Add(sar2[1]);// class name
-        lis.Add(sar2[2]);// func name
+     // names.Split( new char[] { '.'}, StringSplitOptions.RemoveEmptyEntries); 
+        String[] sar2 = Utility.StringSplit(names, ".", true); 
+        lis.add(sar2[0]);// assembly name
+        lis.add(sar2[1]);// class name
+        lis.add(sar2[2]);// func name
 
         // отсечь все что после закрывающей скобки
         int pos = args.IndexOf(')');
@@ -315,7 +315,7 @@ public class RegexManager
      *            Шаблон команды
      * @return Возвращается коллекция аргументов
      */
-    public static ArgumentCollection ExtractArgumentsFromCommand(String command, string pattern)// TODO:
+    public static ArgumentCollection ExtractArgumentsFromCommand(String command, String pattern)// TODO:
                                                                                                 // Regex
     {
         ArgumentCollection args = null;

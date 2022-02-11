@@ -2,7 +2,7 @@
  * @author Pavel Seliakov
  *         Copyright Pavel M Seliakov 2014-2021
  *         Created: Feb 6, 2022 4:59:55 AM
- *         State: Feb 6, 2022 4:59:55 AM - TODO: указать состояние файла здесь.
+ *         State: Feb 11, 2022 2:36:55 AM - Готов к отладке
  */
 package OperatorEngine;
 
@@ -196,8 +196,9 @@ public class FuncArgument
      * 
      * @param p
      *            Найденное Место
+     * @throws Exception 
      */
-    public void ПодставитьМесто(Place p)
+    public void ПодставитьМесто(Place p) throws Exception
     {
         // вписываем тип аргумента из типа Места
         this.m_argtype = Utility.StringCopy(p.get_PlaceTypeExpression());

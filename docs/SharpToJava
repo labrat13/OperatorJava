@@ -1,8 +1,12 @@
+string->String
+Операции со строками - вынесены в класс Utility, копировать оттуда сюда как пример.
+
+---------------------------------------------------------
 DateTime -> LocalDateTime
 //formatting datetime
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("cccc, dd LLLL yyyy'г. 'HH:mm:ss", BigCommandSemanticAnalyser.RuCulture);
         return dtf.format(dt);
-        
+----------------------------------------------------------        
 Dictionary -> HashMap
 
         // проверяем элементы первого уровня Агрегации
@@ -21,4 +25,44 @@ Dictionary -> HashMap
                 if (res != null) return res;
             }
         }       
+-------------------------------------------------        
+Сортировка списков:
+А) Реализовать в классе интерфейс Comparable<>:
+public class Item implements Comparable<Item>
+и затем его функцию сравнения:
+    /**
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(Item o)
+    {
+           if (this.getCreatedOn() == null || o.getCreatedOn() == null) {
+      return 0;
+    }
+    return this.getCreatedOn().compareTo(o.getCreatedOn());
+    }
+Это для основной, часто используемой, сортировки объектов колелкции (например, по названию)
+
+
+Б) Сортировка компаратором
+Компаратор надо создать по-месту-из-кода, не так, как в Шарпе.
+
+    /** 
+     * NT- Сортировать процедуры по возрастанию веса
+     * @param list List of procedures for sorting
+     */
+    public static void SortByVes(LinkedList<Procedure> list)
+    {
+        Collections.sort(list, new Comparator<Procedure>() {
+            @Override
+            public int compare(Procedure u1, Procedure u2) {
+              return u1.get_Ves().compareTo(u2.get_Ves());
+            }
+        });
         
+    }  
+    
+    это для редко используемой сортировки объектов коллекции.
+ -----------------------------------------------------------------   
+    
+          

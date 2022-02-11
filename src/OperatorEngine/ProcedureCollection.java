@@ -2,10 +2,12 @@
  * @author Pavel Seliakov
  *         Copyright Pavel M Seliakov 2014-2021
  *         Created: Feb 6, 2022 4:59:55 AM
- *         State: Feb 6, 2022 4:59:55 AM - TODO: указать состояние файла здесь.
+ *         State: Feb 6, 2022 4:59:55 AM - готов к отладке
  */
 package OperatorEngine;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 
 /**
@@ -89,8 +91,31 @@ public class ProcedureCollection
         this.m_proclist.addAll(list);
         // сортировать процедуры по весу обязательно, иначе команды будут
         // исполняться не по их весу.
-        this.m_proclist.sort(Procedure.SortByVes);// TODO: sorting Comparator
-                                                  // here
+        SortByVes(this.m_proclist);
+
+        return;
+    }
+
+    /**
+     * NT- Сортировать процедуры по возрастанию веса
+     * 
+     * @param list
+     *            List of procedures for sorting
+     */
+    public static void SortByVes(LinkedList<Procedure> list)
+    {
+        if (list.size() > 1)
+        {
+            Collections.sort(list, new Comparator<Procedure>()
+            {
+
+                @Override
+                public int compare(Procedure u1, Procedure u2)
+                {
+                    return u1.get_Ves().compareTo(u2.get_Ves());
+                }
+            });
+        }
 
         return;
     }

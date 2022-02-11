@@ -2,12 +2,11 @@
  * @author Pavel Seliakov
  *         Copyright Pavel M Seliakov 2014-2021
  *         Created: Feb 6, 2022 4:59:55 AM
- *         State: Feb 6, 2022 4:59:55 AM - TODO: указать состояние файла здесь.
+ *         State: Feb 6, 2022 4:59:55 AM - Готов к отладке.
  */
 package OperatorEngine;
 
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Представляет Место Оператора
@@ -46,8 +45,9 @@ public class Place extends Item
      * NT-Конструктор копирования
      * 
      * @param p
+     * @throws Exception 
      */
-    public Place(Place p)
+    public Place(Place p) throws Exception
     {
         this.m_descr = Utility.StringCopy(p.m_descr);
         this.m_id = p.m_id;
@@ -171,8 +171,9 @@ public class Place extends Item
      * Вызывается вручную, после загрузки места из БД через проперти.
      * Заполняет коллекцию типов места из внутренней переменной, которая хранит
      * упакованное значение.
+     * @throws Exception 
      */
-    public void ParseEntityTypeString()
+    public void ParseEntityTypeString() throws Exception
     {
         this.m_entityTypes = new EntityTypesCollection();
         m_entityTypes.ParseExpression(this.m_placetype);

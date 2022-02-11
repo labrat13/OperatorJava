@@ -6,10 +6,6 @@
  */
 package JTerminal;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.lang.*;
-
 /**
  * @author jsmith
  *         Terminal control class
