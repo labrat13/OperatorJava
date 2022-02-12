@@ -57,14 +57,14 @@ public class Operator
             // String result = BCSA.CreateLongDatetimeString(null);
             // Terminal.WriteLine(result);
 
-            String[] sar = "alfa, beta, gamma, delta, saturn   floating - points".split(" ");
-            for (String sl : sar)
-                Terminal.WriteLine(sl + "|");
-            sar = Utility.RemoveEmptyItems(sar);
-            Terminal.WriteLine("-----------");
-            for (String sl : sar)
-                Terminal.WriteLine(sl + "-");
-            Terminal.WriteLine("-----------");
+//            String[] sar = "alfa, beta, gamma, delta, saturn   floating - points".split(" ");
+//            for (String sl : sar)
+//                Terminal.WriteLine(sl + "|");
+//            sar = Utility.RemoveEmptyItems(sar);
+//            Terminal.WriteLine("-----------");
+//            for (String sl : sar)
+//                Terminal.WriteLine(sl + "-");
+//            Terminal.WriteLine("-----------");
 
             // test for getCursorPosition function
             // IntegerProxy r = new IntegerProxy();
@@ -82,6 +82,12 @@ public class Operator
             // Terminal.ErrorWriteLine(String.format("%s = %b",ru1, b2));
             // Terminal.SetAttributeMode(TerminalMode.COLOR_BRIGHT_GREEN);
 
+            Version v = new Version(1, 2, 3, 4);
+            Version g = Version.parse("1.2.3.4");
+            String vs1 = v.toString();
+            String gs1 = g.toString();
+                    Terminal.WriteLine(vs1 + " == " + gs1);
+            
         }
         catch (Exception e)
         {

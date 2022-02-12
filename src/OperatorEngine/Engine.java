@@ -28,7 +28,11 @@ public class Engine
      * Строка версии Оператора для платформы Linux Java
      */
     public final static String EngineVersionString = "1.0.0.0";
-
+/**
+ * Статический объект версии движка для платформы Linux Java
+ */
+    public static Version EngineVersion = Version.parse(EngineVersionString);
+    
     /// <summary>
     /// Писатель файла лога
     /// </summary>
