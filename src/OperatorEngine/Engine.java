@@ -413,28 +413,31 @@ public class Engine
         return result;
     }
 
-    /// <summary>
-    /// NR- Собрать нормальный регекс для процедуры
-    /// </summary>
-    /// <param name="p"></param>
-    /// <returns></returns>
+
+    /**
+     * NT-Собрать нормальный регекс для процедуры
+     * @param p Объект Процедуры
+     * @return Функция возвращает Нормальный регекс для указанной Процедуры.
+     */
     private String MakeNormalRegex(Procedure p)
     {
-        String rx = null;
+        String result = null;
+        String procedureRegex = p.get_Regex();
         // получить тип регекса
-        EnumRegexType rt = RegexManager.determineRegexType(p.get_Regex());
+        EnumRegexType rt = RegexManager.determineRegexType(procedureRegex);
         // конвертировать регекс в пригодный для исполнения
         if (rt == EnumRegexType.NormalRegex)
         {
-            rx = String.Copy(p.get_Regex());
+            result = Utility.StringCopy(procedureRegex);
         }
         else if (rt == EnumRegexType.SimpleString)
         {
-            rx = RegexManager.ConvertSimpleToRegex2(p.Regex);
+            //Тут Простой регекс превращается в Нормальный регекс, русские названия аргументов заменяются на arg_#. 
+            result = RegexManager.ConvertSimpleToRegex2(procedureRegex);
         }
-        else throw new Exception(String.Format("Invalid regex string: {0} in {1}", p.Regex, p.Title));
+        else throw new Exception(String.format("Invalid regex string: %s in %s", procedureRegex, p.get_Title()));
 
-        return rx;
+        return result;
     }
 
     /// <summary>
@@ -478,14 +481,14 @@ public class Engine
     /// <param name="p">Объект процедуры</param>
     /// <param name="args">Коллекция аргументов</param>
     /// <returns>Возвращается результат выполнения процедуры</returns>
-    private ProcedureResult RunLocalAssembly(string command, Procedure p, ArgumentCollection args)
+    private EnumProcedureResult RunLocalAssembly(String command, Procedure p, ArgumentCollection args)
     {
-        ProcedureResult result = ProcedureResult.Success;
+        EnumProcedureResult result = EnumProcedureResult.Success;
         try
         {
             // получить имена частей пути. в порядке: сборка, класс, функция,
             // аргументы по порядку следования если они есть
-            string[] names = RegexManager.ParseAssemblyCodePath(p.Path);
+            String[] names = RegexManager.ParseAssemblyCodePath(p.get_Path());
             // тут аргументы уже должны быть заполнены значениями и типами
             // и местами и готовы к выполнению.
             result = p.invokeProcedure(command, names, this, args);
@@ -526,7 +529,7 @@ public class Engine
         try
         {
             // вставить аргументы в командную строку приложения
-            String cmdline = RegexManager.ConvertApplicationCommandString(p.Path, args);
+            String cmdline = RegexManager.ConvertApplicationCommandString(p.get_Path(), args);
             // запустить приложение
             PowerManager.ExecuteApplication(cmdline);
         }
