@@ -53,6 +53,7 @@ public class ArgumentCollection
      * NT-Добавить аргумент в коллекцию
      * 
      * @param f
+     *            Объект аргумента
      */
     public void Add(FuncArgument f)
     {
@@ -65,7 +66,7 @@ public class ArgumentCollection
      * 
      * @param argname
      *            Название аргумента
-     * @return
+     * @return Функция возвращает объект аргумента
      */
     public FuncArgument GetByName(String argname)
     {
