@@ -69,6 +69,16 @@ public class Utility
     public static String DateTimeNowToString()
     {
         LocalDateTime dt = LocalDateTime.now();
+        
+        return DateTimeToString(dt);
+    }
+    /**
+     * NT-Return formatted string for specified LocalDateTime object.
+     * @param dt LocalDateTime object.
+     * @return Return formatted string for specified LocalDateTime object.
+     */
+    public static String DateTimeToString(LocalDateTime dt)
+    {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss", BCSA.RuCulture);
         return dtf.format(dt);
     }

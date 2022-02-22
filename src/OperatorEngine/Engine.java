@@ -23,7 +23,10 @@ import Lexicon.DialogConsole;
  */
 public class Engine
 {
-
+    /**
+     * Строка названия Оператора для платформы Linux Java 
+     */
+    public final static String ApplicationTitle = "Operator";
     /**
      * Строка версии Оператора для платформы Linux Java
      */
@@ -32,6 +35,7 @@ public class Engine
  * Статический объект версии движка для платформы Linux Java
  */
     public static Version EngineVersion = Version.parse(EngineVersionString);
+
     
     /// <summary>
     /// Писатель файла лога

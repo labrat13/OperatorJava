@@ -13,70 +13,98 @@ package OperatorEngine;
  */
 public static class SystemInfoManager
 {
-
-    /// <summary>
-    /// NT-Определить версию ОС.
-    /// </summary>
-    /// <returns></returns>
-    /// <remarks>
-    /// Функция приблизительно определяет версию ОС, не различает десктопную и
-    /// серверную версии.
-    /// Но для Оператора этого должно быть достаточно.
-    /// </remarks>
-    public static OsType detectOsType()
+    /**
+     * Get Operating system name
+     * @return Operating system name
+     */
+    public static String GetOsTitle()
     {
-        int major = Environment.OSVersion.Version.Major;
-        int minor = Environment.OSVersion.Version.Minor;
-
-        if (major < 5)
-            return OsType.Unknown;
-        else if (major == 5)
-        {
-            if (minor == 0)
-                return OsType.Windows2000;
-            else if (minor == 1)
-                return OsType.WindowsXP;
-            else if (minor == 2)
-                return OsType.Windows2003;
-            else return OsType.Unknown;
-        }
-        else if (major == 6)
-        {
-            if (minor == 0)
-                return OsType.WindowsVista;
-            else if (minor == 1)
-                return OsType.Windows7;
-            else if (minor == 2)
-                return OsType.Windows8;
-            else if (minor == 3)
-                return OsType.Windows81;
-            else return OsType.Unknown;
-        }
-        else if (major == 10)
-            return OsType.Windows10;
-
-        else return OsType.Unknown;
+        return System.getProperty("os.name");
     }
-
-    /// <summary>
-    /// Функция возвращает True если операционная система - Windows XP.
-    /// </summary>
-    /// <returns></returns>
-    public static bool isWindowsXP()
+    /**
+     * Get Operating system architecture
+     * @return Operating system architecture
+     */
+    public static String GetOsArchTitle()
     {
-        if ((Environment.OSVersion.Version.Major == 5) && (Environment.OSVersion.Version.Minor == 1))
-            return true;
-        else return false;
+        return System.getProperty("os.arch");
     }
-
-    /// <summary>
-    /// Функция возвращает True если операционная система 64-битная.
-    /// </summary>
-    /// <returns></returns>
-    public static bool is64bitProcess()
+    /**
+     * Get Operating system version
+     * @return Operating system version
+     */
+    public static String GetOsVersionString()
     {
-        return (IntPtr.Size == 8);
+        return System.getProperty("os.version");
     }
+    /**
+     * Get Line separator ("\n" on UNIX)
+     * @return Line separator ("\n" on UNIX)
+     */
+    public static String GetLineSeparator()
+    {
+        return System.getProperty("line.separator");
+    }
+    /**
+     * Get File separator ("/" on UNIX)
+     * @return File separator ("/" on UNIX)
+     */
+    public static String GetFileSeparator()
+    {
+        return System.getProperty("file.separator");
+    }
+    /**
+     * Get Path separator (":" on UNIX)
+     * @return Path separator (":" on UNIX)
+     */   
+    public static String GetPathSeparator()
+    {
+        return System.getProperty("path.separator");
+    }
+    /**
+     * Get User's account name
+     * @return User's account name
+     */
+    public static String GetUserTitle()
+    {
+        return System.getProperty("user.name");
+    }
+    /**
+     * Get User's home directory
+     * @return User's home directory
+     */
+    public static String GetUserHomeFolderPath()
+    {
+        return System.getProperty("user.home");
+    }
+    /**
+     * Get User's current working directory
+     * @return User's current working directory
+     */
+    public static String GetUserCurrentDirectory()
+    {
+        return System.getProperty("user.dir");
+    }
+    /**
+     * Get Java Runtime Environment version
+     * @return Java Runtime Environment version
+     */
+    public static String GetJREVersion()
+    {
+        return System.getProperty("user.dir");
+    }
+   
+    
+//
+//
+//    /// <summary>
+//    /// Функция возвращает True если операционная система 64-битная.
+//    /// </summary>
+//    /// <returns></returns>
+//    public static bool is64bitProcess()
+//    {
+//        return (IntPtr.Size == 8);
+//    }
 
 }
 
