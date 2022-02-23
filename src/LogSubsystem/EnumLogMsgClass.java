@@ -1,7 +1,7 @@
 /**
  * @author Селяков Павел
  * Created: Feb 22, 2022 5:05:11 PM
- * State: Feb 22, 2022 5:05:11 PM - initial
+ * State: Feb 23, 2022 11:29:32 PM - ready to test
  */
 package LogSubsystem;
 
@@ -13,6 +13,7 @@ package LogSubsystem;
  */
 public enum EnumLogMsgClass
 {
+    //TODO: Добавить новые классы событий лога здесь.
     /**
      * Default (0) or Unknown
      */
@@ -24,9 +25,23 @@ public enum EnumLogMsgClass
     /**
      * Session finish message
      */
-    SessionFinished(2);
-    
-    
+    SessionFinished(2),
+    /**
+     * User input query text
+     */
+    QueryStarted(3),
+    /**
+     * User query processing finished
+     */
+    QueryFinished(4),
+    /**
+     * Exception raised to break execution of Operator
+     */
+    ExceptionRaised(5),
+    /**
+     * Exception suppressed or processed by engine
+     */
+    ExceptionSuppressed(6);
     
     /**
      * Object value

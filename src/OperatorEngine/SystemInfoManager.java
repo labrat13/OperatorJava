@@ -11,7 +11,7 @@ package OperatorEngine;
  * 
  * @author 1
  */
-public static class SystemInfoManager
+public class SystemInfoManager
 {
     /**
      * Get Operating system name

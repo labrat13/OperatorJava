@@ -84,6 +84,17 @@ public class Utility
     }
 
     /**
+     * NT-Return part of filename string for specified LocalDateTime object.
+     * @param dt LocalDateTime object.
+     * @return Return part of filename for specified LocalDateTime object.
+     */
+    public static String DateTimeToFileNameString(LocalDateTime dt)
+    {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyMMdd_HHmmss", BCSA.RuCulture);
+        return dtf.format(dt);
+    }
+    
+    /**
      * NT-Получить строку версии сборки Оператора
      * 
      * @return Returns Operator version string

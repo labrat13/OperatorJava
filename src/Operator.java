@@ -6,12 +6,19 @@
  *         функций вместо запуска основного процесса.
  */
 
+import java.io.IOException;
+
 import JTerminal.IntegerProxy;
 import JTerminal.Terminal;
 import JTerminal.TerminalMode;
 import JTerminal.TerminalModeStrings;
 import Lexicon.BCSA;
+import LogSubsystem.EnumLogMsgClass;
+import LogSubsystem.EnumLogMsgState;
+import LogSubsystem.LogManager;
+import OperatorEngine.Engine;
 import OperatorEngine.Utility;
+import OperatorEngine.Version;
 
 /**
  * @author jsmith
@@ -20,84 +27,91 @@ import OperatorEngine.Utility;
 public class Operator
 {
 
-    /**
+    /** NR-Основной процесс приложения.
      * @param args
      *            - main program arguments
      */
     public static void main(String[] args)
     {
-
-        String s = "redText";
-        String t = "BlueText";
-        String f = "GreenText";
-
-        String ru1 = "Спать";
-        String ru2 = "Спать или не спать - вот в чем вопрос!";
-
-        // Terminal.eraseScreen();
-        // Terminal.WriteLn("SimpleText");
-        // Terminal.WriteLn(TerminalModeStrings.BGCOLOR_BRIGHT_RED +
-        // TerminalModeStrings.COLOR_BRIGHT_BLACK +
-        // TerminalModeStrings.STYLE_UNDERLINE + s +
-        // TerminalModeStrings.COLOR_RESET);
-        // Terminal.WriteLn("SimpleText");
-        // Terminal.ClearAttributeMode();
-        // Terminal.WriteLn("SimpleText");
-        // Terminal.moveCursorDown(1);
-        // Terminal.SetAttributeMode(Terminal.STYLE_BOLD, Terminal.COLOR_GREEN,
-        // Terminal.BGCOLOR_BRIGHT_GRAY);
-        // Terminal.WriteLn(f);
-        // Terminal.forceCursorPosition(15, 5);
-        // Terminal.WriteLn(t);
-
+        //Сейчас тут уже построен каркас Оператор для запуска движка.
+        //Тесты вставлять только в виде вызовов функций тестирования!
+        
+        Engine engine = null;
         try
         {
-            // System.out.println("Press Enter to continue...");
-            // int result = System.in.read();
-            // String result = BCSA.CreateLongDatetimeString(null);
-            // Terminal.WriteLine(result);
-
-//            String[] sar = "alfa, beta, gamma, delta, saturn   floating - points".split(" ");
-//            for (String sl : sar)
-//                Terminal.WriteLine(sl + "|");
-//            sar = Utility.RemoveEmptyItems(sar);
-//            Terminal.WriteLine("-----------");
-//            for (String sl : sar)
-//                Terminal.WriteLine(sl + "-");
-//            Terminal.WriteLine("-----------");
-
-            // test for getCursorPosition function
-            // IntegerProxy r = new IntegerProxy();
-            // IntegerProxy c = new IntegerProxy();
-            // Terminal.getCursorPosition(r,c);
-            // String coords = String.format("r=%d;c=%d", r.getValue(),
-            // c.getValue());
-            // Terminal.WriteLine(coords);
-
-            // Terminal.Beep();
-            // //Terminal.SetAttributeMode(TerminalMode.COLOR_RED);
-            // boolean b1 = BCSA.IsNotRussianFirst(s);
-            // Terminal.ErrorWriteLine(String.format("%s = %b", s, b1));
-            // boolean b2 = BCSA.IsNotRussianFirst(ru1);
-            // Terminal.ErrorWriteLine(String.format("%s = %b",ru1, b2));
-            // Terminal.SetAttributeMode(TerminalMode.COLOR_BRIGHT_GREEN);
-
-            Version v = new Version(1, 2, 3, 4);
-            Version g = Version.parse("1.2.3.4");
-            String vs1 = v.toString();
-            String gs1 = g.toString();
-                    Terminal.WriteLine(vs1 + " == " + gs1);
+            //1. попытаться определить, запущен ли уже Оператор,
+            // и если да, завершить работу и передать фокус ввода более старой копии
             
+            //2. TODO: приложение не умеет перехватывать свое завершение, поэтому не
+            // обрабатывает закрытие окна. Ctrl+C / Break
+            // Так что в лог не выводится запись, завершающая сеанс работы.
+            // И БД не закрывается, это надо исправить!
+            
+            //3. create engine object
+            engine = new Engine();
+            //4. init engine object
+            engine.Init();
+            
+            //5. запускаем цикл приема запросов
+            //TODO: тут надо изменить схему запросов, так как выход из цикла запросов 
+            //в старой схеме запускал процедуру выключения компьютера.
+            //А в Линукс все не так, тут теперь просто приложение закрывается.
+            // m_exitcode = m_engine.ProcessLoop();
+            //processExitCode(m_exitcode);
+
         }
         catch (Exception e)
         {
+            //если лог работоспособен, то вывести сообщение в него
+            //if(Engine.isLogReady(engine))
+                Engine.LoggingException(engine, e);
+                
+            //print exception
             Terminal.WriteLine(e.getClass().getTypeName());
             Terminal.WriteLine(e.getMessage());
             Terminal.WriteLine();
         }
+        finally
+        {
+            //close engine object
+            // записываем в лог сообщение о завершении работы и завершаем работу
+            // приложения.
+            //TODO: разобраться с исключениями в engine.Exit()
+            engine.Exit();
+            engine = null;
+            
+        }
 
         return;
+    }
 
+    /**
+     * @throws Exception 
+     * 
+     */
+    private static void test_LogSubsystem() throws Exception
+    {
+        LogManager lm = new LogManager(null);
+        
+        lm.Open();
+        
+        lm.AddMessage(EnumLogMsgClass.QueryStarted, EnumLogMsgState.OK, "Test started");
+        
+        lm.Close();
+        
+        return;
+    }
+
+    /**
+     * @throws Exception
+     */
+    private static void test_Version() throws Exception
+    {
+        Version v = new Version(1, 2, 3, 4);
+        Version g = Version.parse("1.2.3.4");
+        String vs1 = v.toString();
+        String gs1 = g.toString();
+                Terminal.WriteLine(vs1 + " == " + gs1);
     }
 
     // /// <summary>

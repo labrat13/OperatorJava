@@ -6,8 +6,15 @@
  */
 package OperatorEngine;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+
 import Lexicon.BCSA;
 import Lexicon.DialogConsole;
+import LogSubsystem.EnumLogMsgClass;
+import LogSubsystem.EnumLogMsgState;
+import LogSubsystem.LogManager;
+import LogSubsystem.LogMessage;
 
 // Консоль Оператора:
 // Функции доступа к консоли из сборок процедур сейчас перенесены в класс
@@ -23,25 +30,29 @@ import Lexicon.DialogConsole;
  */
 public class Engine
 {
+
     /**
-     * Строка названия Оператора для платформы Linux Java 
+     * Строка названия Оператора для платформы Linux Java
      */
-    public final static String ApplicationTitle = "Operator";
+    public final static String ApplicationTitle    = "Operator";
+
     /**
      * Строка версии Оператора для платформы Linux Java
      */
     public final static String EngineVersionString = "1.0.0.0";
-/**
- * Статический объект версии движка для платформы Linux Java
- */
-    public static Version EngineVersion = Version.parse(EngineVersionString);
 
-    
-    /// <summary>
-    /// Писатель файла лога
-    /// </summary>
-    private StreamWriter  logWriter;  
-    //TODO: Завести класс лога для всех операций с ним.
+    /**
+     * Статический объект версии движка для платформы Linux Java
+     */
+    public static Version      EngineVersion       = Version.tryParse(EngineVersionString);
+
+    // /// <summary>
+    // /// Писатель файла лога
+    // /// </summary>
+    // private StreamWriter logWriter;
+    // DONE: Завести класс лога для всех операций с ним.
+    // TODO: Заменить все обращения к logWriter на вызовы функций менеджера лога
+    private LogManager         m_logman;
 
     /// <summary>
     /// Объект адаптера БД Оператора
@@ -50,7 +61,15 @@ public class Engine
     /// Кешированный адаптер БД содержит коллекции элементов и сам их
     /// обслуживает
     /// </remarks>
-    private CachedDbAdapter    m_db;
+    private CachedDbAdapter    m_db;                                                                                                                                                                     // TODO:
+                                                                                                                                                                                                         // объект
+                                                                                                                                                                                                         // не
+                                                                                                                                                                                                         // реализован.
+                                                                                                                                                                                                         // Исправить
+                                                                                                                                                                                                         // весь
+                                                                                                                                                                                                         // код
+                                                                                                                                                                                                         // для
+                                                                                                                                                                                                         // него.
 
     /// <summary>
     /// Объект консоли Оператора
@@ -59,42 +78,67 @@ public class Engine
     /// Выделен чтобы упорядочить код работающий с консолью, так как он
     /// вызывается из сборок процедур, создаваемых сторонними разработчиками
     /// </remarks>
-    private DialogConsole      m_OperatorConsole;
+    private DialogConsole      m_OperatorConsole;                                                                                                                              // TODO:
+                                                                                                                                                                               // объект
+                                                                                                                                                                               // реализован
+                                                                                                                                                                               // частично.
+                                                                                                                                                                               // Исправить
+                                                                                                                                                                               // весь
+                                                                                                                                                                               // код
+                                                                                                                                                                               // для
+                                                                                                                                                                               // него.
 
-    /// <summary>
-    /// NR-Constructor
-    /// </summary>
-    /// <param name="log">Initialized Log writer</param>
-    public Engine(StreamWriter log)
+    // /// <summary>
+    // /// NR-Constructor
+    // /// </summary>
+    // /// <param name="log">Initialized Log writer</param>
+    // public Engine(StreamWriter log)
+    // {
+    // this.logWriter = log;
+    // // подцепить БД
+    // this.m_db = new CachedDbAdapter();
+    // // создать объект консоли Оператора
+    // this.m_OperatorConsole = new DialogConsole(this);
+    //
+    // return;
+    // }
+    public Engine()
     {
-        this.logWriter = log;
-        // подцепить БД
-        this.m_db = new CachedDbAdapter();
-        // создать объект консоли Оператора
-        this.m_OperatorConsole = new DialogConsole(this);
-
-        return;
+        // create log manager object
+        this.m_logman = new LogManager(this);
+        // TODO: add code here
     }
-    //#region   Properties
 
+    // #region Properties
+    /**
+     * NT- Get log manager object
+     * 
+     * @return
+     */
+    public LogManager getLogManager()
+    {
+        return this.m_logman;
+    }
 
     /**
-     * Объект адаптера БД Оператора. Не должен быть доступен из сторонних сборок.
+     * Объект адаптера БД Оператора. Не должен быть доступен из сторонних
+     * сборок.
+     * 
      * @return
      */
     public CachedDbAdapter get_Database()
     {
-            return this.m_db; 
+        return this.m_db;
     }
-
 
     /**
      * Объект консоли Оператора. Должен быть доступен из сторонних сборок.
+     * 
      * @return
      */
     public DialogConsole get_OperatorConsole()
     {
-           return this.m_OperatorConsole; 
+        return this.m_OperatorConsole;
     }
     // #endregion
 
@@ -103,70 +147,136 @@ public class Engine
     /// NR-Инициализация механизма
     /// </summary>
     public void Init()
+    {
+        // open engine log session
+        // this.m_logman.AddMessage(new
+        // LogMessage(EnumLogMsgClass.SessionStarted, EnumLogMsgState.OK,
+        // "Session opened"));
+        // - это уже сделано в this.m_logman.Open();
+        this.m_logman.Open();
+
+        // выводим приветствие и описание программы
+        this.OperatorConsole.PrintTextLine("Консоль речевого интерфейса. Версия " + Utility.getOperatorVersionString(), DialogConsoleColors.Сообщение);
+        this.OperatorConsole.PrintTextLine("Для завершения работы приложения введите слово выход или quit", DialogConsoleColors.Сообщение);
+        this.OperatorConsole.PrintTextLine("Сегодня " + BCSA.CreateLongDatetimeString(LocalDateTime.now()), DialogConsoleColors.Сообщение);
+
+        //// init database
+        //// заполнить кеш-коллекции процедур и мест данными из БД
+        //// CachedDbAdapter делает это сам
+        // m_db.Open(DbAdapter.CreateConnectionString("SIdb.mdb"));
+
+        // если новой бд нет в каталоге приложения, создаем ее и копируем в нее
+        // все данные из старой БД.
+        string str = "sidb.sqlite";
+        string connectionString = SqliteDbAdapter.CreateConnectionString(str, false);
+        SqliteDbAdapter sqliteDbAdapter = new SqliteDbAdapter();
+        if (!File.Exists(str))
         {
-            //выводим приветствие и описание программы
-            this.OperatorConsole.PrintTextLine("Консоль речевого интерфейса. Версия " + Utility.getOperatorVersionString(), DialogConsoleColors.Сообщение);
-            this.OperatorConsole.PrintTextLine("Для завершения работы приложения введите слово выход или quit", DialogConsoleColors.Сообщение);
-            this.OperatorConsole.PrintTextLine("Сегодня " + BigCommandSemanticAnalyser.CreateLongDatetimeString(DateTime.Now), DialogConsoleColors.Сообщение);
-
-            logWriter.WriteLine("SESSION {0}", Utility.DateTimeNowToString());
-
-            ////init database
-            ////заполнить кеш-коллекции процедур и мест данными из БД
-            ////CachedDbAdapter делает это сам
-            //m_db.Open(DbAdapter.CreateConnectionString("SIdb.mdb"));
-
-            //если новой бд нет в каталоге приложения, создаем ее и копируем в нее все данные из старой БД.
-            string str = "sidb.sqlite";
-            string connectionString = SqliteDbAdapter.CreateConnectionString(str, false);
-            SqliteDbAdapter sqliteDbAdapter = new SqliteDbAdapter();
-            if (!File.Exists(str))
+            SqliteDbAdapter.DatabaseCreate(str);
+            sqliteDbAdapter.Open(connectionString);
+            sqliteDbAdapter.CreateDatabaseTables();
+            sqliteDbAdapter.Close();
+            if (File.Exists("SIdb.mdb"))
             {
-                SqliteDbAdapter.DatabaseCreate(str);
-                sqliteDbAdapter.Open(connectionString);
-                sqliteDbAdapter.CreateDatabaseTables();
+                OleDbAdapter oleDbAdapter = new OleDbAdapter();
+                oleDbAdapter.Open(OleDbAdapter.CreateConnectionString("SIdb.mdb"));
+                List<Place> allPlaces = oleDbAdapter.GetAllPlaces();
+                List<Procedure> allProcedures = oleDbAdapter.GetAllProcedures();
+                oleDbAdapter.Close();
+                sqliteDbAdapter.Open();
+                sqliteDbAdapter.TransactionBegin();
+                for (Place p : allPlaces)
+                    sqliteDbAdapter.AddPlace(p);
+                sqliteDbAdapter.TransactionCommit();
+                sqliteDbAdapter.TransactionBegin();
+                for (Procedure p : allProcedures)
+                    sqliteDbAdapter.AddProcedure(p);
+                sqliteDbAdapter.TransactionCommit();
                 sqliteDbAdapter.Close();
-                if (File.Exists("SIdb.mdb"))
-                {
-                    OleDbAdapter oleDbAdapter = new OleDbAdapter();
-                    oleDbAdapter.Open(OleDbAdapter.CreateConnectionString("SIdb.mdb"));
-                    List<Place> allPlaces = oleDbAdapter.GetAllPlaces();
-                    List<Procedure> allProcedures = oleDbAdapter.GetAllProcedures();
-                    oleDbAdapter.Close();
-                    sqliteDbAdapter.Open();
-                    sqliteDbAdapter.TransactionBegin();
-                    for (Place p : allPlaces)
-                        sqliteDbAdapter.AddPlace(p);
-                    sqliteDbAdapter.TransactionCommit();
-                    sqliteDbAdapter.TransactionBegin();
-                    for (Procedure p : allProcedures)
-                        sqliteDbAdapter.AddProcedure(p);
-                    sqliteDbAdapter.TransactionCommit();
-                    sqliteDbAdapter.Close();
-                }
             }
-            this.m_db.Open(connectionString);
-
-
-            //БД оставим открытой на весь сеанс работы Оператора
-            return;
         }
+        this.m_db.Open(connectionString);
 
-    /// <summary>
-    /// NR-Подготовка к завершению работы механизма
-    /// </summary>
-    public void Exit()
+        // БД оставим открытой на весь сеанс работы Оператора
+        return;
+    }
+
+    // /// <summary>
+    // /// NR-Подготовка к завершению работы механизма
+    // /// </summary>
+    // public void Exit()
+    // {
+    // //Закрыть БД если еще не закрыта
+    // if (this.m_db != null)
+    // this.m_db.Close();
+    // //но не обнулять ссылку, так как объект БД создается в конструкторе, а не
+    // в Init()
+    // //Хотя вряд ли объект будет еще раз инициализирован и использован, но не
+    // надо путать слои.
+    // return;
+    // }
+    /**
+     * NR-Close engine
+     * 
+     * @throws IOException
+     */
+    public void Exit() throws IOException
+    {
+        // TODO: тут добавить код для закрытия БД
+
+        // close log session - последним элементом
+        this.m_logman.Close();
+        this.m_logman = null;
+
+        return;
+    }
+
+    /**
+     * NT-Write exception to engine log if available
+     * 
+     * @param en
+     *            Engine object
+     * @param e
+     *            Exception object
+     */
+    public static void LoggingException(Engine en, Exception e)
+    {
+        try
         {
-            //Закрыть БД если еще не закрыта
-            if (this.m_db != null)
-                this.m_db.Close();
-            //но не обнулять ссылку, так как объект БД создается в конструкторе, а не в Init()
-            //Хотя вряд ли объект будет еще раз инициализирован и использован, но не надо путать слои.
-            return;
+            // get log manager
+            LogManager l = en.getLogManager();
+            // check log ready and write exception object
+            if (l.isReady()) l.AddExceptionMessage(e);
         }
-    //#endregion
+        catch (Exception e2)
+        {
+            ;// add breakpoint here
+        }
 
-    //#region Основной цикл   исполнения механизма
+        return;
+    }
+
+    /**
+     * NT-Check log is available
+     * 
+     * @param en
+     *            Engine object
+     * @return Function returns True if log writing is available, returns False
+     *         otherwise.
+     */
+    public static boolean isLogReady(Engine en)
+    {
+        if (en == null) return false;
+        // get log manager
+        LogManager l = en.getLogManager();
+        if (l == null) return false;
+        // check log ready
+        return l.isReady();
+    }
+
+    // #endregion
+
+    // #region Основной цикл исполнения механизма
 
     /// <summary>
     /// NR-Основной цикл исполнения механизма
@@ -188,13 +298,14 @@ public class Engine
             // Операторы: return закрывает Оператор, а continue - переводит на
             // следующий цикл приема команды
             if (String.IsNullOrEmpty(query)) continue;
-            
+
             // триммим из запроса пробелы всякие лишние сразу же
             // если строка пустая, начинаем новый цикл приема команды
             query = query.Trim();// query теперь может оказаться пустой строкой
             if (String.IsNullOrEmpty(query)) continue;
             // а если нет - обрабатываем запрос
-            logWriter.WriteLine("QUERY {0}", query);
+            // logWriter.WriteLine("QUERY {0}", query);
+            this.m_logman.AddMessage(new LogMessage(EnumLogMsgClass.QueryStarted, EnumLogMsgState.Default, query));
             // Если запрос требует завершения работы, завершаем цикл приема
             // запросов.
             // Далее должно следовать сохранение результатов и закрытие
@@ -215,8 +326,7 @@ public class Engine
             else if (Dialogs.isExitReloadCommand(query) == true)
                 return ProcedureResult.ExitAndReload;// закрытие приложения и
                                                      // перезагрузка машины
-            else if (Dialogs.isExitLogoffCommand(query) == true) 
-                return ProcedureResult.ExitAndLogoff;// закрытие
+            else if (Dialogs.isExitLogoffCommand(query) == true) return ProcedureResult.ExitAndLogoff;// закрытие
                                                                                                       // приложения
                                                                                                       // и
                                                                                                       // завершение
@@ -238,8 +348,7 @@ public class Engine
 
             // Режимы сна: если прочие программы не завершаются при
             // засыпании, то и завершать работу здесь не нужно.
-            if ((result == ProcedureResult.Exit) 
-                    || (result == ProcedureResult.ExitAndReload) // перезагрузка
+            if ((result == ProcedureResult.Exit) || (result == ProcedureResult.ExitAndReload) // перезагрузка
                                                                                               // компьютера
                     || (result == ProcedureResult.ExitAndShutdown)// выключение
                                                                   // компьютера
@@ -346,12 +455,13 @@ public class Engine
         // 22052020 - фича: если запрос не русскоязычный, то передать его в
         // терминал. Иначе - исполнять.
         if (BCSA.IsNotRussianFirst(query)) return ExecuteWithTerminal(query);
-        //для каждой процедуры из списка процедур из кеша БД:
+        // для каждой процедуры из списка процедур из кеша БД:
         for (Procedure p : this.m_db.Procedures.Procedures)
         {
             // собрать нормальный регекс для процедуры
             // TODO: optimization - можно же это сделать после загрузки регекса
-            // из БД как часть процесса распаковки данных, записав в объект Процедуры как служебное поле.
+            // из БД как часть процесса распаковки данных, записав в объект
+            // Процедуры как служебное поле.
             // а не при каждом исполнении команды от пользователя.
             regex = MakeNormalRegex(p);
             // выполнить регекс и определить, является ли процедура пригодной
@@ -398,13 +508,15 @@ public class Engine
     /// <returns></returns>
     private EnumProcedureResult ExecuteWithTerminal(String query)
     {
-        //TODO: переделать на условия Линукс.
+        // TODO: переделать на условия Линукс.
         EnumProcedureResult result = EnumProcedureResult.Success;
         try
         {
             // cmd.exe /K query
 
-            String app = "cmd.exe";//TODO: путь к терминалу и аргументы получить из настроек Оператора специально для терминала.
+            String app = "cmd.exe";// TODO: путь к терминалу и аргументы
+                                   // получить из настроек Оператора специально
+                                   // для терминала.
             String args = "/K " + query;
             PowerManager.ExecuteApplication(app, args);
         }
@@ -417,10 +529,11 @@ public class Engine
         return result;
     }
 
-
     /**
      * NT-Собрать нормальный регекс для процедуры
-     * @param p Объект Процедуры
+     * 
+     * @param p
+     *            Объект Процедуры
      * @return Функция возвращает Нормальный регекс для указанной Процедуры.
      */
     private String MakeNormalRegex(Procedure p)
@@ -436,7 +549,8 @@ public class Engine
         }
         else if (rt == EnumRegexType.SimpleString)
         {
-            //Тут Простой регекс превращается в Нормальный регекс, русские названия аргументов заменяются на arg_#. 
+            // Тут Простой регекс превращается в Нормальный регекс, русские
+            // названия аргументов заменяются на arg_#.
             result = RegexManager.ConvertSimpleToRegex2(procedureRegex);
         }
         else throw new Exception(String.format("Invalid regex string: %s in %s", procedureRegex, p.get_Title()));
@@ -461,7 +575,8 @@ public class Engine
 
         // надо определить, путь исполнения это путь к процедуре или к
         // приложению.
-        //TODO:оптимизация: сделать это при загрузке Процедуры из БД и сохранить в служебном поле Процедуры 
+        // TODO:оптимизация: сделать это при загрузке Процедуры из БД и
+        // сохранить в служебном поле Процедуры
         boolean isAssemblyCodePath = RegexManager.IsAssemblyCodePath(p.get_Path());
         if (isAssemblyCodePath == false)
         {
@@ -542,7 +657,8 @@ public class Engine
             // вызов исполнения не удался.
             // пока выведем сообщение об исключении в консоль.
             // TODO: вот надо завести в механизме статическую переменную
-            // отладки, включаемую через отдельную процедуру/команду, и по ней выводить
+            // отладки, включаемую через отдельную процедуру/команду, и по ней
+            // выводить
             // на экран эти отладочные данные.
             // TODO: надо вывести тут сообщение об исключении в общий лог.
             // если не выводить сообщение об ошибке, то непонятно, почему
@@ -551,7 +667,7 @@ public class Engine
             // выводила сообщение я не умею.
             this.OperatorConsole.PrintExceptionMessage(e);
             result = EnumProcedureResult.WrongArguments;// флаг что процедура не
-                                                    // годится
+            // годится
         }
         // вернуть результат
         return result;
@@ -601,9 +717,9 @@ public class Engine
         return;
     }
 
-    //#endregion
+    // #endregion
 
-    //#region  Функции доступа к БД из сборок  процедур
+    // #region Функции доступа к БД из сборок процедур
     // вынесены сюда, так как нельзя давать сторонним сборкам доступ к БД (не
     // знаю пока, как получится)
     // Названия функций должны начинаться с Db...
@@ -686,29 +802,31 @@ public class Engine
     /// <param name="title">Название Процедуры</param>
     /// <returns>Возвращает список Процедур с указанным названием</returns>
     public List<Procedure> DbGetProceduresByTitle(string title)
-        {
-            //проще всего перебрать названия процедур в кеше в памяти, а не выбирать их из БД.
-            //поэтому надо сделать выборку Процедур из коллекции процедур в БД, без учета регистра символов
-            return this.m_db.Procedures.getByTitle(title);
-        }
+    {
+        // проще всего перебрать названия процедур в кеше в памяти, а не
+        // выбирать их из БД.
+        // поэтому надо сделать выборку Процедур из коллекции процедур в БД, без
+        // учета регистра символов
+        return this.m_db.Procedures.getByTitle(title);
+    }
 
-//#endregion
+    // #endregion
 
-//
+    //
 
-///// <summary>
-///// Пример функции процедуры обработчика команды
-///// </summary>
-///// <param name="engine"></param>
-///// <param name="cmdline"></param>
-///// <param name="args"></param>
-///// <returns></returns>
-// public static ProcedureResult CommandHandlerExample(Engine engine, string
-///// cmdline, FuncArgument[] args)
-// {
+    ///// <summary>
+    ///// Пример функции процедуры обработчика команды
+    ///// </summary>
+    ///// <param name="engine"></param>
+    ///// <param name="cmdline"></param>
+    ///// <param name="args"></param>
+    ///// <returns></returns>
+    // public static ProcedureResult CommandHandlerExample(Engine engine, string
+    ///// cmdline, FuncArgument[] args)
+    // {
 
-// //вернуть флаг продолжения работы
-// return ProcedureResult.Success;
-// }
-    
+    // //вернуть флаг продолжения работы
+    // return ProcedureResult.Success;
+    // }
+
 }
