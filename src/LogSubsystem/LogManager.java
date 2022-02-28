@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.time.LocalDateTime;
 
+import javax.xml.stream.XMLStreamException;
+
 import OperatorEngine.Engine;
 import OperatorEngine.FileSystemManager;
 import OperatorEngine.SystemInfoManager;
@@ -24,6 +26,7 @@ import OperatorEngine.Utility;
 
 /**
  * NT-Менеджер лога Оператор
+ * Простой менеджер быстро создает XML-теги текстом без экранирования символов.
  * 
  * @author Селяков Павел
  *
@@ -138,8 +141,9 @@ public class LogManager
      * 
      * @throws IOException
      *             Error on writing to log file
+     * @throws XMLStreamException Error on writing to log file.
      */
-    public void Close() throws IOException
+    public void Close() throws IOException, XMLStreamException
     {
         // Cleanup log subsystem here
         if (this.m_Ready == true)
@@ -169,8 +173,9 @@ public class LogManager
      *            New message object.
      * @throws IOException
      *             Error on writing to log file.
+     * @throws XMLStreamException Error on writing to log file.
      */
-    public void AddMessage(LogMessage msg) throws IOException
+    public void AddMessage(LogMessage msg) throws IOException, XMLStreamException
     {
         String s = msg.ToXmlString();
         this.m_Writer.write(s);
@@ -191,8 +196,9 @@ public class LogManager
      *            Event text description
      * @throws IOException
      *             Error on writing to log file.
+     * @throws XMLStreamException Error on writing to log file.
      */
-    public void AddMessage(EnumLogMsgClass c, EnumLogMsgState s, String text) throws IOException
+    public void AddMessage(EnumLogMsgClass c, EnumLogMsgState s, String text) throws IOException, XMLStreamException
     {
         LogMessage msg = new LogMessage(c, s, text);
         this.AddMessage(msg);
@@ -205,7 +211,7 @@ public class LogManager
      * 
      * @return Function returns new log file name/
      */
-    private String makeNewFileName()
+    protected String makeNewFileName()
     {
         LocalDateTime dt = LocalDateTime.now();
         String p = Utility.DateTimeToFileNameString(dt);

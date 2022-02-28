@@ -6,15 +6,23 @@
  */
 package OperatorEngine;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.LocalDateTime;
+
+import javax.xml.stream.XMLStreamException;
 
 import Lexicon.BCSA;
 import Lexicon.DialogConsole;
+import Lexicon.EnumDialogConsoleColor;
 import LogSubsystem.EnumLogMsgClass;
 import LogSubsystem.EnumLogMsgState;
 import LogSubsystem.LogManager;
+import LogSubsystem.LogManager2;
 import LogSubsystem.LogMessage;
+import Settings.ApplicationSettingsBase;
 
 // Консоль Оператора:
 // Функции доступа к консоли из сборок процедур сейчас перенесены в класс
@@ -61,15 +69,9 @@ public class Engine
     /// Кешированный адаптер БД содержит коллекции элементов и сам их
     /// обслуживает
     /// </remarks>
-    private CachedDbAdapter    m_db;                                                                                                                                                                     // TODO:
-                                                                                                                                                                                                         // объект
-                                                                                                                                                                                                         // не
-                                                                                                                                                                                                         // реализован.
-                                                                                                                                                                                                         // Исправить
-                                                                                                                                                                                                         // весь
-                                                                                                                                                                                                         // код
-                                                                                                                                                                                                         // для
-                                                                                                                                                                                                         // него.
+    private CachedDbAdapter    m_db;    
+    // TODO:  Объект реализован частично. Исправить весь код для него.
+    
 
     /// <summary>
     /// Объект консоли Оператора
@@ -78,35 +80,29 @@ public class Engine
     /// Выделен чтобы упорядочить код работающий с консолью, так как он
     /// вызывается из сборок процедур, создаваемых сторонними разработчиками
     /// </remarks>
-    private DialogConsole      m_OperatorConsole;                                                                                                                              // TODO:
-                                                                                                                                                                               // объект
-                                                                                                                                                                               // реализован
-                                                                                                                                                                               // частично.
-                                                                                                                                                                               // Исправить
-                                                                                                                                                                               // весь
-                                                                                                                                                                               // код
-                                                                                                                                                                               // для
-                                                                                                                                                                               // него.
+private DialogConsole      m_OperatorConsole;  
+//TODO:  Объект реализован частично. Исправить весь код для него.
 
-    // /// <summary>
-    // /// NR-Constructor
-    // /// </summary>
-    // /// <param name="log">Initialized Log writer</param>
-    // public Engine(StreamWriter log)
-    // {
-    // this.logWriter = log;
-    // // подцепить БД
-    // this.m_db = new CachedDbAdapter();
-    // // создать объект консоли Оператора
-    // this.m_OperatorConsole = new DialogConsole(this);
-    //
-    // return;
-    // }
+
+/**
+ * Объект настроек Оператора 
+ */
+private ApplicationSettingsBase m_Settings;
+
+ /**
+  * Стандартный конструктор
+  */
     public Engine()
     {
         // create log manager object
-        this.m_logman = new LogManager(this);
+        this.m_logman = new LogManager2(this);
+        //create engine settings object
+        this.m_Settings = new ApplicationSettingsBase();
         // TODO: add code here
+        // // подцепить БД
+        // this.m_db = new CachedDbAdapter();
+        // // создать объект консоли Оператора
+        // this.m_OperatorConsole = new DialogConsole(this);
     }
 
     // #region Properties
@@ -121,7 +117,7 @@ public class Engine
     }
 
     /**
-     * Объект адаптера БД Оператора. Не должен быть доступен из сторонних
+     * NT-Объект адаптера БД Оператора. Не должен быть доступен из сторонних
      * сборок.
      * 
      * @return
@@ -132,13 +128,21 @@ public class Engine
     }
 
     /**
-     * Объект консоли Оператора. Должен быть доступен из сторонних сборок.
+     * NT-Объект консоли Оператора. Должен быть доступен из сторонних сборок.
      * 
      * @return
      */
     public DialogConsole get_OperatorConsole()
     {
         return this.m_OperatorConsole;
+    }
+    /**
+     * NT-Получить объект настроек движка Оператора.
+     * @return
+     */
+    public ApplicationSettingsBase getEngineSettings()
+    {
+        return this.m_Settings; 
     }
     // #endregion
 
@@ -156,10 +160,14 @@ public class Engine
         this.m_logman.Open();
 
         // выводим приветствие и описание программы
-        this.OperatorConsole.PrintTextLine("Консоль речевого интерфейса. Версия " + Utility.getOperatorVersionString(), DialogConsoleColors.Сообщение);
-        this.OperatorConsole.PrintTextLine("Для завершения работы приложения введите слово выход или quit", DialogConsoleColors.Сообщение);
-        this.OperatorConsole.PrintTextLine("Сегодня " + BCSA.CreateLongDatetimeString(LocalDateTime.now()), DialogConsoleColors.Сообщение);
+        this.m_OperatorConsole.PrintTextLine("Консоль речевого интерфейса. Версия " + Utility.getOperatorVersionString(), EnumDialogConsoleColor.Сообщение);
+        this.m_OperatorConsole.PrintTextLine("Для завершения работы приложения введите слово выход или quit", EnumDialogConsoleColor.Сообщение);
+        this.m_OperatorConsole.PrintTextLine("Сегодня " + BCSA.CreateLongDatetimeString(LocalDateTime.now()), EnumDialogConsoleColor.Сообщение);
 
+        //load engine settings
+        String settingsFilePath = FileSystemManager.AppSettingsFilePath;
+        this.m_Settings.Load(settingsFilePath);
+        
         //// init database
         //// заполнить кеш-коллекции процедур и мест данными из БД
         //// CachedDbAdapter делает это сам
@@ -219,11 +227,14 @@ public class Engine
      * NR-Close engine
      * 
      * @throws IOException
+     * @throws XMLStreamException 
      */
-    public void Exit() throws IOException
+    public void Exit() throws IOException, XMLStreamException
     {
         // TODO: тут добавить код для закрытия БД
-
+        
+        //close settings object
+        this.m_Settings.StoreIfModified();
         // close log session - последним элементом
         this.m_logman.Close();
         this.m_logman = null;
@@ -287,8 +298,8 @@ public class Engine
         // запускаем цикл приема запросов
         while (true)
         {
-            this.OperatorConsole.PrintTextLine(String.Empty, DialogConsoleColors.Сообщение);
-            this.OperatorConsole.PrintTextLine("Введите ваш запрос:", DialogConsoleColors.Сообщение);
+            this.m_OperatorConsole.PrintTextLine("", EnumDialogConsoleColor.Сообщение);
+            this.m_OperatorConsole.PrintTextLine("Введите ваш запрос:", EnumDialogConsoleColor.Сообщение);
             String query = this.OperatorConsole.ReadLine();
             // если был нажат CTRL+C, query может быть null
             // пока я не знаю, что делать в этом случае, просто перезапущу цикл

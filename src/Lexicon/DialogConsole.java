@@ -213,7 +213,7 @@ public class DialogConsole
      *            True - требовать повторный ввод, если ответ пустая строка;
      *            False - принимать пустые ответы
      * @return Возвращает строку, введенную пользователем.
-     * @throws Exception
+     * @throws Exception Функция выбрасывает исключение, если параметр keys имеет неправильные значения.
      */
     public String PrintQuestionAnswer(
             EnumSpeakDialogResult keys,
@@ -266,7 +266,7 @@ public class DialogConsole
      *            конце!
      * @return Функция возвращает SpeakDialogResult код стандартного ответа Да,
      *         Нет или Отмена.
-     * @throws Exception
+     * @throws Exception Функция выбрасывает исключение от Dialogs.makeСтрокаОжидаемыхОтветов().
      */
     public EnumSpeakDialogResult PrintДаНетОтмена(String question) throws Exception
     {

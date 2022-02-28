@@ -4,7 +4,7 @@
  *         Created: Feb 6, 2022 4:59:55 AM
  *         State: Feb 11, 2022 2:36:55 AM - TODO: Переделать под новую модель БД и адаптер для нее.
  */
-package OperatorEngine;
+package DbSubsystem;
 
 import java.util.LinkedList;
 

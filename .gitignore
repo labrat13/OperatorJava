@@ -5,3 +5,11 @@
 /bin/LogSubsystem/package-info.class
 /bin/OperatorEngine/FileSystemManager.class
 /bin/OperatorEngine/OperatorSettings.class
+/bin/DbSubsystem/CachedDbAdapter.class
+/bin/DbSubsystem/SqliteDbAdapter.class
+/bin/DbSubsystem/package-info.class
+/bin/LogSubsystem/LogManager2.class
+/bin/Settings/ApplicationSettingsBase.class
+/bin/Settings/ApplicationSettingsXml.class
+/bin/Settings/SettingsItem.class
+/bin/Settings/package-info.class

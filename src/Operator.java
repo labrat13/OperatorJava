@@ -8,6 +8,8 @@
 
 import java.io.IOException;
 
+import javax.xml.stream.XMLStreamException;
+
 import JTerminal.IntegerProxy;
 import JTerminal.Terminal;
 import JTerminal.TerminalMode;
@@ -16,9 +18,12 @@ import Lexicon.BCSA;
 import LogSubsystem.EnumLogMsgClass;
 import LogSubsystem.EnumLogMsgState;
 import LogSubsystem.LogManager;
+import LogSubsystem.LogManager2;
 import OperatorEngine.Engine;
 import OperatorEngine.Utility;
 import OperatorEngine.Version;
+import Settings.ApplicationSettingsBase;
+import Settings.ApplicationSettingsXml;
 
 /**
  * @author jsmith
@@ -35,10 +40,12 @@ public class Operator
     {
         //Сейчас тут уже построен каркас Оператор для запуска движка.
         //Тесты вставлять только в виде вызовов функций тестирования!
-        
+
         Engine engine = null;
         try
         {
+            
+            test_ApplicationSettings();
             //1. попытаться определить, запущен ли уже Оператор,
             // и если да, завершить работу и передать фокус ввода более старой копии
             
@@ -58,6 +65,10 @@ public class Operator
             //А в Линукс все не так, тут теперь просто приложение закрывается.
             // m_exitcode = m_engine.ProcessLoop();
             //processExitCode(m_exitcode);
+            
+            //TODO: разобраться с исключениями в engine.Exit()
+            engine.Exit();
+            engine = null;
 
         }
         catch (Exception e)
@@ -77,14 +88,48 @@ public class Operator
             // записываем в лог сообщение о завершении работы и завершаем работу
             // приложения.
             //TODO: разобраться с исключениями в engine.Exit()
-            engine.Exit();
-            engine = null;
+//            if(engine != null)
+//                engine.Exit();
+//            engine = null;
             
         }
 
         return;
     }
 
+    /** NT- test
+     * @throws Exception 
+     */
+    private static void test_ApplicationSettings() throws Exception
+    {
+        ApplicationSettingsBase as = new ApplicationSettingsBase();
+        as.addItem("test1", "0", "Too short field description text");
+        as.addItem("test2", "Text text text /home/jsmith/text>5", "this specified text");
+        as.addItem("test3", "a", "Очень\nДлинное\nмногострочное \n\"Описание\"");
+        as.Store("/home/jsmith/settings.txt");
+        
+        as.Load("/home/jsmith/settings.txt");
+        
+        return;
+    }
+
+    /**
+     * @throws Exception 
+     * 
+     */
+    private static void test_LogSubsystem2() throws Exception
+    {
+        LogManager lm = new LogManager2(null);
+        
+        lm.Open();
+        
+        lm.AddMessage(EnumLogMsgClass.QueryStarted, EnumLogMsgState.OK, "Test started");
+        
+        lm.Close();
+        
+        return;
+    }
+    
     /**
      * @throws Exception 
      * 

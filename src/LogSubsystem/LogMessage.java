@@ -7,6 +7,9 @@ package LogSubsystem;
 
 import java.time.LocalDateTime;
 
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 import OperatorEngine.Utility;
 
 /**
@@ -182,6 +185,23 @@ public class LogMessage
         return builder.toString();
         
     }
+    /**
+     * NT-Write message to specified writer as xml element.
+     * @param writer Log writer to write to.
+     * @throws XMLStreamException  Throw exception if error on writing.
+     */
+    public void WriteXmlWriter(XMLStreamWriter writer) throws XMLStreamException
+    {
+        writer.writeStartElement("msg");
+        writer.writeAttribute("t", Utility.DateTimeToString(this.m_MsgStamp));
+        writer.writeAttribute("c", this.m_MsgClass.getValueIntAsString());
+        writer.writeAttribute("s", this.m_MsgState.getValueIntAsString());
+        writer.writeCharacters(this.m_MsgText);
+        writer.writeEndElement();
+        
+        return;
+    }
+    
     
     
     

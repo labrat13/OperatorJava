@@ -7,6 +7,8 @@ package OperatorEngine;
 
 import java.io.File;
 
+import Settings.ApplicationSettingsBase;
+
 /**
  * Всевозможные операции с файлами и каталогами
  * 
@@ -30,13 +32,15 @@ public class FileSystemManager
     /**
      * Application main folder
      */
-    public final static String AppFolderPath       = SystemInfoManager.GetUserHomeFolderPath() + File.separator + Engine.ApplicationTitle;
+    public final static String AppFolderPath       = SystemInfoManager.GetUserHomeFolderPath() 
+            + File.separator + Engine.ApplicationTitle;
 
     /**
-     * Application settings file name
+     * Application settings file path
      */
-    public final static String AppSettingsFileName = "settings.xml";
-
+    public final static String AppSettingsFilePath = SystemInfoManager.GetUserHomeFolderPath() 
+            + File.separator + Engine.ApplicationTitle 
+            + File.separator + ApplicationSettingsBase.AppSettingsFileName;
     /**
      * Application database file name
      */

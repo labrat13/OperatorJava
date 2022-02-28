@@ -46,7 +46,20 @@ public class Utility
     {
         return s1.equalsIgnoreCase(s2);
     }
-
+    /**
+     * Compare two strings
+     * 
+     * @param s1
+     *            String
+     * @param s2
+     *            String
+     * @return Returns True if strings are equal, returns False otherwise.
+     */
+    public static boolean StringEquals(String s1, String s2)
+    {
+        return( s1.compareTo(s2) == 0);
+    }
+    
     /**
      * NT-Create copy of specified string
      * 
@@ -132,7 +145,7 @@ public class Utility
     }
 
     /**
-     * NT-Split string by regex and optionall remove empty elements from result
+     * NT-Split string by regex and optional remove empty elements from result
      * array
      * 
      * @param text
@@ -154,6 +167,49 @@ public class Utility
             return Utility.RemoveEmptyItems(sar);
         else return sar;
     }
+
+    /** 
+     * NT-Faster split string at first match delimiter string
+     * @param text Source string
+     * @param delimiter Delimiter string as "="
+     * @return Returns array of 2 parts: before and after delimiter. Returns null if delimiter not found.
+     */
+    public static String[] StringSplitFirstMatch(String text, String delimiter)
+    {
+        String[] result = null;
+        
+        int start = text.indexOf(delimiter);
+        int delimiterLength = delimiter.length();
+        if(start >= 0)
+        {
+         result = new String[2];
+         result[0] = text.substring(0, start);
+            result[1] = text.substring(start+delimiterLength);
+        }
+//        else if(start == 0)
+//        {
+//         result = new String[2];
+//         result[0] = "";
+//         result[1] = text.substring(start+delimiterLength);
+//        }
+        else
+            result = null;
+        
+        return result;
+    }
+    
+    /** NT-Return string value or [Null] if string is null.
+     * @param s String
+     * @return Return string value or [Null] if string is null.
+     */
+    public static String GetStringTextNull(String s)
+    {
+        if(s == null)
+            return "[Null]";
+        else return s;
+    }
+
+
 
     // /**
     // * NT-Получить версию сборки Оператора
