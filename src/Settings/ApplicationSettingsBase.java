@@ -26,12 +26,12 @@ import OperatorEngine.Utility;
  */
 public class ApplicationSettingsBase
 {
-
+    //TODO: класс избыточен по функциям создания-изменения настроек!
     /**
      * Application settings file name
      */
     public final static String              AppSettingsFileName = "settings.txt";
-
+    
     /**
      * Line separator
      */
@@ -482,6 +482,42 @@ public class ApplicationSettingsBase
     }
 
     /**
+     * NT-Add new or replace existing settings item in collection.
+     * 
+     * @param title
+     *            Setting item title as key.
+     * @param value
+     *            Setting item value as Integer.
+     * @param descr
+     *            Setting item description as multiline String.
+     */
+    public void addItem(String title, Integer value, String descr)
+    {
+        String val = value.toString();
+        this.addItem(title, val, descr);
+        
+        return;
+    }
+    
+    /**
+     * NT-Add new or replace existing settings item in collection.
+     * 
+     * @param title
+     *            Setting item title as key.
+     * @param value
+     *            Setting item value as Boolean.
+     * @param descr
+     *            Setting item description as multiline String.
+     */
+    public void addItem(String title, Boolean value, String descr)
+    {
+        String val = value.toString();
+        this.addItem(title, val, descr);
+        
+        return;
+    }
+    
+    /**
      * NT-Remove setting item from collection
      * 
      * @param title
@@ -545,19 +581,20 @@ public class ApplicationSettingsBase
 
     // -------------------------------------------------
     /**
-     * NT-Set value by title
+     * NT-Set value by title, create setting if not exists.
      * 
      * @param title
      *            Keyname
      * @param value
      *            Value string
+     *            @param description Settings description text for new setting or ""
      */
-    public void setValue(String title, String value)
+    public void setValue(String title, String value, String description)
     {
         // add or replace value by title
         if (this.m_Dict.containsKey(title))
             this.m_Dict.get(title).setValue(value);
-        else this.m_Dict.put(title, new SettingsItem(title, value, ""));
+        else this.m_Dict.put(title, new SettingsItem(title, value, description));
         //set modified flag
         this.m_ModifiedFlag = true;
         
@@ -565,21 +602,22 @@ public class ApplicationSettingsBase
     }
 
     /**
-     * NT-Set value by title
+     * NT-Set value by title, create setting if not exists.
      * 
      * @param title
      *            Keyname
      * @param value
      *            Value string
+     *            @param description Settings description text for new setting or ""
      */
-    public void setValue(String title, Integer value)
+    public void setValue(String title, Integer value, String description)
     {
         // add or replace value by title
         if (this.m_Dict.containsKey(title))
             this.m_Dict.get(title).setValue(value);
         else
         {
-            SettingsItem t = new SettingsItem(title, "", "");
+            SettingsItem t = new SettingsItem(title, "", description);
             t.setValue(value);
             this.m_Dict.put(title, t);
         }
@@ -590,21 +628,22 @@ public class ApplicationSettingsBase
     }
 
     /**
-     * NT-Set value by title
+     * NT-Set value by title, create setting if not exists.
      * 
      * @param title
      *            Keyname
      * @param value
      *            Value string
+      *            @param description Settings description text for new setting or ""
      */
-    public void setValue(String title, Boolean value)
+    public void setValue(String title, Boolean value, String description)
     {
         // add or replace value by title
         if (this.m_Dict.containsKey(title))
             this.m_Dict.get(title).setValue(value);
         else
         {
-            SettingsItem t = new SettingsItem(title, "", "");
+            SettingsItem t = new SettingsItem(title, "", description);
             t.setValue(value);
             this.m_Dict.put(title, t);
         }

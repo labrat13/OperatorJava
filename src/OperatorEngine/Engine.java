@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 
 import javax.xml.stream.XMLStreamException;
 
+import DbSubsystem.CachedDbAdapter;
 import Lexicon.BCSA;
 import Lexicon.DialogConsole;
 import Lexicon.EnumDialogConsoleColor;
@@ -23,6 +24,7 @@ import LogSubsystem.LogManager;
 import LogSubsystem.LogManager2;
 import LogSubsystem.LogMessage;
 import Settings.ApplicationSettingsBase;
+import Settings.ApplicationSettingsKeyed;
 
 // Консоль Оператора:
 // Функции доступа к консоли из сборок процедур сейчас перенесены в класс
@@ -42,17 +44,17 @@ public class Engine
     /**
      * Строка названия Оператора для платформы Linux Java
      */
-    public final static String ApplicationTitle    = "Operator";
+    public final static String       ApplicationTitle    = "Operator";
 
     /**
      * Строка версии Оператора для платформы Linux Java
      */
-    public final static String EngineVersionString = "1.0.0.0";
+    public final static String       EngineVersionString = "1.0.0.0";
 
     /**
      * Статический объект версии движка для платформы Linux Java
      */
-    public static Version      EngineVersion       = Version.tryParse(EngineVersionString);
+    public static Version            EngineVersion       = Version.tryParse(EngineVersionString);
 
     // /// <summary>
     // /// Писатель файла лога
@@ -60,7 +62,7 @@ public class Engine
     // private StreamWriter logWriter;
     // DONE: Завести класс лога для всех операций с ним.
     // TODO: Заменить все обращения к logWriter на вызовы функций менеджера лога
-    private LogManager         m_logman;
+    private LogManager               m_logman;
 
     /// <summary>
     /// Объект адаптера БД Оператора
@@ -69,9 +71,8 @@ public class Engine
     /// Кешированный адаптер БД содержит коллекции элементов и сам их
     /// обслуживает
     /// </remarks>
-    private CachedDbAdapter    m_db;    
-    // TODO:  Объект реализован частично. Исправить весь код для него.
-    
+    private CachedDbAdapter          m_db;
+    // TODO: Объект реализован частично. Исправить весь код для него.
 
     /// <summary>
     /// Объект консоли Оператора
@@ -80,24 +81,23 @@ public class Engine
     /// Выделен чтобы упорядочить код работающий с консолью, так как он
     /// вызывается из сборок процедур, создаваемых сторонними разработчиками
     /// </remarks>
-private DialogConsole      m_OperatorConsole;  
-//TODO:  Объект реализован частично. Исправить весь код для него.
+    private DialogConsole            m_OperatorConsole;
+    // TODO: Объект реализован частично. Исправить весь код для него.
 
+    /**
+     * Объект настроек Оператора
+     */
+    private ApplicationSettingsKeyed m_Settings;
 
-/**
- * Объект настроек Оператора 
- */
-private ApplicationSettingsBase m_Settings;
-
- /**
-  * Стандартный конструктор
-  */
+    /**
+     * Стандартный конструктор
+     */
     public Engine()
     {
         // create log manager object
         this.m_logman = new LogManager2(this);
-        //create engine settings object
-        this.m_Settings = new ApplicationSettingsBase();
+        // create engine settings object
+        this.m_Settings = new ApplicationSettingsKeyed();
         // TODO: add code here
         // // подцепить БД
         // this.m_db = new CachedDbAdapter();
@@ -136,13 +136,15 @@ private ApplicationSettingsBase m_Settings;
     {
         return this.m_OperatorConsole;
     }
+
     /**
      * NT-Получить объект настроек движка Оператора.
+     * 
      * @return
      */
     public ApplicationSettingsBase getEngineSettings()
     {
-        return this.m_Settings; 
+        return this.m_Settings;
     }
     // #endregion
 
@@ -164,10 +166,12 @@ private ApplicationSettingsBase m_Settings;
         this.m_OperatorConsole.PrintTextLine("Для завершения работы приложения введите слово выход или quit", EnumDialogConsoleColor.Сообщение);
         this.m_OperatorConsole.PrintTextLine("Сегодня " + BCSA.CreateLongDatetimeString(LocalDateTime.now()), EnumDialogConsoleColor.Сообщение);
 
-        //load engine settings
+        // load engine settings
+        // TODO: Если файл настроек не обнаружен, вывести сообщение об этом и
+        // создать новый файл настроек с дефолтовыми значениями.
         String settingsFilePath = FileSystemManager.AppSettingsFilePath;
         this.m_Settings.Load(settingsFilePath);
-        
+
         //// init database
         //// заполнить кеш-коллекции процедур и мест данными из БД
         //// CachedDbAdapter делает это сам
@@ -227,13 +231,13 @@ private ApplicationSettingsBase m_Settings;
      * NR-Close engine
      * 
      * @throws IOException
-     * @throws XMLStreamException 
+     * @throws XMLStreamException
      */
     public void Exit() throws IOException, XMLStreamException
     {
         // TODO: тут добавить код для закрытия БД
-        
-        //close settings object
+
+        // close settings object
         this.m_Settings.StoreIfModified();
         // close log session - последним элементом
         this.m_logman.Close();

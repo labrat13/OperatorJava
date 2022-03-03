@@ -7,9 +7,11 @@
  */
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 import javax.xml.stream.XMLStreamException;
 
+import DbSubsystem.SqliteDbAdapter;
 import JTerminal.IntegerProxy;
 import JTerminal.Terminal;
 import JTerminal.TerminalMode;
@@ -20,6 +22,10 @@ import LogSubsystem.EnumLogMsgState;
 import LogSubsystem.LogManager;
 import LogSubsystem.LogManager2;
 import OperatorEngine.Engine;
+import OperatorEngine.EntityTypesCollection;
+import OperatorEngine.FileSystemManager;
+import OperatorEngine.Place;
+import OperatorEngine.Procedure;
 import OperatorEngine.Utility;
 import OperatorEngine.Version;
 import Settings.ApplicationSettingsBase;
@@ -45,7 +51,7 @@ public class Operator
         try
         {
             
-            test_ApplicationSettings();
+            test_Database();
             //1. попытаться определить, запущен ли уже Оператор,
             // и если да, завершить работу и передать фокус ввода более старой копии
             
@@ -94,6 +100,105 @@ public class Operator
             
         }
 
+        return;
+    }
+
+    /**
+     * @throws Exception 
+     * @throws ClassNotFoundException 
+     * 
+     */
+    private static void test_Database() throws ClassNotFoundException, Exception
+    {
+
+        SqliteDbAdapter db = new SqliteDbAdapter();
+        String dbFile = FileSystemManager.getAppDbFilePath();
+        String constr = SqliteDbAdapter.CreateConnectionString(dbFile);
+        db.Open(constr);
+        boolean result = db.CreateDatabaseTables();
+        if(result == false)
+            throw new Exception("Cannot create database tables");
+        db.Close();
+        //create 3 procedures and 3 places
+        Procedure pr1 = new Procedure();
+        pr1.set_Description("Description");
+        pr1.set_Path("a.b.c");
+        pr1.set_Regex("regex");
+        pr1.set_TableId(0);
+        pr1.set_Title("TestProcedure1");
+        pr1.set_Ves(0.5);
+        
+        Procedure pr2 = new Procedure();
+        pr2.set_Description("Description");
+        pr2.set_Path("a.b.c");
+        pr2.set_Regex("regex");
+        pr2.set_TableId(0);
+        pr2.set_Title("TestProcedure2");
+        pr2.set_Ves(0.5);
+        
+        Procedure pr3 = new Procedure();
+        pr3.set_Description("Description");
+        pr3.set_Path("a.b.c");
+        pr3.set_Regex("regex");
+        pr3.set_TableId(0);
+        pr3.set_Title("TestProcedure3");
+        pr3.set_Ves(0.5);
+        
+        Place pl1 = new Place();
+        pl1.set_Description("descr");
+        pl1.set_Path("a:b:c");
+        pl1.set_PlaceTypeExpression("Class::Class1");
+        pl1.set_Synonim("syno1, syno12");
+        pl1.set_TableId(0);
+        pl1.set_Title("place1");
+        pl1.ParseEntityTypeString();
+        
+        Place pl2 = new Place();
+        pl2.set_Description("descr");
+        pl2.set_Path("a:b:c");
+        pl2.set_PlaceTypeExpression("Class::Class2");
+        pl2.set_Synonim("syno2, syno22");
+        pl2.set_TableId(0);
+        pl2.set_Title("place2");
+        pl2.ParseEntityTypeString();
+        
+        Place pl3 = new Place();
+        pl3.set_Description("descr");
+        pl3.set_Path("a:b:c");
+        pl3.set_PlaceTypeExpression("Class::Class3");
+        pl3.set_Synonim("syno3, syno32");
+        pl3.set_TableId(0);
+        pl3.set_Title("place3");
+        pl3.ParseEntityTypeString();
+        
+        //add to database 
+        db.Open();
+        db.AddPlace(pl1);
+        db.AddPlace(pl2);
+        db.AddPlace(pl3);
+        
+        db.TransactionCommit();
+        
+        db.AddProcedure(pr1);
+        db.AddProcedure(pr2);
+        db.AddProcedure(pr3);
+        
+        db.TransactionCommit();
+        
+        db.Close();
+        
+        //test item operations
+        db.Open();
+        
+        boolean active = db.isConnectionActive();
+        int lastId = db.getLastRowId(SqliteDbAdapter.TablePlaces, 50);
+        int lastId2 = db.getLastRowId(SqliteDbAdapter.TableProcs, 50);
+        int maxid = db.getTableMaxInt32(SqliteDbAdapter.TablePlaces, "id", 50);
+        int minid = db.getTableMinInt32(SqliteDbAdapter.TablePlaces, "id", 50);
+        int rowcount = db.GetRowCount(SqliteDbAdapter.TablePlaces, "id", 50);
+        boolean isrowExists = db.IsRowExists(SqliteDbAdapter.TablePlaces, "id", 2, 50);
+        
+        db.Close();
         return;
     }
 

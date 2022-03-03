@@ -13,3 +13,5 @@
 /bin/Settings/ApplicationSettingsXml.class
 /bin/Settings/SettingsItem.class
 /bin/Settings/package-info.class
+/bin/Settings/ApplicationSettingsKeyed.class
+/bin/Settings/EnumSettingKey.class

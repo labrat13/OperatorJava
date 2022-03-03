@@ -39,7 +39,6 @@ public class LogManager2 extends LogManager
     public LogManager2(Engine en)
     {
         super(en);
-        // TODO Auto-generated constructor stub
     }
     
     

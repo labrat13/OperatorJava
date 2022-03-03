@@ -7,6 +7,7 @@ package OperatorEngine;
 
 import java.io.File;
 
+import DbSubsystem.SqliteDbAdapter;
 import Settings.ApplicationSettingsBase;
 
 /**
@@ -22,46 +23,96 @@ public class FileSystemManager
     /**
      * File path separator as string
      */
-    public final static String FileSeparator       = File.separator;
+    public final static String FileSeparator  = File.separator;
 
     /**
      * User home directory
      */
-    public final static String UserFolderPath      = SystemInfoManager.GetUserHomeFolderPath();
+    public final static String UserFolderPath = SystemInfoManager.GetUserHomeFolderPath();
 
-    /**
-     * Application main folder
-     */
-    public final static String AppFolderPath       = SystemInfoManager.GetUserHomeFolderPath() 
-            + File.separator + Engine.ApplicationTitle;
+    // /**
+    // * Application main folder
+    // */
+    // public final static String AppFolderPath =
+    // SystemInfoManager.GetUserHomeFolderPath()
+    // + File.separator + Engine.ApplicationTitle;
+    //
+    // /**
+    // * Application settings file path
+    // */
+    // public final static String AppSettingsFilePath =
+    // SystemInfoManager.GetUserHomeFolderPath()
+    // + File.separator + Engine.ApplicationTitle
+    // + File.separator + ApplicationSettingsBase.AppSettingsFileName;
 
-    /**
-     * Application settings file path
-     */
-    public final static String AppSettingsFilePath = SystemInfoManager.GetUserHomeFolderPath() 
-            + File.separator + Engine.ApplicationTitle 
-            + File.separator + ApplicationSettingsBase.AppSettingsFileName;
-    /**
-     * Application database file name
-     */
-    public final static String AppDbFileName       = "db.sqlite";
-
-    /**
-     * Application log folder path
-     */
-    public final static String AppLogFolderPath    = AppFolderPath + File.separator + "logs";
+    // /**
+    // * Application log folder path
+    // */
+    // public final static String AppLogFolderPath = AppFolderPath +
+    // File.separator + "logs";
 
     /**
      * NR-Создать каталог Оператора с правильной структурой файлов и папок
      */
     public static void CreateOperatorFolder()
     {
-        //TODO: Добавить код сосздания папок и файлов и копировать сюда все нужные файлы.
-        //Этот код для общего понимания устройства структуры каталогов Оператора.
+        // TODO: Добавить код сосздания папок и файлов и копировать сюда все
+        // нужные файлы.
+        // Этот код для общего понимания устройства структуры каталогов
+        // Оператора.
     }
-    
-    
-    
+
+    /**
+     * NT- Get application folder path string
+     * 
+     * @return
+     */
+    public static String getAppFolderPath()
+    {
+        return SystemInfoManager.GetUserHomeFolderPath() + File.separator + "." + Engine.ApplicationTitle;
+    }
+
+    /**
+     * NT- Get application settings file pathname string
+     * 
+     * @return
+     */
+    public static String getAppSettingsFilePath()
+    {
+        return getAppFolderPath() + File.separator + ApplicationSettingsBase.AppSettingsFileName;
+    }
+
+    /**
+     * NT-Get application log folder path string
+     * 
+     * @return
+     */
+    public static String getAppLogFolderPath()
+    {
+        return getAppFolderPath() + File.separator + "logs";
+    }
+
+    /**
+     * NT-Get application database file pathname string
+     * 
+     * @return
+     */
+    public static String getAppDbFilePath()
+    {
+        return getAppFolderPath() + File.separator + SqliteDbAdapter.AppDbFileName;
+    }
+
+    /**
+     * NR-Get current user temporary folder path string
+     * 
+     * @throws Exception
+     */
+    public static String getTempFolderPath() throws Exception
+    {
+        // TODO: add path to User temp folder
+        throw new Exception();
+    }
+
     /**
      * NT-Получить список дисковых томов данного компьютера
      * 
