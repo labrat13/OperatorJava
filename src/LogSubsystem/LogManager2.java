@@ -1,7 +1,7 @@
 /**
  * @author Селяков Павел
- * Created: Feb 25, 2022 1:35:04 AM
- * State: Feb 25, 2022 1:35:04 AM - initial
+ *         Created: Feb 25, 2022 1:35:04 AM
+ *         State: Feb 25, 2022 1:35:04 AM - initial
  */
 package LogSubsystem;
 
@@ -17,11 +17,11 @@ import javax.xml.stream.XMLStreamWriter;
 import OperatorEngine.Engine;
 import OperatorEngine.FileSystemManager;
 
-
 /**
  * NT-Менеджер лога Оператор with XML writer.
  * Более медленная версия с экранированием недопустимых символов.
  * Немного другой формат сообщения - текст расположен в элементе иначе.
+ * 
  * @author Селяков Павел
  *
  */
@@ -32,7 +32,7 @@ public class LogManager2 extends LogManager
      * Log writer object
      */
     protected XMLStreamWriter m_Writer;
-    
+
     /**
      * @param en
      */
@@ -40,8 +40,7 @@ public class LogManager2 extends LogManager
     {
         super(en);
     }
-    
-    
+
     /**
      * NT-Initialize log subsystem here and open log session
      * 
@@ -49,6 +48,7 @@ public class LogManager2 extends LogManager
      *             "Session already exists" or "Error on writing to log file."
      * 
      */
+    @Override
     public void Open() throws Exception
     {
         // Если каталог лога не найден - создать новый каталог лога и файл лога
@@ -67,19 +67,20 @@ public class LogManager2 extends LogManager
         // Operator/logs directory/
         // 4. create writer object
         FileOutputStream os = new FileOutputStream(logfile.getPath(), false);
-//        //OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");
-//        // И вывести стандартный заголовок XML файла: <?xml version="1.0"
-//        // encoding="UTF-8" standalone="yes" ?>
-//        // 5. write log file header
-//        osw.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>");
-//        osw.write(LineSeparator);      
+        // //OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");
+        // // И вывести стандартный заголовок XML файла: <?xml version="1.0"
+        // // encoding="UTF-8" standalone="yes" ?>
+        // // 5. write log file header
+        // osw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"
+        // standalone=\"yes\" ?>");
+        // osw.write(LineSeparator);
         XMLOutputFactory output = XMLOutputFactory.newInstance();
         XMLStreamWriter writer = output.createXMLStreamWriter(os);
-        writer.writeStartDocument("utf-8", "1.0"); 
+        writer.writeStartDocument("utf-8", "1.0");
         writer.writeCharacters(LineSeparator);
-//        // Вывести открытие сессии <session> как корень документа.
-//        osw.write("<session>");
-//        osw.write(LineSeparator);
+        // // Вывести открытие сессии <session> как корень документа.
+        // osw.write("<session>");
+        // osw.write(LineSeparator);
         writer.writeStartElement("session");
         writer.writeCharacters(LineSeparator);
         // store to class field
@@ -94,24 +95,25 @@ public class LogManager2 extends LogManager
 
     /**
      * NT-Close log session
-     * @throws XMLStreamException Error on writing to log file.
+     * 
+     * @throws XMLStreamException
+     *             Error on writing to log file.
      * 
      * @throws IOException
      *             Error on writing to log file
      */
-    public void Close() throws IOException, XMLStreamException 
+    @Override
+    public void Close() throws IOException, XMLStreamException
     {
         // Cleanup log subsystem here
         if (this.m_Ready == true)
         {
             // write session finish message
             this.AddMessage(EnumLogMsgClass.SessionFinished, EnumLogMsgState.OK, "Session closed");
-//            // Вывести закрытие сессии </session>.
-//            this.m_Writer.write("</session>");
-//            this.m_Writer.write(LineSeparator);
+            // Вывести закрытие сессии </session>.
             this.m_Writer.writeEndDocument();
             this.m_Writer.flush();
-            
+
         }
         // clear ready flag
         this.m_Ready = false;
@@ -124,7 +126,7 @@ public class LogManager2 extends LogManager
 
         return;
     }
-    
+
     /**
      * NT-Append new message object to log
      * 
@@ -132,17 +134,17 @@ public class LogManager2 extends LogManager
      *            New message object.
      * @throws IOException
      *             Error on writing to log file.
-     * @throws XMLStreamException Throw exception if error on writing.
+     * @throws XMLStreamException
+     *             Throw exception if error on writing.
      */
     public void AddMessage(LogMessage msg) throws IOException, XMLStreamException
     {
-        //skip writing if subsystem not ready
-        if(this.m_Ready == false)
-            return;
-        //write msg line
+        // skip writing if subsystem not ready
+        if (this.m_Ready == false) return;
+        // write msg line
         msg.WriteXmlWriter(this.m_Writer);
-        this.m_Writer.writeCharacters(LineSeparator);//add new line
-        //flush to file
+        this.m_Writer.writeCharacters(LineSeparator);// add new line
+        // flush to file
         this.m_Writer.flush();
 
         return;

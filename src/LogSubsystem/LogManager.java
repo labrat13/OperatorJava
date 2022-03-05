@@ -50,14 +50,15 @@ public class LogManager
     /**
      * Application log folder path
      */
-    public final static String   AppLogFolderPath = SystemInfoManager.GetUserHomeFolderPath() + File.separator + "Operator" + File.separator + "logs";
+    protected final static String   AppLogFolderPath = FileSystemManager.getAppLogFolderPath();
+    //SystemInfoManager.GetUserHomeFolderPath() + File.separator + "Operator" + File.separator + "logs";
     // = FileSystemManager.AppLogFolderPath; - заменено на время отладки,
     // поскольку Engine класс не готов.
 
     /**
      * Line break symbol "/n"
      */
-    public final static String   LineSeparator    = System.lineSeparator();
+    protected final static String   LineSeparator    = System.lineSeparator();
 
     /**
      * Log writer object
@@ -202,7 +203,8 @@ public class LogManager
      *            Event text description
      * @throws IOException
      *             Error on writing to log file.
-     * @throws XMLStreamException Error on writing to log file.
+     * @throws XMLStreamException
+     *             Error on writing to log file.
      */
     public void AddMessage(EnumLogMsgClass c, EnumLogMsgState s, String text) throws IOException, XMLStreamException
     {

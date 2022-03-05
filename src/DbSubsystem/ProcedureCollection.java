@@ -2,13 +2,15 @@
  * @author Pavel Seliakov
  *         Copyright Pavel M Seliakov 2014-2021
  *         Created: Feb 6, 2022 4:59:55 AM
- *         State: Feb 6, 2022 4:59:55 AM - готов к отладке
+ *         State: Feb 6, 2022 4:59:55 AM - Ported, Готов к отладке.
  */
-package OperatorEngine;
+package DbSubsystem;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
+
+import OperatorEngine.Procedure;
 
 /**
  * Список процедур
@@ -32,13 +34,31 @@ public class ProcedureCollection
     }
 
     /**
-     * Список объектов процедур
+     * NT-Получить список объектов процедур
      * 
      * @return Список объектов процедур
      */
     public LinkedList<Procedure> get_Procedures()
     {
         return this.m_proclist;
+    }
+
+    /**
+     * NT-Очистить коллекцию
+     */
+    public void Clear()
+    {
+        this.m_proclist.clear();
+    }
+
+    /**
+     * NT-Get count of collection items.
+     * 
+     * @return Returns count of collection items.
+     */
+    public int getCount()
+    {
+        return this.m_proclist.size();
     }
 
     // TODO: Процедуры более не должны создаваться из кода.
@@ -121,14 +141,6 @@ public class ProcedureCollection
     }
 
     /**
-     * NT-Очистить коллекцию
-     */
-    public void Clear()
-    {
-        this.m_proclist.clear();
-    }
-
-    /**
      * NT-Выбрать из БД Процедуры по названию, без учета регистра символов
      * 
      * @param title
@@ -145,4 +157,5 @@ public class ProcedureCollection
 
         return result;
     }
+
 }

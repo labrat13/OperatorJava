@@ -96,11 +96,11 @@ public class BCSA // BigCommandSemanticAnalyser - такое длинное на
         return (!(IsRussianLetter(q.charAt(0)) && IsRussianLetter(q.charAt(1))));
     }
 
-    /// <summary>
-    /// NT-Возвращает True если проверяемый символ - русская буква
-    /// </summary>
-    /// <param name="p">Проверяемый символ</param>
-    /// <returns></returns>
+    /**
+     * NT-Возвращает True если проверяемый символ - русская буква
+     * @param p Проверяемый символ
+     * @return Возвращает True если проверяемый символ - русская буква
+     */
     private static boolean IsRussianLetter(char p)
     {
         int pi = (int) p;

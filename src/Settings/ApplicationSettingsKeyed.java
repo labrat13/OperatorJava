@@ -5,6 +5,8 @@
  */
 package Settings;
 
+import OperatorEngine.Engine;
+
 /**
  * NT-Класс настроек приложения, использующий EnumSettingKey в качестве ключей
  * настроек.
@@ -19,11 +21,16 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
     // и потом сюда в функцию Reset() вместе с значениями по умолчанию.
 
     /**
+     * Backreference to Engine object - for logging
+     */
+    protected Engine m_Engine;
+
+    /**
      * Default constructor
      */
-    public ApplicationSettingsKeyed()
+    public ApplicationSettingsKeyed(Engine engine)
     {
-
+        this.m_Engine = engine;
     }
 
     // Load() and Store() functions come from base class

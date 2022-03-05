@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 import javax.xml.stream.XMLStreamException;
@@ -90,19 +91,22 @@ public class Engine
     private ApplicationSettingsKeyed m_Settings;
 
     /**
-     * Стандартный конструктор
+     * NR-Стандартный конструктор
+     * 
+     * @throws Exception
      */
-    public Engine()
+    public Engine() throws Exception
     {
         // create log manager object
         this.m_logman = new LogManager2(this);
         // create engine settings object
-        this.m_Settings = new ApplicationSettingsKeyed();
-        // TODO: add code here
-        // // подцепить БД
-        // this.m_db = new CachedDbAdapter();
-        // // создать объект консоли Оператора
-        // this.m_OperatorConsole = new DialogConsole(this);
+        this.m_Settings = new ApplicationSettingsKeyed(this);
+        // create database adapter object
+        this.m_db = new CachedDbAdapter(this);
+        // создать объект консоли Оператора
+        this.m_OperatorConsole = new DialogConsole(this);
+
+        return;
     }
 
     // #region Properties
@@ -148,12 +152,25 @@ public class Engine
     }
     // #endregion
 
-    // #region Функции инициализации и завершения движка
-    /// <summary>
-    /// NR-Инициализация механизма
-    /// </summary>
-    public void Init()
+    // Функции инициализации и завершения движка =================
+
+    /**
+     * NT- Инициализация механизма
+     * 
+     * @throws Exception
+     */
+    public void Init() throws Exception
     {
+        // check operator folder exist
+        if (FileSystemManager.isAppFolderExists() == false)
+        {
+            String msg1 = "Ошибка: Каталог Оператор не найден: " + FileSystemManager.getAppFolderPath();
+            String msg2 = "Будет создан новый каталог Оператор с настройками по умолчанию.";
+            this.m_OperatorConsole.PrintTextLine(msg1, EnumDialogConsoleColor.Предупреждение);
+            this.m_OperatorConsole.PrintTextLine(msg2, EnumDialogConsoleColor.Предупреждение);
+            FileSystemManager.CreateOperatorFolder();
+        }
+
         // open engine log session
         // this.m_logman.AddMessage(new
         // LogMessage(EnumLogMsgClass.SessionStarted, EnumLogMsgState.OK,
@@ -167,76 +184,61 @@ public class Engine
         this.m_OperatorConsole.PrintTextLine("Сегодня " + BCSA.CreateLongDatetimeString(LocalDateTime.now()), EnumDialogConsoleColor.Сообщение);
 
         // load engine settings
-        // TODO: Если файл настроек не обнаружен, вывести сообщение об этом и
+        // Если файл настроек не обнаружен, вывести сообщение об этом и
         // создать новый файл настроек с дефолтовыми значениями.
-        String settingsFilePath = FileSystemManager.AppSettingsFilePath;
-        this.m_Settings.Load(settingsFilePath);
-
-        //// init database
-        //// заполнить кеш-коллекции процедур и мест данными из БД
-        //// CachedDbAdapter делает это сам
-        // m_db.Open(DbAdapter.CreateConnectionString("SIdb.mdb"));
-
-        // если новой бд нет в каталоге приложения, создаем ее и копируем в нее
-        // все данные из старой БД.
-        string str = "sidb.sqlite";
-        string connectionString = SqliteDbAdapter.CreateConnectionString(str, false);
-        SqliteDbAdapter sqliteDbAdapter = new SqliteDbAdapter();
-        if (!File.Exists(str))
+        String settingsFilePath = FileSystemManager.getAppSettingsFilePath();
+        if (!FileSystemManager.isAppSettingsFileExists())
         {
-            SqliteDbAdapter.DatabaseCreate(str);
-            sqliteDbAdapter.Open(connectionString);
-            sqliteDbAdapter.CreateDatabaseTables();
-            sqliteDbAdapter.Close();
-            if (File.Exists("SIdb.mdb"))
-            {
-                OleDbAdapter oleDbAdapter = new OleDbAdapter();
-                oleDbAdapter.Open(OleDbAdapter.CreateConnectionString("SIdb.mdb"));
-                List<Place> allPlaces = oleDbAdapter.GetAllPlaces();
-                List<Procedure> allProcedures = oleDbAdapter.GetAllProcedures();
-                oleDbAdapter.Close();
-                sqliteDbAdapter.Open();
-                sqliteDbAdapter.TransactionBegin();
-                for (Place p : allPlaces)
-                    sqliteDbAdapter.AddPlace(p);
-                sqliteDbAdapter.TransactionCommit();
-                sqliteDbAdapter.TransactionBegin();
-                for (Procedure p : allProcedures)
-                    sqliteDbAdapter.AddProcedure(p);
-                sqliteDbAdapter.TransactionCommit();
-                sqliteDbAdapter.Close();
-            }
+            String msg3 = "Файл настроек " + settingsFilePath + " не найден! Будет создан файл с настройками по умолчанию.";
+            this.m_logman.AddMessage(EnumLogMsgClass.Default, EnumLogMsgState.Fail, msg3);
+            this.m_OperatorConsole.PrintTextLine(msg3, EnumDialogConsoleColor.Предупреждение);
+            this.m_Settings.Reset();
+            this.m_Settings.Store(settingsFilePath);
         }
-        this.m_db.Open(connectionString);
+        else this.m_Settings.Load(settingsFilePath);
 
-        // БД оставим открытой на весь сеанс работы Оператора
+        // init database
+        // заполнить кеш-коллекции процедур и мест данными из БД
+        // CachedDbAdapter делает это сам
+
+        // если новой бд нет в каталоге приложения, создаем ее.
+        String dbFile = FileSystemManager.getAppDbFilePath();
+        String connectionString = CachedDbAdapter.CreateConnectionString(dbFile);
+        if (FileSystemManager.isAppDbFileExists() == false)
+        {
+            // print warning about database
+            String msg4 = "Файл базы данных " + dbFile + " не найден! Будет создан новый пустой файл базы данных.";
+            this.m_logman.AddMessage(EnumLogMsgClass.Default, EnumLogMsgState.Fail, msg4);
+            this.m_OperatorConsole.PrintTextLine(msg4, EnumDialogConsoleColor.Предупреждение);
+            // TODO: тут лучше попытаться загрузить бекап-копию БД, после
+            // предупреждения о отсутствии основного файла.
+            // Но эту копию надо сначала создать.
+
+            // create new database here. Open, write, close.
+            CachedDbAdapter.CreateNewDatabase(this, dbFile);
+            // но работать с пустой БД - начинать все сначала.
+        }
+        // else
+        // open existing database
+        this.m_db.Open(connectionString);
+        // БД оставим открытой на весь сеанс работы Оператора.
+
+        // TODO: Следует переделать адаптер так, чтобы он открывал БД только на
+        // время чтения или записи, а не держал ее постоянно открытой.
+        // Так меньше вероятность повредить бд при глюках линукса.
+
         return;
     }
 
-    // /// <summary>
-    // /// NR-Подготовка к завершению работы механизма
-    // /// </summary>
-    // public void Exit()
-    // {
-    // //Закрыть БД если еще не закрыта
-    // if (this.m_db != null)
-    // this.m_db.Close();
-    // //но не обнулять ссылку, так как объект БД создается в конструкторе, а не
-    // в Init()
-    // //Хотя вряд ли объект будет еще раз инициализирован и использован, но не
-    // надо путать слои.
-    // return;
-    // }
     /**
-     * NR-Close engine
+     * NT-Close engine
      * 
-     * @throws IOException
-     * @throws XMLStreamException
+     * @throws Exception
      */
-    public void Exit() throws IOException, XMLStreamException
+    public void Exit() throws Exception
     {
-        // TODO: тут добавить код для закрытия БД
-
+        // Закрыть БД если еще не закрыта
+        if (this.m_db != null) this.m_db.Close();
         // close settings object
         this.m_Settings.StoreIfModified();
         // close log session - последним элементом

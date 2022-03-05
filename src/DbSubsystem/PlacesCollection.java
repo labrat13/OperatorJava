@@ -2,13 +2,16 @@
  * @author Pavel Seliakov
  *         Copyright Pavel M Seliakov 2014-2021
  *         Created: Feb 6, 2022 4:59:55 AM
- *         State: Готов к отладке.
+ *         State: Ported, Готов к отладке.
  */
-package OperatorEngine;
+package DbSubsystem;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+
+import OperatorEngine.Place;
+import OperatorEngine.Utility;
 
 /**
  * Коллекция мест для быстрого доступа из кода
@@ -31,6 +34,7 @@ public class PlacesCollection
         this.m_places = new HashMap<String, Place>();
     }
 
+    // Properties ====================
     /**
      * Словарь синонимов сущностей мест
      * 
@@ -50,6 +54,25 @@ public class PlacesCollection
     public void set_Places(HashMap<String, Place> places)
     {
         this.m_places = places;
+    }
+
+    // Functions ====================
+    /**
+     * NT-Очистить коллекцию
+     */
+    public void Clear()
+    {
+        this.m_places.clear();
+    }
+
+    /**
+     * NT-Get count of collection items.
+     * 
+     * @return Returns count of collection items.
+     */
+    public int getCount()
+    {
+        return this.m_places.size();
     }
 
     /**
@@ -212,14 +235,6 @@ public class PlacesCollection
             this.Add(p);
         }
         return;
-    }
-
-    /**
-     * NT-Очистить коллекцию
-     */
-    public void Clear()
-    {
-        this.m_places.clear();
     }
 
     /**

@@ -15,3 +15,7 @@
 /bin/Settings/package-info.class
 /bin/Settings/ApplicationSettingsKeyed.class
 /bin/Settings/EnumSettingKey.class
+/bin/DbSubsystem/OperatorDbAdapter.class
+/bin/DbSubsystem/PlacesCollection.class
+/bin/DbSubsystem/ProcedureCollection$1.class
+/bin/DbSubsystem/ProcedureCollection.class

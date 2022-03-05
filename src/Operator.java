@@ -8,9 +8,11 @@
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.LinkedList;
 
 import javax.xml.stream.XMLStreamException;
 
+import DbSubsystem.CachedDbAdapter;
 import DbSubsystem.SqliteDbAdapter;
 import JTerminal.IntegerProxy;
 import JTerminal.Terminal;
@@ -51,7 +53,6 @@ public class Operator
         try
         {
             
-            test_Database();
             //1. попытаться определить, запущен ли уже Оператор,
             // и если да, завершить работу и передать фокус ввода более старой копии
             
@@ -100,6 +101,24 @@ public class Operator
             
         }
 
+        return;
+    }
+
+    /**
+     * @throws Exception 
+     * 
+     */
+    private static void testCachedDbAdapter() throws Exception
+    {
+        // TODO Auto-generated method stub
+        CachedDbAdapter db = new CachedDbAdapter();
+        String dbFile = FileSystemManager.getAppDbFilePath();
+        String constr = CachedDbAdapter.CreateConnectionString(dbFile);
+        db.Open(constr);
+        
+        
+        db.Close();
+        
         return;
     }
 
@@ -197,6 +216,13 @@ public class Operator
         int minid = db.getTableMinInt32(SqliteDbAdapter.TablePlaces, "id", 50);
         int rowcount = db.GetRowCount(SqliteDbAdapter.TablePlaces, "id", 50);
         boolean isrowExists = db.IsRowExists(SqliteDbAdapter.TablePlaces, "id", 2, 50);
+        //read all
+        LinkedList<Place> places = db.GetAllPlaces();
+        LinkedList<Procedure> procs = db.GetAllProcedures();
+        //delete row
+        int r1 = db.RemovePlace(2);
+        int r2 = db.RemoveProcedure(2);
+        db.TransactionCommit();
         
         db.Close();
         return;

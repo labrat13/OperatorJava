@@ -6,6 +6,7 @@
  */
 package Lexicon;
 
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -24,12 +25,10 @@ import OperatorEngine.Utility;
  */
 public class DialogConsole
 {
-    // TODO: тут надо переделать работу с цветами под новую консоль, но пока
-    // непонятно, как это устроено.
 
-    // 2.1 Доделать и отладить функции Terminal терминала - а то сейчас они не все
+    // TODO: Доделать и отладить функции Terminal терминала - а то сейчас они не все
     // работают.
-    // 5. Удалить лишние переменные и функции (закомментить пока), заменить
+    // TODO: Удалить лишние переменные и функции (закомментить пока), заменить
     // обратно видимость с public на package (вместо internal)
 
     /**
@@ -387,13 +386,15 @@ public class DialogConsole
     }
 
     /**
-     * NR-Вывести на экран список существующих мест - только названия мест
+     * NT-Вывести на экран список существующих мест - только названия мест
+     * @throws Exception 
+     * @throws SQLException 
      */
-    public void PrintListOfPlaces()
+    public void PrintListOfPlaces() throws SQLException, Exception
     {
         this.SureConsoleCursorStart();
         // получить список мест
-        LinkedList<Place> places = this.m_Engine.Database.GetAllPlaces();
+        LinkedList<Place> places = this.m_Engine.get_Database().GetAllPlaces();
         // TODO: database here
         // сортировать список мест по алфавиту
         Collections.sort(places); //Sort by Title over interface Comparable
@@ -408,14 +409,15 @@ public class DialogConsole
     }
 
     /**
-     * NR-Вывести на экран список существующих Процедур - только названия
+     * NT-Вывести на экран список существующих Процедур - только названия
      * процедур
+     * @throws SQLException 
      */
-    public void PrintListOfProcedures()
+    public void PrintListOfProcedures() throws SQLException
     {
         this.SureConsoleCursorStart();
         // получить список процедур
-        LinkedList<Procedure> procedures = this.m_Engine.Database.GetAllProcedures();
+        LinkedList<Procedure> procedures = this.m_Engine.get_Database().GetAllProcedures();
         // TODO: database here
         // сортировать список мест по алфавиту
         Collections.sort(procedures); //Sort by Title over interface Comparable
