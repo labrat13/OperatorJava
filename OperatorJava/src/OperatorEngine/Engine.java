@@ -630,7 +630,7 @@ public class Engine
             // тут аргументы уже должны быть заполнены значениями и типами
             // и местами и готовы к выполнению.
             //result = p.invokeProcedure(command, names, this, args);
-            this.m_PEM.invokeProcedure(p, command, names, this, args);
+            result = this.m_PEM.invokeProcedure(p, names, command, this, args);
         }
         catch (Exception e)
         {
@@ -646,9 +646,11 @@ public class Engine
             // выводила сообщение я не умею.
 
             PrintExceptionToConsole(e);
-
-            result = ProcedureResult.WrongArguments;// флаг что процедура не
-                                                    // годится
+            
+            // вернуть флаг, что данная процедура не годится для данной команды
+            //TODO: Определить, что тут должна возвращать текущая функция, если во время исполнения Процедуры произошла ошибка.
+            //Ошибка - это ошибка, а не несоответствие Запроса и Процедуры. А тут - наобум назначено возвращаемое значение.
+            result = EnumProcedureResult.WrongArguments;
         }
         // возвращаем то что вернет процедура
         return result;
