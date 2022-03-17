@@ -7,19 +7,24 @@ package ProcedureSubsystem;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedList;
 
 import Lexicon.EnumDialogConsoleColor;
 import Lexicon.EnumSpeakDialogResult;
+import LogSubsystem.EnumLogMsgClass;
+import LogSubsystem.EnumLogMsgState;
 import OperatorEngine.ArgumentCollection;
 import OperatorEngine.Engine;
 import OperatorEngine.EnumProcedureResult;
 import OperatorEngine.FileSystemManager;
+import OperatorEngine.Place;
 import OperatorEngine.Procedure;
 import OperatorEngine.Utility;
 
@@ -66,13 +71,11 @@ public class ProcedureExecutionManager
      */
     public void Open()
     {
-        // Заполнить HashMap <String, String> парами <AssemblyTitle,
-        // JarFilePath>.
+        // Заполнить HashMap <String, String> парами <AssemblyTitle, JarFilePath>.
         this.m_Libraries = findLibraries();
         // TODO: init all libraries
-        // TODO: тут нужен код для загрузки менеджеров библиотек из этих
-        // библиотек.
-        // тут нужен код для выгрузки Процедур и Мест из кажддой библиотеки в
+        // TODO: тут нужен код для загрузки менеджеров библиотек из этих библиотек.
+        // TODO: тут нужен код для выгрузки Процедур и Мест из кажддой библиотеки в
         // Оператор. Но не в БД, а в общий такой буфер для них.
         // Поверх CachedDbAdapter такой буфер нужно добавить в Движок Оператора.
         return;
@@ -112,7 +115,8 @@ public class ProcedureExecutionManager
         // так как там еще должны быть всякие папки и файлы ресурсов потом.
         File libFolder = new File(libraryFolder);
         // собираем файлы только в указанном каталоге, но не в подкаталогах.
-        File[] files = FileSystemManager.getDirectoryFiles(libFolder, new String[] { ".jar", ".JAR" });
+        File[] files = FileSystemManager.getDirectoryFiles(libFolder, new String[] {
+                ".jar", ".JAR" });
         // извлечь имя файла без расширения и путь к файлу и поместить в словарь
         for (File f : files)
         {
@@ -127,7 +131,7 @@ public class ProcedureExecutionManager
     }
 
     /**
-     * NR-Invoke procedure method
+     * NT-Invoke procedure method
      * 
      * @param p
      *            Procedure for execution
@@ -139,113 +143,122 @@ public class ProcedureExecutionManager
      *            Engine object reference
      * @param args
      *            Procedure arguments array
+     * @return Function returns Procedure result code.
      * @throws Exception
-     *             "Не найдена библиотека Процедур"
+     *             "Не найдена библиотека Процедур" и другие.
      */
-    public EnumProcedureResult invokeProcedure(Procedure p, String[] names, String command, Engine engine, ArgumentCollection args)
+    public EnumProcedureResult invokeProcedure(
+            Procedure p,
+            String[] names,
+            String command,
+            Engine engine,
+            ArgumentCollection args)
             throws Exception
     {
         URLClassLoader loader = null;
         EnumProcedureResult result = EnumProcedureResult.Error;
-        
+
         try
         {
 
             String AssemblyTitle = names[0];
             String ClassTitle = AssemblyTitle + "." + names[1]; // "AssemblyTitle.ClassTitle"
             String MethodTitle = names[2];
-            
+
             // 1. Получить абсолютный путь к JAR файлу сборки.
             // Файл должен называться по names[0] и иметь расширение jar.
             // Путь к файлу следует получить из HashMap по ключу names[0].
             String jarFilePath = this.getLibraryPathByAssemblyTitle(AssemblyTitle);
             if (Utility.StringIsNullOrEmpty(jarFilePath) || (FileSystemManager.isFileExists(jarFilePath) == false)) throw new Exception("Не найдена библиотека Процедур: " + AssemblyTitle);
-            // а далее - по коду из прототипа 
-            
+            // а далее - по коду из прототипа
+
             // 2. load class from specified JarFile
             URL classUrl = new URL(jarFilePath);
             URL[] classUrls = new URL[] { classUrl };
             loader = new URLClassLoader(classUrls);
             Class<?> cls = loader.loadClass(ClassTitle);
-            
+
             // 3. Package annotation check
             Package pg = cls.getPackage();
-            // может не быть корневого пакета
-            if (pg != null)
-            {
-                OperatorProcedure packageAnnot = pg.getAnnotation(OperatorProcedure.class);
-                if (packageAnnot.State() == ImplementationState.NotRealized) 
-                    throw new Exception("Specified package marked as ImplementationState.NotRealized.");
-            }
-            
+            // не может не быть корневого пакета
+            if (pg == null) 
+                throw new Exception("Root package not found in Procedure Library " + jarFilePath);
+            OperatorProcedure packageAnnot = pg.getAnnotation(OperatorProcedure.class);
+            if (packageAnnot == null) 
+                throw new Exception(String.format("Root package in Procedure Library %s not marked with OperatorProcedure annotation.", jarFilePath));
+            if (packageAnnot.State() == ImplementationState.NotRealized) 
+                throw new Exception(String.format("Root package in Procedure Library %s marked as ImplementationState.NotRealized.", jarFilePath));
+
             // 4. if class not annotated, stop work
-              OperatorProcedure annot = cls.getAnnotation(OperatorProcedure.class);
-              if(annot == null)
-                  throw new Exception("Specified class not marked with OperatorProcedure annotation.");
-              // 5. find method
-              ImplementationState state = annot.State();
-             // String class_title = annot.Title();
-             // String class_description = annot.Description();
-              if(state == ImplementationState.NotRealized)
-                  throw new Exception("Specified class marked as ImplementationState.NotRealized.");
-              if(state == ImplementationState.NotTested)
-              {
-                  //print warning "This Procedure method class %s marked as not tested"
-                  String msg1 = "Класс " + ClassTitle + ", содержащий данную Процедуру, помечен как NotTested";
-                  engine.get_OperatorConsole().PrintTextLine(msg1, EnumDialogConsoleColor.Предупреждение);
-              }
-              //6. get method
-              Method m = cls.getMethod(MethodTitle, String.class, Engine.class, ArgumentCollection.class);
-              //throw NoSuchMethodException if cannot find method
-              
-              //7. check method annotation
-              OperatorProcedure annot2 = m.getAnnotation(OperatorProcedure.class);
-              if(annot2 == null)
-                  throw new Exception("Specified method not marked with OperatorProcedure annotation.");
-              ImplementationState state2 = annot2.State();
-              // String method_title = annot2.Title();
-              // String method_description = annot2.Description();
-              if(state2 == ImplementationState.NotRealized)
-                  throw new Exception("Specified method marked as ImplementationState.NotRealized.");
-              //запросить у пользователя подтверждение на запуск процедуры, помеченной как требующая отладки.            
-              if(state2 == ImplementationState.NotTested)
-              {
-                  String question = String.format("Исполняемый метод %s.%s помечен как NotTested. Продолжить выполнение?", ClassTitle, MethodTitle);
-                  EnumSpeakDialogResult esdr = engine.get_OperatorConsole().PrintДаНетОтмена(question);
-                  //если пользователь ответил не Да, то отменить исполнение Процедуры.
-                  if(!esdr.isДа())
-                  {
-                      //TODO: тут надо прервать выполнение и вернуть результат EnumProcedureResult.CancelledByUser 
-                      //Я накидал сейчас что попало, это не то, что нужно.
-                      result = EnumProcedureResult.CancelledByUser;
-                          throw new Exception("Процедура прервана пользователем.");
-                  }
-              }
-            
-              // 8. execute method
-              @SuppressWarnings("unused")
-              Object returned = m.invoke(null, command, engine, args);
-              // 8. return result
-              if(returned == null)
-                  throw new Exception(String.format("Error: Method %s.%s returns null.", ClassTitle, MethodTitle));
-             
-              result = (EnumProcedureResult) returned;
-            
+            OperatorProcedure annot = cls.getAnnotation(OperatorProcedure.class);
+            if (annot == null) 
+                throw new Exception("Specified class not marked with OperatorProcedure annotation.");
+            // 5. find method
+            ImplementationState state = annot.State();
+            // String class_title = annot.Title();
+            // String class_description = annot.Description();
+            if (state == ImplementationState.NotRealized) 
+                throw new Exception("Specified class marked as ImplementationState.NotRealized.");
+            if (state == ImplementationState.NotTested)
+            {
+                // print warning "This Procedure method class %s marked as not tested"
+                String msg1 = "Класс " + ClassTitle + ", содержащий данную Процедуру, помечен как NotTested";
+                engine.get_OperatorConsole().PrintTextLine(msg1, EnumDialogConsoleColor.Предупреждение);
+                //add msg to log
+                engine.getLogManager().AddMessage(EnumLogMsgClass.Default, EnumLogMsgState.Default, msg1);
+            }
+            // 6. get method
+            Method m = cls.getMethod(MethodTitle, String.class, Engine.class, ArgumentCollection.class);
+            // throw NoSuchMethodException if cannot find method
+
+            // 7. check method annotation
+            OperatorProcedure annot2 = m.getAnnotation(OperatorProcedure.class);
+            if (annot2 == null) 
+                throw new Exception("Specified method not marked with OperatorProcedure annotation.");
+            ImplementationState state2 = annot2.State();
+            // String method_title = annot2.Title();
+            // String method_description = annot2.Description();
+            if (state2 == ImplementationState.NotRealized) 
+                throw new Exception("Specified method marked as ImplementationState.NotRealized.");
+            // запросить у пользователя подтверждение на запуск процедуры, помеченной как требующая отладки.
+            if (state2 == ImplementationState.NotTested)
+            {
+                String question = String.format("Исполняемый метод %s.%s помечен как NotTested. Продолжить выполнение?", ClassTitle, MethodTitle);
+                EnumSpeakDialogResult esdr = engine.get_OperatorConsole().PrintДаНетОтмена(question);
+                // если пользователь ответил не "Да", то отменить исполнение Процедуры.
+                if (!esdr.isДа())
+                {
+                    // TODO: тут надо прервать выполнение и вернуть результат EnumProcedureResult.CancelledByUser
+                    // Я накидал сейчас что попало, это не то, что нужно.
+                    result = EnumProcedureResult.CancelledByUser;
+                    // throw new Exception("Процедура прервана пользователем.");
+                }
+            }
+
+            // 8. execute method if not previous cancelled by user
+            if (result != EnumProcedureResult.CancelledByUser)
+            {
+                Object returned = m.invoke(null, command, engine, args);
+                // 8. return result
+                if (returned == null) throw new Exception(String.format("Error: Method %s.%s returns null.", ClassTitle, MethodTitle));
+
+                result = (EnumProcedureResult) returned;
+            }
         }
-        catch (Exception ex)
+        // ловить тут ничего не будем - все вызывающему коду передаем.
+        finally
         {
             // close class loader
             if (loader != null) loader.close();
-            // throw current exception
-            throw ex;
         }
 
-        //finally ?
-        
-        if (loader != null) loader.close();
         return result;
     }
 
+     
+    
+    
+    
     /**
      * NT- Получить путь к файлу по названию сборки из пути Процедуры
      * 
@@ -447,21 +460,12 @@ public class ProcedureExecutionManager
     // return ist;
     // }
     //
-
-    /// <summary>
-    /// NT-Get assembly file path for assembly loading
-    /// </summary>
-    /// <param name="assemblyName">assembly name without extension</param>
-    /// <returns>full assmbly file path</returns>
-    // public static String getAssemblyFilePath(String assemblyName) {
-    // String asmPath =
-    ///// System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-    // asmPath = System.IO.Path.ChangeExtension(System.IO.Path.Combine(asmPath,
-    ///// assemblyName), ".dll");
-    // return asmPath;
-    // }
-    //
-
+    
+    //=== Java Reflection debug functions ===
+/**
+ * RT-Вывести на экран информацию о классе.
+ * @param c Объект класса.
+ */
     private static void printClassInfo(Class<?> c)
     {
         if (c == null)
@@ -482,7 +486,10 @@ public class ProcedureExecutionManager
 
         return;
     }
-
+/**
+ * RT-Вывести на экран информацию о методах класса.
+ * @param mar Массив объектов методов класса.
+ */
     private static void printMethodsInfo(Method[] mar)
     {
         System.out.println("Methods information:");
@@ -501,7 +508,10 @@ public class ProcedureExecutionManager
 
         return;
     }
-
+/**
+ * RT-Вывести на экран информацию о пакете.
+ * @param p Объект пакета.
+ */
     private static void printPackageInfo(Package p)
     {
         if (p == null)
@@ -523,8 +533,8 @@ public class ProcedureExecutionManager
         return;
     }
 
-    /**
-     * @param annotations
+    /** RT-Вывести на экран массив аннотаций
+     * @param annotations Массив аннотаций элемента
      */
     private static void printAnnotations(Annotation[] annotations)
     {
@@ -540,4 +550,29 @@ public class ProcedureExecutionManager
         return;
     }
 
+    //==============================================
+    /**
+     * NR-Получить все объекты Places
+     * 
+     * @return Функция возвращает список объектов Places
+     * @throws Exception
+     *             Ошибка
+     */
+    public LinkedList<Place> GetAllPlaces() throws  Exception
+    {
+        throw new Exception("Function not implemented"); //TODO: add code here
+    }
+    
+    /**
+     * NR-Получить все объекты Процедур
+     * 
+     * @return Функция возвращает список объектовПроцедур.
+     * @throws Exception
+     *             Ошибка .
+     */
+    public LinkedList<Procedure> GetAllProcedures() throws Exception
+    {
+        throw new Exception("Function not implemented"); //TODO: add code here
+    }
+    
 }

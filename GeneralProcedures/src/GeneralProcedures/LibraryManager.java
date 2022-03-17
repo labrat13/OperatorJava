@@ -73,7 +73,27 @@ public class LibraryManager extends LibraryManagerBase
      */
     public static Procedure[] getLibraryProcedures() throws Exception
     {
-        throw new Exception("Function not implemented");//TODO: add code here
+        //throw new Exception("Function not implemented");//TODO: add code here
+        
+        //Тут надо вернуть вызывающему коду массив объектов Процедур, реализоыванных в этой библиотеке Процедур.
+        //Пока просто создаем их в коде, но если Процедур очень много, то следует внести заранее их в XML файл, 
+        //добавить его в jar-файл этой библиотеки и тут загрузить их из файла XML. 
+        //Это сэкономит немного памяти VM. 
+        
+        //создать выходной массив
+        Procedure[] result = new Procedure[1];
+        //создать объект Процедуры и добавить в выходной массив
+        Procedure p = new Procedure();
+        p.set_Description("Тестовая процедура: выводит на консоль helloworld  и звуковой сигнал.");
+        p.set_Path("GeneralProcedures.TestProcedures.testHelloWorld");
+        p.set_Regex("запустить тест хеловорд");
+        p.set_TableId(-1);
+        p.set_Title("Тест хеловорд");
+        p.set_Ves(0.5);
+        result[0] = p;
+        //вернуть выходной массив
+        return result;
     }
+    
     
 }

@@ -50,7 +50,7 @@ public class Place extends Item
     public Place(Place p) throws Exception
     {
         this.m_descr = Utility.StringCopy(p.m_descr);
-        this.m_id = p.m_id;
+        this.m_tableid = p.m_tableid;
         this.m_path = Utility.StringCopy(p.m_path);
         this.m_placetype = Utility.StringCopy(p.m_placetype);
         this.m_synonim = Utility.StringCopy(p.m_synonim);
@@ -135,7 +135,10 @@ public class Place extends Item
     }
 
     // #endregion
-
+    /**
+     * NT-Получить строку описания свойств Процедуры для отладчика.
+     * @return Функция возвращает описание свойств Процедуры одной строкой.
+     */
     @Override
     public String toString()
     {
@@ -153,7 +156,7 @@ public class Place extends Item
     {
         // Одна строка, 80 символов макс.
         StringBuilder sb = new StringBuilder();
-        sb.append(this.m_id);
+        sb.append(this.m_tableid);
         sb.append(";");
         sb.append(this.m_title);
         sb.append(";");

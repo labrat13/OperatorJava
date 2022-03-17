@@ -28,11 +28,13 @@ public class Procedure extends Item
 
     // #endregion
     /**
-     * Стандартный конструктор
+     * NT-Стандартный конструктор
      */
     public Procedure()
     {
-
+        super();
+        this.m_ves = 0.5;
+        this.m_regex = "";
     }
     // #region *** Properties ***
 
@@ -87,23 +89,27 @@ public class Procedure extends Item
     }
 
     // #endregion
+    /**
+     * NT-Получить строку описания свойств Процедуры для отладчика.
+     * @return Функция возвращает описание свойств Процедуры одной строкой.
+     */
     @Override
     public String toString()
     {
         return this.getSingleLineProperties();
     }
 
-    /// <summary>
-    /// NT-Получить одну строку описания свойств Процедуры
-    /// Для вывода списка Процедур в разных случаях работы программы
-    /// </summary>
-    /// <returns></returns>
+    /**
+     * NT-Получить одну строку описания свойств Процедуры.
+     * Для вывода списка Процедур в разных случаях работы программы.
+     * @return Функция возвращает описание свойств Процедуры одной строкой.
+     */
     @Override
     public String getSingleLineProperties()
     {
         // Одна строка, 80 символов макс.
         StringBuilder sb = new StringBuilder();
-        sb.append(this.m_id);
+        sb.append(this.m_tableid);
         sb.append(";");
         sb.append(this.m_title);
         sb.append(";ves=");
@@ -229,8 +235,8 @@ public class Procedure extends Item
      /// <param name="names">Путь к процедуре</param>
      /// <param name="args">Готовый для применения список аргументов</param>
      /// <returns></returns>
-     public EnumProcedureResult invokeProcedure(String command, String[] names, Engine engine, ArgumentCollection args) 
-     {
+     //public EnumProcedureResult invokeProcedure(String command, String[] names, Engine engine, ArgumentCollection args) 
+     //{
 //     //получить сборку и метод в ней
 //     MethodInfo mi = getMethodInfo(names);
 //     //проверить готовность кода процедуры
@@ -249,7 +255,7 @@ public class Procedure extends Item
 //     //вернуть результат
 //     return (EnumProcedureResult) resval;
          
-     }
+     //}
 
     // #endregion
     

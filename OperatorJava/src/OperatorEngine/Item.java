@@ -19,9 +19,15 @@ public class Item implements Comparable<Item>
     // #region Fields
 
     /**
+     * Константа для поля TableId, обозначает, что данный элемент (Procedure или Place) не хранится в БД.
+     * Например, импортируется из какой-либо Библиотеки Процедур.
+     */
+    public static final int Id_ItemNotFromDatabase = -1;
+    
+    /**
      * первичный ключ таблицы
      */
-    protected int    m_id;
+    protected int    m_tableid;
 
     /**
      * Название Сущности
@@ -41,11 +47,16 @@ public class Item implements Comparable<Item>
     // #endregion
 
     /**
-     * Стандартный конструктор
+     * NT-Стандартный конструктор
      */
     public Item()
     {
-
+        this.m_descr = "";
+        this.m_path = "";
+        this.m_tableid = 0;
+        this.m_title = "";
+        
+        return;
     }
 
     // #region Properties
@@ -56,7 +67,7 @@ public class Item implements Comparable<Item>
      */
     public int get_TableId()
     {
-        return m_id;
+        return m_tableid;
     }
 
     /**
@@ -67,7 +78,7 @@ public class Item implements Comparable<Item>
      */
     public void set_TableId(int id)
     {
-        this.m_id = id;
+        this.m_tableid = id;
     }
 
     /**
@@ -132,13 +143,24 @@ public class Item implements Comparable<Item>
     {
         this.m_path = path;
     }
-
+    /**
+     * NT-Получить строку описания свойств Процедуры для отладчика.
+     * @return Функция возвращает описание свойств Процедуры одной строкой.
+     */
     @Override
     public String toString()
     {
         return this.getSingleLineProperties();
     }
-
+    
+    /**
+     * NT-Проверить что элемент должен храниться в БД.
+     * @return Функция возвращает True, если элемент хранится в БД, False в противном случае.
+     */
+    public boolean isItemFromDatabase()
+    {
+     return this.m_tableid == Item.Id_ItemNotFromDatabase;   
+    }
     /**
      * NT-Получить одну строку описания свойств итема
      * 
@@ -148,13 +170,13 @@ public class Item implements Comparable<Item>
     {
         // Одна строка, 80 символов макс.
         StringBuilder sb = new StringBuilder();
-        sb.append(this.get_TableId());
+        sb.append(this.m_tableid);
         sb.append(";");
-        sb.append(this.get_Title());
+        sb.append(this.m_title);
         sb.append(";");
-        sb.append(this.get_Path());
+        sb.append(this.m_path);
         sb.append(";");
-        sb.append(this.get_Description());
+        sb.append(this.m_descr);
         if (sb.length() > 80) sb.setLength(80);
         return sb.toString();
     }

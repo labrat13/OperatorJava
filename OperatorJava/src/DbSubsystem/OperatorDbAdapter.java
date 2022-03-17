@@ -223,7 +223,7 @@ public class OperatorDbAdapter extends SqliteDbAdapter
 
         return result;
     }
-
+//==============================================================================
     /**
      * RT-Получить все записи таблицы Places
      * 
@@ -362,7 +362,18 @@ public class OperatorDbAdapter extends SqliteDbAdapter
     {
         return this.DeleteRow(OperatorDbAdapter.TablePlaces, "id", placeId, this.m_Timeout);
     }
-
+    
+    /**
+     * NR-Update Place
+     * @param p Place object
+     * @return Функция возвращает число измененных строк таблицы.
+     * @throws Exception Ошибка при использовании БД.
+     */
+    public int UpdatePlace(Place p) throws Exception
+    {
+        throw new Exception("Function not implemented"); //TODO: add code here
+    }
+//=======================================================================
     /**
      * NT-Получить все записи таблицы Процедур
      * 
@@ -488,7 +499,19 @@ public class OperatorDbAdapter extends SqliteDbAdapter
     {
         return this.DeleteRow(OperatorDbAdapter.TableProcs, "id", id, this.m_Timeout);
     }
+    
+    /**
+     * NR-Update Procedure
+     * @param p Procedure object
+     * @return Функция возвращает число измененных строк таблицы.
+     * @throws Exception Ошибка при использовании БД.
+     */
+    public int UpdateProcedure(Procedure p) throws Exception
+    {
+        throw new Exception("Function not implemented"); //TODO: add code here
+    }
+    
+//============================================================
 
-    // TODO: Добавить функции UPDATE для Процедур и Мест
 
 }

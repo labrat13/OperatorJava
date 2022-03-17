@@ -12,10 +12,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 
 import javax.xml.stream.XMLStreamException;
 
 import DbSubsystem.CachedDbAdapter;
+import DbSubsystem.OperatorDbAdapter;
 import Lexicon.BCSA;
 import Lexicon.DialogConsole;
 import Lexicon.EnumDialogConsoleColor;
@@ -69,7 +71,7 @@ public class Engine
      * Объект адаптера БД Оператора.
      * Кешированный адаптер БД содержит коллекции элементов и сам их обслуживает.
      */
-    private CachedDbAdapter          m_db;
+    private OperatorDbAdapter          m_db;
     // TODO: Объект реализован частично. Исправить весь код для него.
     
     /**
@@ -87,6 +89,10 @@ public class Engine
      * Объект менеджера исполнения Процедур
      */
     private ProcedureExecutionManager m_PEM;
+    /**
+     * Объект Менеджера кэша Мест и Процедур Оператора
+     */
+    private ElementCacheManager m_ECM;
 
     /**
      * NR-Стандартный конструктор
@@ -102,9 +108,11 @@ public class Engine
         // create engine settings object
         this.m_Settings = new ApplicationSettingsKeyed(this);
         // create database adapter object
-        this.m_db = new CachedDbAdapter(this);
+        this.m_db = new OperatorDbAdapter(this);
         //create execution manager
         this.m_PEM = new ProcedureExecutionManager(this);
+        //create cache manager object - after DB and PEM only. 
+        this.m_ECM = new ElementCacheManager(this, this.m_db, this.m_PEM);
         
         return;
     }
@@ -121,12 +129,11 @@ public class Engine
     }
 
     /**
-     * NT-Объект адаптера БД Оператора. Не должен быть доступен из сторонних
-     * сборок.
+     * NT-Объект адаптера БД Оператора. 
      * 
      * @return
      */
-    public CachedDbAdapter get_Database()
+    public OperatorDbAdapter get_Database()
     {
         return this.m_db;
     }
@@ -161,7 +168,9 @@ public class Engine
      */
     public void Init() throws Exception
     {
-        // check operator folder exist
+        //this.m_OperatorConsole.PrintTextLine("Operator loading...", EnumDialogConsoleColor.Сообщение);
+        
+        //1. check operator folder exist
         if (FileSystemManager.isAppFolderExists() == false)
         {
             String msg1 = "Ошибка: Каталог Оператор не найден: " + FileSystemManager.getAppFolderPath();
@@ -171,19 +180,16 @@ public class Engine
             FileSystemManager.CreateOperatorFolder();
         }
 
-        // open engine log session
+        //2. open engine log session
         // this.m_logman.AddMessage(new
         // LogMessage(EnumLogMsgClass.SessionStarted, EnumLogMsgState.OK,
         // "Session opened"));
         // - это уже сделано в this.m_logman.Open();
         this.m_logman.Open();
 
-        // выводим приветствие и описание программы
-        this.m_OperatorConsole.PrintTextLine("Консоль речевого интерфейса. Версия " + Utility.getOperatorVersionString(), EnumDialogConsoleColor.Сообщение);
-        this.m_OperatorConsole.PrintTextLine("Для завершения работы приложения введите слово выход или quit", EnumDialogConsoleColor.Сообщение);
-        this.m_OperatorConsole.PrintTextLine("Сегодня " + BCSA.CreateLongDatetimeString(LocalDateTime.now()), EnumDialogConsoleColor.Сообщение);
 
-        // load engine settings
+
+        //3. load engine settings
         // Если файл настроек не обнаружен, вывести сообщение об этом и
         // создать новый файл настроек с дефолтовыми значениями.
         String settingsFilePath = FileSystemManager.getAppSettingsFilePath();
@@ -197,7 +203,7 @@ public class Engine
         }
         else this.m_Settings.Load(settingsFilePath);
 
-        // init database
+        //4. init database
         // заполнить кеш-коллекции процедур и мест данными из БД
         // CachedDbAdapter делает это сам
 
@@ -215,18 +221,32 @@ public class Engine
             // Но эту копию надо сначала создать.
 
             // create new database here. Open, write, close.
-            CachedDbAdapter.CreateNewDatabase(this, dbFile);
+            OperatorDbAdapter.CreateNewDatabase(this, dbFile);
             // но работать с пустой БД - начинать все сначала.
         }
         // else
         // open existing database
         this.m_db.Open(connectionString);
-        // БД оставим открытой на весь сеанс работы Оператора.
-
+        // БД оставим открытой на весь сеанс работы Оператора.      
         // TODO: Следует переделать адаптер так, чтобы он открывал БД только на
         // время чтения или записи, а не держал ее постоянно открытой.
         // Так меньше вероятность повредить бд при глюках линукса.
-
+        
+        //5. Open PEM
+        //TODO: дополнить код здесь полезными проверками
+        this.m_PEM.Open();//TODO: this function not completed now.
+        
+        //6. Open ECM 
+        //TODO: дополнить код здесь полезными проверками
+        this.m_ECM.Open();//TODO: this function not completed now.
+        
+        
+        // выводим приветствие и описание программы
+        this.m_OperatorConsole.PrintTextLine("Консоль речевого интерфейса. Версия " + Utility.getOperatorVersionString(), EnumDialogConsoleColor.Сообщение);
+        this.m_OperatorConsole.PrintTextLine("Для завершения работы приложения введите слово выход или quit", EnumDialogConsoleColor.Сообщение);
+        this.m_OperatorConsole.PrintTextLine("Сегодня " + BCSA.CreateLongDatetimeString(LocalDateTime.now()), EnumDialogConsoleColor.Сообщение);
+        
+        
         return;
     }
 
@@ -237,6 +257,13 @@ public class Engine
      */
     public void Exit() throws Exception
     {
+        
+        //закрыть ECM
+        if(this.m_ECM != null)
+            this.m_ECM.Close();
+        //закрыть PEM
+        if(this.m_PEM != null)
+            this.m_PEM.Close();
         // Закрыть БД если еще не закрыта
         if (this.m_db != null) this.m_db.Close();
         // close settings object
@@ -612,13 +639,13 @@ public class Engine
 
     }
 
-    /// <summary>
-    /// NR- Запустить функцию из локальной сборки
-    /// </summary>
-    /// <param name="command">Команда пользователя</param>
-    /// <param name="p">Объект процедуры</param>
-    /// <param name="args">Коллекция аргументов</param>
-    /// <returns>Возвращается результат выполнения процедуры</returns>
+    /**
+     * NT-Запустить функцию из локальной сборки
+     * @param command Команда пользователя
+     * @param p Объект процедуры
+     * @param args Коллекция аргументов
+     * @return Возвращается результат выполнения процедуры.
+     */
     private EnumProcedureResult RunLocalAssembly(String command, Procedure p, ArgumentCollection args)
     {
         EnumProcedureResult result = EnumProcedureResult.Success;
@@ -631,6 +658,7 @@ public class Engine
             // и местами и готовы к выполнению.
             //result = p.invokeProcedure(command, names, this, args);
             result = this.m_PEM.invokeProcedure(p, names, command, this, args);
+            //Это выбрасывает исключения процесса запуска и исполнения Процедуры.
         }
         catch (Exception e)
         {
@@ -646,8 +674,10 @@ public class Engine
             // выводила сообщение я не умею.
 
             PrintExceptionToConsole(e);
+            //add exception to log
+            this.m_logman.AddExceptionMessage(e);
             
-            // вернуть флаг, что данная процедура не годится для данной команды
+            // вернуть флаг ошибки
             //TODO: Определить, что тут должна возвращать текущая функция, если во время исполнения Процедуры произошла ошибка.
             //Ошибка - это ошибка, а не несоответствие Запроса и Процедуры. А тут - наобум назначено возвращаемое значение.
             result = EnumProcedureResult.WrongArguments;
@@ -680,16 +710,18 @@ public class Engine
             // пока выведем сообщение об исключении в консоль.
             // TODO: вот надо завести в механизме статическую переменную
             // отладки, включаемую через отдельную процедуру/команду, и по ней
-            // выводить
-            // на экран эти отладочные данные.
+            // выводить на экран эти отладочные данные.
             // TODO: надо вывести тут сообщение об исключении в общий лог.
             // если не выводить сообщение об ошибке, то непонятно, почему
             // команда не исполняется.
             // например, когда выключился спящий режим, команда спать просто
             // выводила сообщение я не умею.
-            this.m_OperatorConsole.PrintExceptionMessage(e);
-            result = EnumProcedureResult.WrongArguments;// флаг что процедура не
-            // годится
+            //this.m_OperatorConsole.PrintExceptionMessage(e);
+            PrintExceptionToConsole(e);
+            //add exception to log
+            this.m_logman.AddExceptionMessage(e);
+            
+            result = EnumProcedureResult.WrongArguments;// флаг что процедура не годится
         }
         // вернуть результат
         return result;
@@ -741,96 +773,96 @@ public class Engine
 
     // #endregion
 
-    // #region Функции доступа к БД из сборок процедур
-    // вынесены сюда, так как нельзя давать сторонним сборкам доступ к БД (не
-    // знаю пока, как получится)
-    // Названия функций должны начинаться с Db...
-
-    /// <summary>
-    /// NR-Добавить Место в БД
-    /// </summary>
-    /// <param name="p">Заполненный объект</param>
-    public void DbInsertPlace(Place p)
-    {
-        // Добавить объект в БД
-        this.m_db.AddPlace(p);
-
-        return;
-    }
-
-    /// <summary>
-    /// NR-Добавить несколько Мест в БД
-    /// </summary>
-    /// <param name="places">Список заполненных Мест</param>
-    public void DbInsertPlace(List<Place> places)
-    {
-        // Добавить объекты в БД
-        this.m_db.AddPlace(places);
-
-        return;
-    }
-
-    public void DbRemovePlace(Place p)
-    {
-        this.m_db.RemovePlace(p);
-    }
-
-    /// <summary>
-    /// NR-Добавить Процедуру в БД
-    /// </summary>
-    /// <param name="p">Заполненный объект</param>
-    public void DbInsertProcedure(Procedure p)
-    {
-        // Добавить объект в БД
-        this.m_db.AddProcedure(p);
-
-        return;
-    }
-
-    /// <summary>
-    /// NR-Добавить несколько Процедур в БД
-    /// </summary>
-    /// <param name="procedures">Список заполненных Процедур</param>
-    public void DbInsertProcedure(List<Procedure> procedures)
-    {
-        // Добавить объект в БД
-        this.m_db.AddProcedure(procedures);
-
-        return;
-    }
-
-    public void DbRemoveProcedure(Procedure p)
-    {
-        this.m_db.RemoveProcedure(p);
-    }
-
-    /// <summary>
-    /// NR-Выбрать из БД Места по названию, без учета регистра символов
-    /// </summary>
-    /// <param name="placeTitle">Название места</param>
-    /// <returns>Возвращает список мест с указанным названием</returns>
-    public List<Place> DbGetPlacesByTitle(string placeTitle)
-    {
-        // проще всего перебрать названия мест в кеше в памяти, а не выбирать их
-        // из БД.
-        // поэтому надо сделать выборку Мест из коллекции мест в БД, без учета
-        // регистра символов
-        return this.m_db.Places.getByTitle(placeTitle);
-    }
-
-    /// <summary>
-    /// NR-Выбрать из БД Процедуры по названию, без учета регистра символов
-    /// </summary>
-    /// <param name="title">Название Процедуры</param>
-    /// <returns>Возвращает список Процедур с указанным названием</returns>
-    public List<Procedure> DbGetProceduresByTitle(string title)
-    {
-        // проще всего перебрать названия процедур в кеше в памяти, а не
-        // выбирать их из БД.
-        // поэтому надо сделать выборку Процедур из коллекции процедур в БД, без
-        // учета регистра символов
-        return this.m_db.Procedures.getByTitle(title);
-    }
+//    // #region Функции доступа к БД из сборок процедур
+//    // вынесены сюда, так как нельзя давать сторонним сборкам доступ к БД (не
+//    // знаю пока, как получится)
+//    // Названия функций должны начинаться с Db...
+//
+//    /// <summary>
+//    /// NR-Добавить Место в БД
+//    /// </summary>
+//    /// <param name="p">Заполненный объект</param>
+//    public void DbInsertPlace(Place p)
+//    {
+//        // Добавить объект в БД
+//        this.m_db.AddPlace(p);
+//
+//        return;
+//    }
+//
+//    /// <summary>
+//    /// NR-Добавить несколько Мест в БД
+//    /// </summary>
+//    /// <param name="places">Список заполненных Мест</param>
+//    public void DbInsertPlace(List<Place> places)
+//    {
+//        // Добавить объекты в БД
+//        this.m_db.AddPlace(places);
+//
+//        return;
+//    }
+//
+//    public void DbRemovePlace(Place p)
+//    {
+//        this.m_db.RemovePlace(p);
+//    }
+//
+//    /// <summary>
+//    /// NR-Добавить Процедуру в БД
+//    /// </summary>
+//    /// <param name="p">Заполненный объект</param>
+//    public void DbInsertProcedure(Procedure p)
+//    {
+//        // Добавить объект в БД
+//        this.m_db.AddProcedure(p);
+//
+//        return;
+//    }
+//
+//    /// <summary>
+//    /// NR-Добавить несколько Процедур в БД
+//    /// </summary>
+//    /// <param name="procedures">Список заполненных Процедур</param>
+//    public void DbInsertProcedure(List<Procedure> procedures)
+//    {
+//        // Добавить объект в БД
+//        this.m_db.AddProcedure(procedures);
+//
+//        return;
+//    }
+//
+//    public void DbRemoveProcedure(Procedure p) throws SQLException
+//    {
+//        this.m_db.RemoveProcedure(p.m_tableid);
+//    }
+//
+//    /// <summary>
+//    /// NR-Выбрать из БД Места по названию, без учета регистра символов
+//    /// </summary>
+//    /// <param name="placeTitle">Название места</param>
+//    /// <returns>Возвращает список мест с указанным названием</returns>
+//    public LinkedList<Place> DbGetPlacesByTitle(String placeTitle)
+//    {
+//        // проще всего перебрать названия мест в кеше в памяти, а не выбирать их
+//        // из БД.
+//        // поэтому надо сделать выборку Мест из коллекции мест в БД, без учета
+//        // регистра символов
+//        return this.m_db.Places.getByTitle(placeTitle);
+//    }
+//
+//    /// <summary>
+//    /// NR-Выбрать из БД Процедуры по названию, без учета регистра символов
+//    /// </summary>
+//    /// <param name="title">Название Процедуры</param>
+//    /// <returns>Возвращает список Процедур с указанным названием</returns>
+//    public LinkedList<Procedure> DbGetProceduresByTitle(String title)
+//    {
+//        // проще всего перебрать названия процедур в кеше в памяти, а не
+//        // выбирать их из БД.
+//        // поэтому надо сделать выборку Процедур из коллекции процедур в БД, без
+//        // учета регистра символов
+//        return this.m_db.Procedures.getByTitle(title);
+//    }
 
     // #endregion
 
