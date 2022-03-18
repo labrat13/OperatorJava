@@ -101,12 +101,12 @@ public class ProcedureCollection
     // }
 
     /**
-     * Fill collection from database
+     * Fill collection from database and sort by Ves field
      * 
      * @param list
      *            List of Procedure from database
      */
-    public void FillFromDb(LinkedList<Procedure> list)
+    public void Fill(LinkedList<Procedure> list)
     {
         this.m_proclist.addAll(list);
         // сортировать процедуры по весу обязательно, иначе команды будут

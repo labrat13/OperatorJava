@@ -271,11 +271,11 @@ public class PlacesCollection
      * @throws Exception
      *             Ошибка: Синоним Места уже существует в словаре мест.
      */
-    public void FillFromDb(LinkedList<Place> list) throws Exception
+    public void Fill(LinkedList<Place> list) throws Exception
     {
         for (Place p : list)
         {
-            // p.ParseEntityTypeString(); это уже сделано при чтении из БД
+            // p.ParseEntityTypeString(); TODO: проверить, что это уже сделано при чтении из БД
             this.Add(p);
         }
         return;
@@ -310,5 +310,7 @@ public class PlacesCollection
 
         return result;
     }
+    
+
 
 }

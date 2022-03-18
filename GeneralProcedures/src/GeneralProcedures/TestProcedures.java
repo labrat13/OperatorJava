@@ -21,6 +21,10 @@ import ProcedureSubsystem.ImplementationState;
 @OperatorProcedure(State = ImplementationState.NotTested, Title = "Test class", Description = "Test procedures engine class.")
 public class TestProcedures
 {
+    //Для всех операций с Процедурами и Местами из кода Процедур использовать класс ElementCacheManager, а не  БД итп.
+    //engine.get_ECM().AddPlace(p);
+    
+    
     /**
      * NT- Тестовая процедура: выводит на консоль helloworld  и звуковой сигнал.
      * @param engine    Ссылка на объект Движка Оператор для доступа к консоли, логу, БД итп.
@@ -44,6 +48,9 @@ public class TestProcedures
         //print helloworld message to console and exit
         engine.get_OperatorConsole().PrintTextLine("helloworld", EnumDialogConsoleColor.Сообщение);
         engine.get_OperatorConsole().Beep();
+        
+
+        
         
         return EnumProcedureResult.Success;
     }

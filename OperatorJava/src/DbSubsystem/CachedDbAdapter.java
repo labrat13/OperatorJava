@@ -273,7 +273,7 @@ public class CachedDbAdapter extends OperatorDbAdapter
     {
         // тут заполнить коллекцию мест данными мест.
         this.m_places.Clear();
-        this.m_places.FillFromDb(GetAllPlaces());
+        this.m_places.Fill(GetAllPlaces());
 
         return;
     }
@@ -290,7 +290,7 @@ public class CachedDbAdapter extends OperatorDbAdapter
         // тут заполнить коллекцию процедур данными процедур. И не забыть их
         // отсортировать по весу.
         this.m_procedures.Clear();
-        this.m_procedures.FillFromDb(GetAllProcedures());
+        this.m_procedures.Fill(GetAllProcedures());
 
         return;
     }

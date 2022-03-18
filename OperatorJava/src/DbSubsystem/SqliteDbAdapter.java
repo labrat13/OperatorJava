@@ -149,16 +149,23 @@ public class SqliteDbAdapter
     }
 
     /**
-     * RT-Open connection to database, using previous stored connection string.
+     * NT-Open connection to database, using previous stored connection string.
+     * If connection already opened then return.
      * 
      * @throws Exception
      *             Ошибка при использовании БД.
      */
     public void Open() throws Exception
     {
-        DriverManager.setLoginTimeout(this.m_Timeout);
-        this.m_connection = DriverManager.getConnection(this.m_connectionString);
-        this.m_connection.setAutoCommit(false);
+        // skip if connection already active
+        if (this.isConnectionActive())
+            return;
+        else
+        {
+            DriverManager.setLoginTimeout(this.m_Timeout);
+            this.m_connection = DriverManager.getConnection(this.m_connectionString);
+            this.m_connection.setAutoCommit(false);
+        }
 
         return;
     }

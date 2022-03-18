@@ -121,7 +121,7 @@ public class Engine
     /**
      * NT- Get log manager object
      * 
-     * @return
+     * @return Функция возвращает log manager object
      */
     public LogManager getLogManager()
     {
@@ -129,9 +129,9 @@ public class Engine
     }
 
     /**
-     * NT-Объект адаптера БД Оператора. 
+     * NT-Получить объект адаптера БД Оператора. 
      * 
-     * @return
+     * @return Функция возвращает Объект адаптера БД Оператора. 
      */
     public OperatorDbAdapter get_Database()
     {
@@ -139,9 +139,9 @@ public class Engine
     }
 
     /**
-     * NT-Объект консоли Оператора. Должен быть доступен из сторонних сборок.
+     * NT-Получить объект консоли Оператора. Должен быть доступен из сторонних сборок.
      * 
-     * @return
+     * @return Функция возвращает Объект консоли Оператора.
      */
     public DialogConsole get_OperatorConsole()
     {
@@ -151,11 +151,28 @@ public class Engine
     /**
      * NT-Получить объект настроек движка Оператора.
      * 
-     * @return
+     * @return Функция возвращает объект настроек движка Оператора.
      */
-    public ApplicationSettingsBase getEngineSettings()
+    public ApplicationSettingsBase get_EngineSettings()
     {
         return this.m_Settings;
+    }
+    
+    /**
+     * NT-Получить объект кеш-коллекции Процедур и Мест Оператора.
+     * @return Возвращает объект кеш-коллекции Процедур и Мест Оператора.
+     */
+    public ElementCacheManager get_ECM()
+    {
+        return this.m_ECM;
+    }
+    /**
+     * NT-Получить объект Менеджера Библиотек Процедур.
+     * @return Функция возвращает объект Менеджера Библиотек Процедур.
+     */
+    public ProcedureExecutionManager get_PEM()
+    {
+        return this.m_PEM;
     }
     // #endregion
 
