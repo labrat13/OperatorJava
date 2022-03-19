@@ -6,6 +6,7 @@
 package ProcedureSubsystem;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
@@ -15,6 +16,8 @@ import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedList;
+
+import javax.xml.stream.XMLStreamException;
 
 import Lexicon.EnumDialogConsoleColor;
 import Lexicon.EnumSpeakDialogResult;
@@ -52,7 +55,7 @@ public class ProcedureExecutionManager
     /**
      * Словарь (Сборка,Путь) для путей к библиотекам.
      */
-    protected HashMap<String, String> m_Libraries;
+    protected HashMap<String, LibraryManagerBase> m_Libraries;
 
     /**
      * NT-Constructor
@@ -72,7 +75,7 @@ public class ProcedureExecutionManager
     public void Open()
     {
         // Заполнить HashMap <String, String> парами <AssemblyTitle, JarFilePath>.
-        this.m_Libraries = findLibraries();
+        this.m_Libraries = loadLibraries();
         // TODO: init all libraries
         // TODO: тут нужен код для загрузки менеджеров библиотек из этих библиотек.
         // TODO: тут нужен код для выгрузки Процедур и Мест из кажддой библиотеки в
@@ -80,6 +83,8 @@ public class ProcedureExecutionManager
         // Поверх CachedDbAdapter такой буфер нужно добавить в Движок Оператора.
         return;
     }
+
+
 
     /**
      * NR-Close execution manager
@@ -91,43 +96,105 @@ public class ProcedureExecutionManager
         return;
     }
 
-    /**
-     * NT-Fill dictionary with jar files pathes
-     * 
-     * @return Function returns dictionary (title, path) of each jar file in
-     *         main libraries folder.
-     */
-    private HashMap<String, String> findLibraries()
-    {
-        // TODO Тут jar файлы библиотек процедур должны быть сложены
-        // непосредственно в каталог Процедур, а не как положено.
-        // Надо переделать этот код после отладки.
+//    /**
+//     * NT-Fill dictionary with jar files pathes
+//     * 
+//     * @return Function returns dictionary (title, path) of each jar file in
+//     *         main libraries folder.
+//     */
+//    private HashMap<String, String> findLibraries()
+//    {
+//        // TODO Тут jar файлы библиотек процедур должны быть сложены
+//        // непосредственно в каталог Процедур, а не как положено.
+//        // Надо переделать этот код после отладки.
+//
+//        // создать словарь название библиотеки -путь к jar-файлу библиотеки.
+//        HashMap<String, String> result = new HashMap<String, String>();
+//        // получить путь к корневой папке хранилища библиотек
+//        String libraryFolder = FileSystemManager.getAssembliesFolderPath();
+//        // сейчас просто извлечь все jar-файлы из этой папки, но не подпапок,
+//        // хотя это неправильно, но для отладки на первое время сойдет.
+//        // TODO: переделать после отладки код здесь на правильную структуру
+//        // папок и файлов Процедур.
+//        // а правильно - каждый файл в свою одноименную папку помещать
+//        // так как там еще должны быть всякие папки и файлы ресурсов потом.
+//        File libFolder = new File(libraryFolder);
+//        // собираем файлы только в указанном каталоге, но не в подкаталогах.
+//        File[] files = FileSystemManager.getDirectoryFiles(libFolder, new String[] {
+//                ".jar", ".JAR" });
+//        // извлечь имя файла без расширения и путь к файлу и поместить в словарь
+//        for (File f : files)
+//        {
+//            String filetitle = f.getName();
+//            filetitle = Utility.getFileExtension(filetitle);
+//            String path = f.getAbsolutePath();
+//
+//            result.put(filetitle, path);
+//        }
+//
+//        return result;
+//    }
 
-        // создать словарь название библиотеки -путь к jar-файлу библиотеки.
-        HashMap<String, String> result = new HashMap<String, String>();
+    /** 
+     * NT-Load LibraryManager object from each of founded Procedure Library JAR file.
+     * @return Function returns HashMap<title, manager>.
+     * @throws Exception Error on loading.
+     */
+    private HashMap<String, LibraryManagerBase> loadLibraries() throws Exception
+    {
+        // создать словарь название библиотеки - объект менеджера.
+        HashMap<String, LibraryManagerBase> result = new HashMap<String, LibraryManagerBase>();
         // получить путь к корневой папке хранилища библиотек
         String libraryFolder = FileSystemManager.getAssembliesFolderPath();
-        // сейчас просто извлечь все jar-файлы из этой папки, но не подпапок,
-        // хотя это неправильно, но для отладки на первое время сойдет.
-        // TODO: переделать после отладки код здесь на правильную структуру
-        // папок и файлов Процедур.
-        // а правильно - каждый файл в свою одноименную папку помещать
-        // так как там еще должны быть всякие папки и файлы ресурсов потом.
         File libFolder = new File(libraryFolder);
         // собираем файлы только в указанном каталоге, но не в подкаталогах.
         File[] files = FileSystemManager.getDirectoryFiles(libFolder, new String[] {
-                ".jar", ".JAR" });
-        // извлечь имя файла без расширения и путь к файлу и поместить в словарь
+                ".jar", ".JAR" }, true);
+        //найденные файлы проверить и обработать.
+        //здесь исключение не должно прерывать общий процесс загрузки библиотек,
+        // но должно выводиться на консоль и в лог.
         for (File f : files)
         {
+            try {
+            // извлечь имя файла без расширения и путь к файлу
             String filetitle = f.getName();
-            filetitle = Utility.getFileExtension(filetitle);
+            filetitle = Utility.getFilenameWithoutExtension(filetitle);
             String path = f.getAbsolutePath();
-
-            result.put(filetitle, path);
+            //get library manager object from class loader
+            LibraryManagerBase manager = this.loadLibraryManager(path);
+            //поместить объект в словарь только если файл является правильным файлом библиотеки 
+            if(manager != null)
+                result.put(filetitle, manager);
+            }
+            catch(Exception e)
+            {
+                String title = "Исключение при загрузке библиотеки Процедур " + f.getAbsolutePath();
+                this.m_Engine.get_OperatorConsole().PrintExceptionMessage(title, e);
+                //add exception to log - TODO: надо бы и текст описательный выводить.
+                this.m_Engine.getLogManager().AddMessage(EnumLogMsgClass.ExceptionRaised, EnumLogMsgState.Default, title);
+                this.m_Engine.getLogManager().AddExceptionMessage(e);
+            }
         }
-
+        
         return result;
+    }
+    
+    
+    /** 
+     * NR- Try get library manager from specified jar file.
+     * @param path JAR file path.
+     * @return Function returns library manager object or null if it is not found.
+     * @throws Exception Error on loading.
+     *  
+     */
+    private LibraryManagerBase loadLibraryManager(String path) throws Exception
+    {
+        //throw exceptions if any error
+        //return null if no manager in that file       
+        //TODO: не забыть вписать в объект менеджера путь к его файлу path!
+        
+        throw new Exception("Function not implemented"); //TODO: add code here
+        //return null;
     }
 
     /**

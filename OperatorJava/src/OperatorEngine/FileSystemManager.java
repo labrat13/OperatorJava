@@ -7,6 +7,7 @@ package OperatorEngine;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.LinkedList;
 
 import DbSubsystem.OperatorDbAdapter;
 import Settings.ApplicationSettingsBase;
@@ -278,7 +279,7 @@ public class FileSystemManager
     }
     
     /**
-     * NT- Get from directory all files with specified extensions.
+     * NT- Get from top directory all files with specified extensions.
      * 
      * @param dir
      *            Directory
@@ -304,4 +305,72 @@ public class FileSystemManager
         return files;
     }
 
+/**
+ * NT-Get directory files
+ * @param dir Directory object.
+ * @param exts Array of file endings (extension).
+ * @param recursive If True, read all subdirectories recursive. Else read specified directory only.
+ * @return Function returns array of founded files.
+ */
+    public static File[] getDirectoryFiles(
+            File dir,
+            String[] exts,
+            boolean recursive)
+    {
+            LinkedList<File> result = new LinkedList<File>();
+            getDirectoryFilesRecurse(result, dir, exts, recursive);
+            
+            return result.toArray(new File[result.size()]);
+    }
+    
+    /** NT - Get directory files recursively.
+     * @param result Result list of founded File objects
+     * @param dir Directory object.
+     * @param exts Array of file endings (extension).
+     * @param recursive If True, read all subdirectories recursive. Else read specified directory only.
+     */
+    private static void getDirectoryFilesRecurse(
+            LinkedList<File> result,
+            File dir,
+            String[] exts,
+            boolean recursive )
+    {
+          File[] files = dir.listFiles();
+          if (files != null && files.length > 0)
+          {
+              for (File f : files)
+              {
+                  if(f.isDirectory() && (recursive == true))
+                      getDirectoryFilesRecurse(result, f, exts, recursive);
+                  else
+                      if(f.isFile() && (checkFileExt(f, exts) == true))
+                          result.add(f);
+              }
+          }
+      
+      return;  
+    }
+/**
+ * NT-Check file extension matched array contents.
+ * @param f File or Directory object.
+ * @param exts Array of name ending string's.
+ * @return Function returns True if file title matched with any of specified title ending's.
+ * Function returns False otherwise.
+ */
+    private static boolean checkFileExt(File f, String[] exts)
+    {
+        // check filename ends
+        String name = f.getAbsolutePath();
+        for (String ext : exts)
+            if (name.endsWith(ext)) return true;
+        
+        return false;
+    }
+
+
+    
+    
+    
+    
+    
 }
