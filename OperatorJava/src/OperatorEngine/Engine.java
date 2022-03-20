@@ -228,7 +228,7 @@ public class Engine
 
         // если новой бд нет в каталоге приложения, создаем ее.
         String dbFile = FileSystemManager.getAppDbFilePath();
-        String connectionString = CachedDbAdapter.CreateConnectionString(dbFile);
+        String connectionString = OperatorDbAdapter.CreateConnectionString(dbFile);
         if (FileSystemManager.isAppDbFileExists() == false)
         {
             // print warning about database

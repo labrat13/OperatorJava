@@ -55,6 +55,7 @@ public class Place extends Item
         this.m_placetype = Utility.StringCopy(p.m_placetype);
         this.m_synonim = Utility.StringCopy(p.m_synonim);
         this.m_title = Utility.StringCopy(p.m_title);
+        this.m_storage = Utility.StringCopy(p.m_storage);
         this.m_entityTypes = null;
         ParseEntityTypeString();// распарсить дерево классов
 
@@ -157,6 +158,8 @@ public class Place extends Item
     {
         // Одна строка, 80 символов макс.
         StringBuilder sb = new StringBuilder();
+        sb.append(this.m_storage);
+        sb.append(':');
         sb.append(this.m_tableid);
         sb.append(";");
         sb.append(this.m_title);

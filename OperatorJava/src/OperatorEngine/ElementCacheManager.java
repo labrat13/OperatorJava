@@ -137,9 +137,11 @@ public class ElementCacheManager
         int procCount = 0;
         if (this.m_procedures != null)
             procCount = this.m_procedures.getCount();
+        
         int placeCount = 0;
         if (this.m_places != null)
             placeCount = this.m_places.getCount();
+        
         String result = String.format("ElementCacheManager; procedures=%d; places=%d;", procCount, placeCount);
 
         return result;
@@ -172,7 +174,8 @@ public class ElementCacheManager
         return;
     }
 
-    // ==== Procedure function ==============================
+    //*** Procedure function ***
+    
     /**
      * NT-Добавить Процедуру в БД и обновить кеш процедур.
      * БД открывается, если еще не открыта, затем закрывается.
@@ -643,7 +646,7 @@ public class ElementCacheManager
 
         return;
     }
-
+//*** Получить Процедуры и Места как списки ***
     /**
      * NT-Получить список всех Процедур для перечисления.
      * 

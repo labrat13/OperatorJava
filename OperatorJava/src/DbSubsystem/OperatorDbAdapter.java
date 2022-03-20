@@ -16,6 +16,7 @@ import javax.xml.stream.XMLStreamException;
 import LogSubsystem.EnumLogMsgClass;
 import LogSubsystem.EnumLogMsgState;
 import OperatorEngine.Engine;
+import OperatorEngine.Item;
 import OperatorEngine.Place;
 import OperatorEngine.Procedure;
 import OperatorEngine.Utility;
@@ -280,6 +281,9 @@ public class OperatorDbAdapter extends SqliteDbAdapter
             place.ParseEntityTypeString();// TODO: перенести этот вызов на более
                                           // поздний этап и обложить катчем на
                                           // всякий случай.
+            //set storage title as database
+            place.set_Storage(Item.StorageKeyForDatabaseItem);
+            //add to result list
             list.add(place);
         }
 
@@ -428,7 +432,9 @@ public class OperatorDbAdapter extends SqliteDbAdapter
             proc.set_Path(reader.getString(4));
             proc.set_Regex(reader.getString(5));
             proc.set_Description(reader.getString(6));
-
+            //set storage title as database
+            proc.set_Storage(Item.StorageKeyForDatabaseItem);
+            //add to result list
             list.add(proc);
         }
         // ((DbDataReader) sqLiteDataReader).Close();

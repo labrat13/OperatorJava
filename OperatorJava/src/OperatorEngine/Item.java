@@ -15,11 +15,18 @@ public class Item implements Comparable<Item>
 {
     // #region Fields
 
+//    /**
+//     * Константа для поля TableId, обозначает, что данный элемент (Procedure или Place) не хранится в БД.
+//     * Например, импортируется из какой-либо Библиотеки Процедур.
+//     */
+//    public static final int Id_ItemNotFromDatabase = -1;
+    
     /**
-     * Константа для поля TableId, обозначает, что данный элемент (Procedure или Place) не хранится в БД.
-     * Например, импортируется из какой-либо Библиотеки Процедур.
+     * Константа для поля m_storage, обозначает, что данный элемент хранится в Бд Оператор.
+     * Все остальные значения этого поля должны соответствовать названиям Библиотек Процедур,
+     *  из которых извлечен данный элемент (Место или Процедура).
      */
-    public static final int Id_ItemNotFromDatabase = -1;
+    public static final String StorageKeyForDatabaseItem = "Database";
 
     /**
      * первичный ключ таблицы
@@ -41,6 +48,12 @@ public class Item implements Comparable<Item>
      */
     protected String        m_path;
 
+    /**
+     * Название Хранилища ( Библиотеки Процедур или БД).
+     * Не сохранять в таблицу БД!
+     */
+    protected String        m_storage;
+
     // #endregion
 
     /**
@@ -52,8 +65,32 @@ public class Item implements Comparable<Item>
         this.m_path = "";
         this.m_tableid = 0;
         this.m_title = "";
+        this.m_storage = "";
 
         return;
+    }
+
+    /**
+     * Название Хранилища ( Библиотеки Процедур или БД).
+     * Не сохранять в таблицу БД!
+     * 
+     * @return the storage
+     */
+    public String get_Storage()
+    {
+        return this.m_storage;
+    }
+
+    /**
+     * Название Хранилища ( Библиотеки Процедур или БД)
+     * Не сохранять в таблицу БД!
+     * 
+     * @param storage
+     *            the storage to set
+     */
+    public void set_Storage(String storage)
+    {
+        this.m_storage = storage;
     }
 
     // #region Properties
@@ -159,7 +196,7 @@ public class Item implements Comparable<Item>
      */
     public boolean isItemFromDatabase()
     {
-        return this.m_tableid == Item.Id_ItemNotFromDatabase;
+        return Utility.StringEqualsOrdinalIgnoreCase(this.m_storage, Item.StorageKeyForDatabaseItem);
     }
 
     /**
@@ -171,6 +208,8 @@ public class Item implements Comparable<Item>
     {
         // Одна строка, 80 символов макс.
         StringBuilder sb = new StringBuilder();
+        sb.append(this.m_storage);
+        sb.append(':');
         sb.append(this.m_tableid);
         sb.append(";");
         sb.append(this.m_title);
