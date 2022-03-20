@@ -1,30 +1,18 @@
 /**
  * @author Селяков Павел
  *         Created: Mar 14, 2022 8:21:10 PM
- *         State: Mar 14, 2022 8:21:10 PM - initial
+ *         State: Mar 21, 2022 12:37:20 AM - Ported, Готов к отладке.
  */
 package ProcedureSubsystem;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.file.Path;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.xml.stream.XMLStreamException;
-
-import Lexicon.EnumDialogConsoleColor;
-import Lexicon.EnumSpeakDialogResult;
-import LogSubsystem.EnumLogMsgClass;
-import LogSubsystem.EnumLogMsgState;
 import OperatorEngine.ArgumentCollection;
 import OperatorEngine.Engine;
 import OperatorEngine.EnumProcedureResult;
@@ -41,9 +29,8 @@ import OperatorEngine.Utility;
  */
 public class ProcedureExecutionManager
 {
-    // TODO: что если тут хранить не пути к файлам сборок Процедур, а объекты
-    // менеджеров LibraryManager?
-    // а пути к сборкам процедур хранить в этих объектах.
+    // Тут хранить объекты менеджеров LibraryManager.
+    // А пути к сборкам процедур хранить в этих объектах.
     // Тогда и объекты в памяти остаются - и данные инициализации в памяти
     // остаются на время хранения объекта.
     // - пока непонятно, что там должно храниться в памяти, и как что
@@ -52,7 +39,7 @@ public class ProcedureExecutionManager
     /**
      * Engine backreference
      */
-    protected Engine                  m_Engine;
+    protected Engine                              m_Engine;
 
     /**
      * Словарь (Сборка,Путь) для путей к библиотекам.
@@ -73,98 +60,101 @@ public class ProcedureExecutionManager
 
     /**
      * NT-Initialize Execution manager
-     * @throws Exception Exception on errors.
+     * 
+     * @throws Exception
+     *             Exception on errors.
      */
     public void Open() throws Exception
     {
-        // Заполнить HashMap 
-        this.m_Libraries = loadLibraries();//TODO: как обрабатывать исключения в Open() всех менеджеров?
+        // Заполнить HashMap
+        this.m_Libraries = loadLibraries();// TODO: как обрабатывать исключения в Open() всех менеджеров?
         // init all libraries
         this.initLibraries();
 
         return;
     }
 
-
-
-
-
     /**
      * NT-Close execution manager
      */
     public void Close()
     {
-        //free all libraries
+        // free all libraries
         this.сloseLibraries();
-        //clear dictionary
+        // clear dictionary
         this.m_Libraries.clear();
-            
+
         return;
     }
 
-    /** 
+    /**
      * NT-Получить объект менеджера библиотеки по названию библиотеки
-     * @param key Название библиотеки.
+     * 
+     * @param key
+     *            Название библиотеки.
      * @return Функция возвращает объект менеджера библиотеки.
      */
     private LibraryManagerBase getManager(String key)
     {
         return this.m_Libraries.get(key);
     }
-    
+
     /**
      * NT-initialize all libraries
      */
     private void initLibraries()
     {
         Set<Entry<String, LibraryManagerBase>> values = this.m_Libraries.entrySet();
-        for(Entry<String, LibraryManagerBase> en : values)
+        for (Entry<String, LibraryManagerBase> en : values)
         {
-            try 
+            try
             {
                 en.getValue().Init();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-              //тут вывести сообщение о ошибке инициализации библиотеки
-                //на консоль и в лог
+                // тут вывести сообщение о ошибке инициализации библиотеки
+                // на консоль и в лог
                 String msg = String.format("Error on init library \"%s\" (path=\"%s\")", en.getKey(), en.getValue().m_LibraryPath);
-                this.m_Engine.PrintExceptionMessageToConsoleAndLog(msg, ex);  
+                this.m_Engine.PrintExceptionMessageToConsoleAndLog(msg, ex);
             }
         }
-        
+
         return;
     }
+
     /**
      * NT-deinitialize all libraries
      */
     private void сloseLibraries()
     {
         Set<Entry<String, LibraryManagerBase>> values = this.m_Libraries.entrySet();
-        for(Entry<String, LibraryManagerBase> en : values)
+        for (Entry<String, LibraryManagerBase> en : values)
         {
-            try 
+            try
             {
                 LibraryManagerBase lmb = en.getValue();
-                if(lmb.get_Initialized() == true)
+                if (lmb.get_Initialized() == true)
                     lmb.Exit();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-              //тут вывести сообщение о ошибке инициализации библиотеки
-                //на консоль и в лог
+                // тут вывести сообщение о ошибке инициализации библиотеки
+                // на консоль и в лог
                 String msg = String.format("Error on exit library \"%s\" (path=\"%s\")", en.getKey(), en.getValue().m_LibraryPath);
-                this.m_Engine.PrintExceptionMessageToConsoleAndLog(msg, ex); 
+                this.m_Engine.PrintExceptionMessageToConsoleAndLog(msg, ex);
             }
         }
-        
+
         return;
     }
 
-    /** 
+    /**
      * NT-Load LibraryManager object from each of founded Procedure Library JAR file.
+     * 
      * @return Function returns HashMap<title, manager>.
-     * @throws Exception Error on loading.
+     * @throws Exception
+     *             Error on loading.
      */
     private HashMap<String, LibraryManagerBase> loadLibraries() throws Exception
     {
@@ -176,34 +166,34 @@ public class ProcedureExecutionManager
         // собираем файлы только в указанном каталоге, но не в подкаталогах.
         File[] files = FileSystemManager.getDirectoryFiles(libFolder, new String[] {
                 ".jar", ".JAR" }, true);
-        //найденные файлы проверить и обработать.
-        //здесь исключение не должно прерывать общий процесс загрузки библиотек,
+        // найденные файлы проверить и обработать.
+        // здесь исключение не должно прерывать общий процесс загрузки библиотек,
         // но должно выводиться на консоль и в лог.
         for (File f : files)
         {
-            try {
-            // извлечь имя файла без расширения и путь к файлу
-            String filetitle = f.getName();
-            filetitle = Utility.getFilenameWithoutExtension(filetitle);
-            String path = f.getAbsolutePath();
-            //get library manager object from class loader
-            LibraryManagerBase manager = LibraryManagerBase.loadLibraryManager(this.m_Engine, filetitle, path);
-            //поместить объект в словарь только если файл является правильным файлом библиотеки 
-            if(manager != null)
-                result.put(filetitle, manager);
+            try
+            {
+                // извлечь имя файла без расширения и путь к файлу
+                String filetitle = f.getName();
+                filetitle = Utility.getFilenameWithoutExtension(filetitle);
+                String path = f.getAbsolutePath();
+                // get library manager object from class loader
+                LibraryManagerBase manager = LibraryManagerBase.loadLibraryManager(this.m_Engine, filetitle, path);
+                // поместить объект в словарь только если файл является правильным файлом библиотеки
+                if (manager != null)
+                    result.put(filetitle, manager);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 String title = "Исключение при загрузке библиотеки Процедур " + f.getAbsolutePath();
                 this.m_Engine.PrintExceptionMessageToConsoleAndLog(title, e);
             }
         }
-        
+
         return result;
     }
-    
-    
-    //==============================================
+
+    // ==============================================
     /**
      * NT-Получить все объекты Places
      * 
@@ -211,35 +201,35 @@ public class ProcedureExecutionManager
      * @throws Exception
      *             Ошибка
      */
-    public LinkedList<Place> GetAllPlaces() throws  Exception
+    public LinkedList<Place> GetAllPlaces() throws Exception
     {
         LinkedList<Place> result = new LinkedList<Place>();
         Set<Entry<String, LibraryManagerBase>> values = this.m_Libraries.entrySet();
-        
-        for(Entry<String, LibraryManagerBase> en : values)
+
+        for (Entry<String, LibraryManagerBase> en : values)
         {
-            try 
+            try
             {
                 LibraryManagerBase lmb = en.getValue();
-                if(lmb.get_Initialized() == true)
-                {                    
-                Place[] par = lmb.getLibraryPlaces();
-                //add to result list
-                for(Place p : par)
-                    result.add(p);
+                if (lmb.get_Initialized() == true)
+                {
+                    Place[] par = lmb.getLibraryPlaces();
+                    // add to result list
+                    for (Place p : par)
+                        result.add(p);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-              //тут вывести сообщение о ошибке библиотеки на консоль и в лог
+                // тут вывести сообщение о ошибке библиотеки на консоль и в лог
                 String msg = String.format("Error on getAllPlaces() for library \"%s\" (path=\"%s\")", en.getKey(), en.getValue().m_LibraryPath);
-                this.m_Engine.PrintExceptionMessageToConsoleAndLog(msg, ex); 
+                this.m_Engine.PrintExceptionMessageToConsoleAndLog(msg, ex);
             }
         }
-        
+
         return result;
     }
-    
+
     /**
      * NT-Получить все объекты Процедур
      * 
@@ -251,40 +241,47 @@ public class ProcedureExecutionManager
     {
         LinkedList<Procedure> result = new LinkedList<Procedure>();
         Set<Entry<String, LibraryManagerBase>> values = this.m_Libraries.entrySet();
-        
-        for(Entry<String, LibraryManagerBase> en : values)
+
+        for (Entry<String, LibraryManagerBase> en : values)
         {
-            try 
+            try
             {
                 LibraryManagerBase lmb = en.getValue();
-                if(lmb.get_Initialized() == true)
-                { 
-                Procedure[] par = lmb.getLibraryProcedures();
-                //add to result list
-                for(Procedure p : par)
-                    result.add(p);
+                if (lmb.get_Initialized() == true)
+                {
+                    Procedure[] par = lmb.getLibraryProcedures();
+                    // add to result list
+                    for (Procedure p : par)
+                        result.add(p);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-              //тут вывести сообщение о ошибке библиотеки на консоль и в лог
+                // тут вывести сообщение о ошибке библиотеки на консоль и в лог
                 String msg = String.format("Error on getAllProcedures() for library \"%s\" (path=\"%s\")", en.getKey(), en.getValue().m_LibraryPath);
-                this.m_Engine.PrintExceptionMessageToConsoleAndLog(msg, ex); 
+                this.m_Engine.PrintExceptionMessageToConsoleAndLog(msg, ex);
             }
         }
-        
+
         return result;
     }
 
-    /** 
+    /**
      * NT- Запустить процедуру на исполнение
-     * @param p Объект Процедуры.
-     * @param names Массив частей пути Процедуры.
-     * @param command Текст запроса пользователя.
-     * @param engine Ссылка на Движок Оператора.
-     * @param args Мвассив аргументов для Процедуры.
+     * 
+     * @param p
+     *            Объект Процедуры.
+     * @param names
+     *            Массив частей пути Процедуры.
+     * @param command
+     *            Текст запроса пользователя.
+     * @param engine
+     *            Ссылка на Движок Оператора.
+     * @param args
+     *            Мвассив аргументов для Процедуры.
      * @return Функция возвращает код результата исполнения Процедуры.
-     * @throws Exception Error on execution.
+     * @throws Exception
+     *             Error on execution.
      */
     public EnumProcedureResult invokeProcedure(
             Procedure p,
@@ -293,32 +290,29 @@ public class ProcedureExecutionManager
             Engine engine,
             ArgumentCollection args) throws Exception
     {
-        //get manager reference
+        // get manager reference
         LibraryManagerBase manager = this.getManager(names[0]);
         String jarFilePath = manager.get_LibraryPath();
-            if(manager.get_Initialized() == false)
-                throw new Exception("Library manager not initialized for " +  jarFilePath);
-            else
-                return LibraryManagerBase.invokeProcedure(p, names, jarFilePath, engine, manager, command, args);
+        if (manager.get_Initialized() == false)
+            throw new Exception("Library manager not initialized for " + jarFilePath);
+        else return LibraryManagerBase.invokeProcedure(p, names, jarFilePath, engine, manager, command, args);
     }
-    
-    
-    
-//    /**
-//     * NT- Получить путь к файлу по названию сборки из пути Процедуры
-//     * 
-//     * @param title
-//     *            Assembly title = library file title = library package title
-//     * @return Function returns library file path or null if title not exists
-//     */
-//    protected String getLibraryPathByAssemblyTitle(String title)
-//    {
-//        // if(this.m_Libraries.containsKey(title))
-//        // return this.m_Libraries.get(title);
-//        // else return null;
-//
-//        return this.m_Libraries.get(title);
-//    }
+
+    // /**
+    // * NT- Получить путь к файлу по названию сборки из пути Процедуры
+    // *
+    // * @param title
+    // * Assembly title = library file title = library package title
+    // * @return Function returns library file path or null if title not exists
+    // */
+    // protected String getLibraryPathByAssemblyTitle(String title)
+    // {
+    // // if(this.m_Libraries.containsKey(title))
+    // // return this.m_Libraries.get(title);
+    // // else return null;
+    //
+    // return this.m_Libraries.get(title);
+    // }
 
     // /**
     // * NR-Test of invoking Procedure from
@@ -505,14 +499,14 @@ public class ProcedureExecutionManager
     // return ist;
     // }
     //
-    
 
-
-//=== Java Reflection debug functions ===
-/**
- * RT-Вывести на экран информацию о классе.
- * @param c Объект класса.
- */
+    // === Java Reflection debug functions ===
+    /**
+     * RT-Вывести на экран информацию о классе.
+     * 
+     * @param c
+     *            Объект класса.
+     */
     @SuppressWarnings("unused")
     private static void printClassInfo(Class<?> c)
     {
@@ -534,10 +528,13 @@ public class ProcedureExecutionManager
 
         return;
     }
-/**
- * RT-Вывести на экран информацию о методах класса.
- * @param mar Массив объектов методов класса.
- */
+
+    /**
+     * RT-Вывести на экран информацию о методах класса.
+     * 
+     * @param mar
+     *            Массив объектов методов класса.
+     */
     private static void printMethodsInfo(Method[] mar)
     {
         System.out.println("Methods information:");
@@ -556,10 +553,13 @@ public class ProcedureExecutionManager
 
         return;
     }
-/**
- * RT-Вывести на экран информацию о пакете.
- * @param p Объект пакета.
- */
+
+    /**
+     * RT-Вывести на экран информацию о пакете.
+     * 
+     * @param p
+     *            Объект пакета.
+     */
     private static void printPackageInfo(Package p)
     {
         if (p == null)
@@ -581,8 +581,11 @@ public class ProcedureExecutionManager
         return;
     }
 
-    /** RT-Вывести на экран массив аннотаций
-     * @param annotations Массив аннотаций элемента
+    /**
+     * RT-Вывести на экран массив аннотаций
+     * 
+     * @param annotations
+     *            Массив аннотаций элемента
      */
     private static void printAnnotations(Annotation[] annotations)
     {
@@ -598,8 +601,4 @@ public class ProcedureExecutionManager
         return;
     }
 
-
-
-
-    
 }

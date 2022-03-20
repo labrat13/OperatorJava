@@ -1,7 +1,7 @@
 /**
  * @author Селяков Павел
  *         Created: Feb 28, 2022 11:44:22 AM
- *         State: Mar 01, 2022 02:55:43 AM - tested success.
+ *         State: Mar 21, 2022 12:37:20 AM - Ported, Готов к отладке.
  */
 package Settings;
 
@@ -26,12 +26,13 @@ import OperatorEngine.Utility;
  */
 public class ApplicationSettingsBase
 {
-    //TODO: класс избыточен по функциям создания-изменения настроек!
+
+    // TODO: класс избыточен по функциям создания-изменения настроек!
     /**
      * Application settings file name
      */
     public final static String              AppSettingsFileName = "settings.txt";
-    
+
     /**
      * Line separator
      */
@@ -41,10 +42,11 @@ public class ApplicationSettingsBase
      * Settings file comment symbol as string('#')
      */
     protected final static String           commentChar         = "#";
+
     /**
      * Строка-маркер окончания файла настроек. Заодно проверяет сохранность русскоязычного текста файла.
      */
-    protected final static String EndOfSettingsFile = "Конец файла настроек";
+    protected final static String           EndOfSettingsFile   = "Конец файла настроек";
 
     /**
      * Dictionary<String, String> for application setings
@@ -55,10 +57,11 @@ public class ApplicationSettingsBase
      * Settings file pathname
      */
     protected String                        m_filepath;
+
     /**
      * Flag for Settings has been changed
      */
-    protected boolean m_ModifiedFlag;
+    protected boolean                       m_ModifiedFlag;
 
     /**
      * Constructor
@@ -69,7 +72,6 @@ public class ApplicationSettingsBase
         this.m_ModifiedFlag = false;
     }
 
-    
     /**
      * NT-Load or reload settings from file
      * 
@@ -93,8 +95,8 @@ public class ApplicationSettingsBase
     public void Load(String filepath) throws Exception
     {
 
-        
-        /* Стандартный формат файла:
+        /*
+         * Стандартный формат файла:
          * Комментарий Заголовок с копирайтом
          * Пустая строка
          * Комментарий Описание настройки
@@ -104,11 +106,12 @@ public class ApplicationSettingsBase
          * Строка ключ=значение настройки №2
          * Пустая строка
          * и так далее...
-         * Запись о окончании файла настроек EndOfSettingsFile 
-         *  - чтобы обнаружить, когда он не до конца записался.
+         * Запись о окончании файла настроек EndOfSettingsFile
+         * - чтобы обнаружить, когда он не до конца записался.
          */
-        
-         /* Порядок разбора:
+
+        /*
+         * Порядок разбора:
          * Читаем файл по одной строке
          * В строке уже нет символов конца строки - их удалил BufferedReader.
          * А) Если строка начинается с символа комментария - добавить ее в буфер
@@ -127,17 +130,17 @@ public class ApplicationSettingsBase
          * после строки ключ=значение.
          * В любом случае буфер комментариев уже не нужен, его надо очистить.
          */
-        
+
         // 1. open specified file and read all items to dictionary
         FileInputStream fi = new FileInputStream(filepath);
         InputStreamReader isr = new InputStreamReader(fi, "UTF-8");
-        //при нормальной работе ридер закрывается, а при исключении все приложение 
+        // при нормальной работе ридер закрывается, а при исключении все приложение
         // закрывается, так что утечки дескриптора не должно образоваться.
         BufferedReader reader = new BufferedReader(isr);
-        
+
         String line, line2, title, value, descr;
         StringBuilder descriptionLines = new StringBuilder();
-        boolean hasEndOfSettingsFile = false;//флаг, что был прочитан маркер окончания файла настроек.
+        boolean hasEndOfSettingsFile = false;// флаг, что был прочитан маркер окончания файла настроек.
         // read file lines
         while ((line = reader.readLine()) != null)
         {
@@ -145,13 +148,12 @@ public class ApplicationSettingsBase
             // if line has comment char - add it to description buffer
             if (isCommentLine(line))
             {
-                //удалить знак комментария и триммить остальной текст
-                line2 = conditeComment(line); 
-                //это или комментарий, или маркер завершения файла 
-                if(isEndOfSettingsMarker(line2))
-                    hasEndOfSettingsFile = true;//установить флаг
-                else
-                    this.appendDescriptionLine(descriptionLines, line2);
+                // удалить знак комментария и триммить остальной текст
+                line2 = conditeComment(line);
+                // это или комментарий, или маркер завершения файла
+                if (isEndOfSettingsMarker(line2))
+                    hasEndOfSettingsFile = true;// установить флаг
+                else this.appendDescriptionLine(descriptionLines, line2);
             }
             // descriptionLines.append(makeCommentLine(line));
             // if line is empty - reset description buffer
@@ -162,11 +164,13 @@ public class ApplicationSettingsBase
             else if (isKeyValueLine(line))
             {
                 String[] sar = Utility.StringSplitFirstMatch(line, "=");
-                if (sar == null) throw new Exception(String.format("Invalid settings file line format: %s at %s", filepath, line));
+                if (sar == null)
+                    throw new Exception(String.format("Invalid settings file line format: %s at %s", filepath, line));
                 title = sar[0].trim();
                 // выбросить исключение, если название итема настроек - пустое.
                 // а вот значение может быть и пустой строкой.
-                if (title.isEmpty()) throw new Exception(String.format("Invalid settings title: %s at %s", filepath, line));
+                if (title.isEmpty())
+                    throw new Exception(String.format("Invalid settings title: %s at %s", filepath, line));
                 value = sar[1].trim();
                 // extract description from buffer
                 descr = descriptionLines.toString();
@@ -180,37 +184,41 @@ public class ApplicationSettingsBase
 
         // close all
         reader.close();
-        if(hasEndOfSettingsFile == false)
+        if (hasEndOfSettingsFile == false)
             throw new Exception("Invalid end of settings file: " + filepath);
         // 2. set specified file as current file
         this.m_filepath = filepath;
-        //3. modified flag clear
+        // 3. modified flag clear
         this.m_ModifiedFlag = false;
 
         return;
     }
 
-    /** 
+    /**
      * NT-Очистить текст описания от знака комментария, итп.
-     * @param line Строка со знаком комментария.
+     * 
+     * @param line
+     *            Строка со знаком комментария.
      * @return Функция возвращает строку без знака комментария.
      */
     private String conditeComment(String line)
     {
         // первым символом строки комментария должен быть символ комментария
-        if (line.length() > 1) 
+        if (line.length() > 1)
             return line.substring(1).trim();
         else return "";
     }
 
-    /** 
-     * NT-Проверить, что строка это маркер конца файла настроек. 
-     * @param line Проверяемая строка
+    /**
+     * NT-Проверить, что строка это маркер конца файла настроек.
+     * 
+     * @param line
+     *            Проверяемая строка
      * @return Функция возвращает True, если строка полностью совпадает с маркером конца файла настроек.
-     * Функция возвращает False в противном случае.
+     *         Функция возвращает False в противном случае.
      */
     private boolean isEndOfSettingsMarker(String line)
-    {        
+    {
         return Utility.StringEquals(line, ApplicationSettingsBase.EndOfSettingsFile);
     }
 
@@ -243,7 +251,8 @@ public class ApplicationSettingsBase
         if (!line.isEmpty())
         {
             // if buf not empty, add line separator, then add new text
-            if (buf.length() > 0) buf.append(lineSeparator);
+            if (buf.length() > 0)
+                buf.append(lineSeparator);
             buf.append(line);
         }
 
@@ -279,20 +288,21 @@ public class ApplicationSettingsBase
         return;
     }
 
-    /** 
+    /**
      * NT- Write settings to file - if modified only
-     * @throws XMLStreamException 
-     * @throws IOException 
+     * 
+     * @throws XMLStreamException
+     * @throws IOException
      * 
      */
     public void StoreIfModified() throws IOException, XMLStreamException
     {
-        if(this.m_ModifiedFlag == true)
+        if (this.m_ModifiedFlag == true)
             this.Store(this.m_filepath);
-        
+
         return;
     }
-    
+
     /**
      * NT- Write settings to file
      * 
@@ -328,7 +338,7 @@ public class ApplicationSettingsBase
         this.WriteCommentLines(writer, EndOfSettingsFile);
         writer.close();
         // 2. do not set specified file as current file
-        //3. clear modified flag
+        // 3. clear modified flag
         this.m_ModifiedFlag = false;
 
         return;
@@ -346,7 +356,10 @@ public class ApplicationSettingsBase
      * @throws IOException
      *             Error on writing
      */
-    private void WriteKeyValuePair(OutputStreamWriter writer, String title, String value) throws IOException
+    private void WriteKeyValuePair(
+            OutputStreamWriter writer,
+            String title,
+            String value) throws IOException
     {
         // 1. check title and value
         // 2. print title=value
@@ -384,10 +397,12 @@ public class ApplicationSettingsBase
      * @throws IOException
      *             Error on writing
      */
-    private void WriteCommentLines(OutputStreamWriter writer, String s) throws IOException
+    private void WriteCommentLines(OutputStreamWriter writer, String s)
+            throws IOException
     {
         // 1. check null or empty = not print
-        if (Utility.StringIsNullOrEmpty(s)) return;
+        if (Utility.StringIsNullOrEmpty(s))
+            return;
         // 2. split to lines and print each line as comment
         String[] sar = Utility.StringSplit(s, lineSeparator, true);
         for (String r : sar)
@@ -413,7 +428,7 @@ public class ApplicationSettingsBase
         // engine version
         this.addItem("EngineVersion", Engine.EngineVersionString, "Engine version string");
         // engine version
-        //TODO: определить, нужно ли тут сбрасывать флаг modified?
+        // TODO: определить, нужно ли тут сбрасывать флаг modified?
         return;
     }
 
@@ -455,9 +470,9 @@ public class ApplicationSettingsBase
     public void addItem(String title, SettingsItem item)
     {
         this.m_Dict.put(title, item);
-        //set modified flag
+        // set modified flag
         this.m_ModifiedFlag = true;
-        
+
         return;
     }
 
@@ -475,9 +490,9 @@ public class ApplicationSettingsBase
     {
         SettingsItem item = new SettingsItem(title, value, descr);
         this.m_Dict.put(title, item);
-        //set modified flag
+        // set modified flag
         this.m_ModifiedFlag = true;
-        
+
         return;
     }
 
@@ -495,10 +510,10 @@ public class ApplicationSettingsBase
     {
         String val = value.toString();
         this.addItem(title, val, descr);
-        
+
         return;
     }
-    
+
     /**
      * NT-Add new or replace existing settings item in collection.
      * 
@@ -513,10 +528,10 @@ public class ApplicationSettingsBase
     {
         String val = value.toString();
         this.addItem(title, val, descr);
-        
+
         return;
     }
-    
+
     /**
      * NT-Remove setting item from collection
      * 
@@ -526,9 +541,9 @@ public class ApplicationSettingsBase
     public void removeItem(String title)
     {
         this.m_Dict.remove(title);
-        //set modified flag
+        // set modified flag
         this.m_ModifiedFlag = true;
-        
+
         return;
     }
 
@@ -587,7 +602,8 @@ public class ApplicationSettingsBase
      *            Keyname
      * @param value
      *            Value string
-     *            @param description Settings description text for new setting or ""
+     * @param description
+     *            Settings description text for new setting or ""
      */
     public void setValue(String title, String value, String description)
     {
@@ -595,9 +611,9 @@ public class ApplicationSettingsBase
         if (this.m_Dict.containsKey(title))
             this.m_Dict.get(title).setValue(value);
         else this.m_Dict.put(title, new SettingsItem(title, value, description));
-        //set modified flag
+        // set modified flag
         this.m_ModifiedFlag = true;
-        
+
         return;
     }
 
@@ -608,7 +624,8 @@ public class ApplicationSettingsBase
      *            Keyname
      * @param value
      *            Value string
-     *            @param description Settings description text for new setting or ""
+     * @param description
+     *            Settings description text for new setting or ""
      */
     public void setValue(String title, Integer value, String description)
     {
@@ -621,9 +638,9 @@ public class ApplicationSettingsBase
             t.setValue(value);
             this.m_Dict.put(title, t);
         }
-        //set modified flag
+        // set modified flag
         this.m_ModifiedFlag = true;
-        
+
         return;
     }
 
@@ -634,7 +651,8 @@ public class ApplicationSettingsBase
      *            Keyname
      * @param value
      *            Value string
-      *            @param description Settings description text for new setting or ""
+     * @param description
+     *            Settings description text for new setting or ""
      */
     public void setValue(String title, Boolean value, String description)
     {
@@ -647,13 +665,10 @@ public class ApplicationSettingsBase
             t.setValue(value);
             this.m_Dict.put(title, t);
         }
-        //set modified flag
+        // set modified flag
         this.m_ModifiedFlag = true;
-        
+
         return;
     }
-
-
-
 
 }

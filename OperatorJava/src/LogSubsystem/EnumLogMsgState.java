@@ -1,7 +1,7 @@
 /**
  * @author Селяков Павел
  *         Created: Feb 22, 2022 5:06:41 PM
- *         State: Feb 23, 2022 11:29:32 PM - ready to test
+ *         State: Mar 21, 2022 12:37:20 AM - Ported, Готов к отладке.
  */
 package LogSubsystem;
 

@@ -1,7 +1,7 @@
 /**
  * @author Селяков Павел
  *         Created: Mar 2, 2022 12:32:43 PM
- *         State: Mar 2, 2022 12:32:43 PM - initial
+ *         State: Mar 21, 2022 12:37:20 AM - Ported, Готов к отладке.
  */
 package Settings;
 

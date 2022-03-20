@@ -2,14 +2,12 @@
  * @author Pavel Seliakov
  *         Copyright Pavel M Seliakov 2014-2021
  *         Created: Feb 6, 2022 4:59:55 AM
- *         State: Feb 6, 2022 4:59:55 AM - TODO: требуется регекс и переделка
+ *         State: Mar 21, 2022 12:37:20 AM - TODO: требуется регекс и переделка
  *         класса под него.
  */
 package OperatorEngine;
 
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,8 +19,8 @@ import java.util.regex.Pattern;
 public class RegexManager
 {
 
-    //TODO: надо написать тесты по функциям регексов здешних - чтобы все протестировать и уверенно работать дальше.
-    
+    // TODO: надо написать тесты по функциям регексов здешних - чтобы все протестировать и уверенно работать дальше.
+
     // Статические переменные для регекса
     /**
      * Символы, которые необходимо экранировать при переработке простого регекса
@@ -86,7 +84,8 @@ public class RegexManager
     public static EnumRegexType determineRegexType(String pattern)
     {
         // проверка наличия регекса в процедуре
-        if (Utility.StringIsNullOrEmpty(pattern)) return EnumRegexType.Empty;
+        if (Utility.StringIsNullOrEmpty(pattern))
+            return EnumRegexType.Empty;
         // проверка наличия ^ и $
         boolean b1 = (pattern.charAt(0) == '^');
         boolean b2 = (pattern.charAt(pattern.length() - 1) == '$');
@@ -210,9 +209,10 @@ public class RegexManager
         {
             // если символ из входной строки есть в списке символов, которые
             // нужно экранировать, то
-            if (RegexManager.unsafeRegexChars.indexOf((int) ch) != -1) sb.append("\\");// добавить
-                                                                                       // экранирующий
-                                                                                       // слеш
+            if (RegexManager.unsafeRegexChars.indexOf((int) ch) != -1)
+                sb.append("\\");// добавить
+                                // экранирующий
+                                // слеш
             // Добавить сам символ
             sb.append(ch);
         }
@@ -276,18 +276,19 @@ public class RegexManager
         // StringSplitOptions.RemoveEmptyEntries);
         String[] sar2 = Utility.StringSplit(names, "\\.", true);
         // TODO: Оптимизация: можно ли обойтись без регекса?
-        
+
         lis.add(sar2[0].trim());// assembly name
         lis.add(sar2[1].trim());// class name
         lis.add(sar2[2].trim());// func name
-        //TODO: можно ли уместить путь к методу в Java в 3 элемента? 
+        // TODO: можно ли уместить путь к методу в Java в 3 элемента?
 
         // отсечь все что после закрывающей скобки
         int pos = args.indexOf(")");
-        if (pos < 0) throw new Exception(String.format("Неправильный путь: %s", path));
+        if (pos < 0)
+            throw new Exception(String.format("Неправильный путь: %s", path));
         // но этого не может быть - ведь мы уже проверили формат пути ранее
 
-        args = args.substring(0, pos).trim(); //как .Remove(pos);? - проверить!
+        args = args.substring(0, pos).trim(); // как .Remove(pos);? - проверить!
         // если там еще что-то есть, это должны быть аргументы
         if (args.length() > 0)
         {
@@ -307,65 +308,74 @@ public class RegexManager
 
     /**
      * NT-Извлечь аргументы из текста команды, если она совпала с шаблоном.
-     * @param query Текст команды (запроса пользователя)
-     * @param regex Регекс команды
+     * 
+     * @param query
+     *            Текст команды (запроса пользователя)
+     * @param regex
+     *            Регекс команды
      * @return Функция возвращает коллекцию аргументов или нуль если не было совпадения.
      */
-    public static ArgumentCollection ExtractArgumentsFromCommand(String query, String regex)
+    public static ArgumentCollection ExtractArgumentsFromCommand(
+            String query,
+            String regex)
     {
         ArgumentCollection args = null;
-        //TODO: Оптимизация: К Процедуре надо прицепить список названий аргументов, 
+        // TODO: Оптимизация: К Процедуре надо прицепить список названий аргументов,
         // чтобы не выполнять второй раз регекс для извлечения названий групп.
         // А брать их из этого списка в правильном порядке.
-        //TODO: К Процедуре надо прицепить объекты регекса, чтобы не создавать их каждый раз, а использовать созданные в первый раз.
+        // TODO: К Процедуре надо прицепить объекты регекса, чтобы не создавать их каждый раз, а использовать созданные в первый раз.
         // Тогда нужно разработать один объект-контейнер для этих объектов регекса и прицепить его к Процедуре при ее загрузке из БД.
         // Но делать это после завершения портирования текущего проекта, как обновление.
-        //Чтобы не усложнять и не запутывать портирование проекта сейчас.
-        
-        //rx  = ^my app.exe -t -d(?<arg1>.+)%[56*4765] -c"(?<arg2>.+)"$
-        //cmd =  my app.exe -t -dhttps://www.google.com%[56*4765] -c"udaff.com"
-        
-        // тут надо распарсить строку запроса, выделив аргументы.      
-       LinkedList<String> groupNames = getGroupNames(regex);
-       //регекс не работает с группами, названия которых на русском языке - выдает исключение
-       Pattern p = Pattern.compile(regex, Pattern.UNICODE_CHARACTER_CLASS | Pattern.CASE_INSENSITIVE );//Cannot move to static now! Но можно прицепить к процедуре каждый Pattern как объект.
-       Matcher m = p.matcher(query);//А этот нельзя прицепить к Процедуре. 
-       //Проверить что совпадение регекса и текста есть
-       if(m.matches() == true)
-       {
-           // создаем коллекцию аргументов как флаг успеха сравнения
-           args = new ArgumentCollection();
-           // делаем из совпадений регекса аргументы и вносим в список аргументов
-           //Извлечь имена и значения групп тут
-           for(String name : groupNames)
-           {
-             String value =  m.group(name);
-             args.Add(new FuncArgument(name, "", value, value));
-           }
-       }
-       //очистить список имен групп для порядка
-       groupNames.clear();
-       
+        // Чтобы не усложнять и не запутывать портирование проекта сейчас.
+
+        // rx = ^my app.exe -t -d(?<arg1>.+)%[56*4765] -c"(?<arg2>.+)"$
+        // cmd = my app.exe -t -dhttps://www.google.com%[56*4765] -c"udaff.com"
+
+        // тут надо распарсить строку запроса, выделив аргументы.
+        LinkedList<String> groupNames = getGroupNames(regex);
+        // регекс не работает с группами, названия которых на русском языке - выдает исключение
+        Pattern p = Pattern.compile(regex, Pattern.UNICODE_CHARACTER_CLASS | Pattern.CASE_INSENSITIVE);// Cannot move to static now! Но можно прицепить к
+                                                                                                       // процедуре каждый Pattern как объект.
+        Matcher m = p.matcher(query);// А этот нельзя прицепить к Процедуре.
+        // Проверить что совпадение регекса и текста есть
+        if (m.matches() == true)
+        {
+            // создаем коллекцию аргументов как флаг успеха сравнения
+            args = new ArgumentCollection();
+            // делаем из совпадений регекса аргументы и вносим в список аргументов
+            // Извлечь имена и значения групп тут
+            for (String name : groupNames)
+            {
+                String value = m.group(name);
+                args.Add(new FuncArgument(name, "", value, value));
+            }
+        }
+        // очистить список имен групп для порядка
+        groupNames.clear();
+
         // возвращаем коллекцию аргументов, если матч успешный и нуль,если матч неуспешный
         return args;
     }
-    
-    /** 
+
+    /**
      * NT-Извлечь из регекса все имена групп строго в порядке следования
-     * @param regex Нормальный регекс, содержащий имена групп.
+     * 
+     * @param regex
+     *            Нормальный регекс, содержащий имена групп.
      * @return Функция возвращает список имен групп в порядке их следования в регексе.
      */
     private static LinkedList<String> getGroupNames(String regex)
     {
         LinkedList<String> result = new LinkedList<String>();
-        //в названии групп в регексе можно использовать только латинские символы. 
-        //Русские символы приводят к выбросу исключения далее в разборе выражения.
-        //Поэтому надо на этапе преобразования регекса из простого в нормальный заменять русские имена на arg0 итп, строго по порядку появления в регексе.
-        //И еще нужна функция, позволяющая определить, что название аргумента - группы содержит не-латинские символы, или начинается не с буквы.
-        //Matcher m = Pattern.compile("\\(\\?<([a-zA-Z][a-zA-Z_0-9]+)>", Pattern.UNICODE_CHARACTER_CLASS ).matcher(regex);
+        // в названии групп в регексе можно использовать только латинские символы.
+        // Русские символы приводят к выбросу исключения далее в разборе выражения.
+        // Поэтому надо на этапе преобразования регекса из простого в нормальный заменять русские имена на arg0 итп, строго по порядку появления в регексе.
+        // И еще нужна функция, позволяющая определить, что название аргумента - группы содержит не-латинские символы, или начинается не с буквы.
+        // Matcher m = Pattern.compile("\\(\\?<([a-zA-Z][a-zA-Z_0-9]+)>", Pattern.UNICODE_CHARACTER_CLASS ).matcher(regex);
         Matcher m = GGNPattern.matcher(regex);
 
-        while (m.find()) {
+        while (m.find())
+        {
             result.add(m.group(1));
         }
 
@@ -374,85 +384,93 @@ public class RegexManager
 
     /**
      * NT-Заменить аргументы в командной строке приложения их значениями.
-     * @param cmdline Командная строка с аргументами в стиле Простой регекс.
-     * @param args Коллекция аргументов Процедуры
+     * 
+     * @param cmdline
+     *            Командная строка с аргументами в стиле Простой регекс.
+     * @param args
+     *            Коллекция аргументов Процедуры
      * @return Функция возвращает командную строку с параметрами вместо аргументов.
-     * @throws Exception Аргумент %s не найден! Вероятно, неправильная командная строка Процедуры.
+     * @throws Exception
+     *             Аргумент %s не найден! Вероятно, неправильная командная строка Процедуры.
      */
-    public static String ConvertApplicationCommandString(String cmdline, ArgumentCollection args) throws Exception
+    public static String ConvertApplicationCommandString(
+            String cmdline,
+            ArgumentCollection args) throws Exception
     {
         // распарсить строку вида: my app.exe -t -d%arg1%[56*4765] -c"%arg2"
         // Аргумент начинается с % и содержит буквы или цифры, но не знаки или пробелы.
-        // Тут надо заменить аргументы в строке Простого регекса их значениями.       
+        // Тут надо заменить аргументы в строке Простого регекса их значениями.
         // - это текст поля объекта Процедуры - пути и командной строки приложения, запускаемого в качестве Процедуры.
         // Командная строка может содержать ключи и аргументы в формате Простого регекса.
         // А в формате Нормального регекса - очень сложно ее задавать и применять.
-        
+
         // TODO: кавычки в командной строке: Исправление от 10.07.2019 : если значение аргумента содержит пробелы, заключать его в кавычки.
         // Это только для аргументов командной строки.
         // Решено: все места, где могут быть такие случаи, в строке шаблона в кавычки заключать, а не здесь аватоматически!
         // Поскольку лучше в самой командной строке их в кавычки заключать - вдруг приложение не поддерживает кавычки,
         // а ведь пользователь не сможет их отменить без перекомпиляции кода Оператор.
         // - это глобальная фича - всю БД команд надо будет переписывать, чтобы отменить/применить эту фичу.
-        
-        //1. найти аргументы в исходной строке
-        //2. заменить аргументы на значения
-        //3. вернуть получившуюся строку
-        
+
+        // 1. найти аргументы в исходной строке
+        // 2. заменить аргументы на значения
+        // 3. вернуть получившуюся строку
+
         String query = cmdline.trim();
-        
+
         Matcher m = MNRPattern.matcher(query);
         StringBuilder sb = new StringBuilder();
         int lastEnd = 0;
-        //int argCounter = 0; - сейчас не используется, но, возможно, потребуется...
+        // int argCounter = 0; - сейчас не используется, но, возможно, потребуется...
         int start, end;
         String argname, part;
-        //iterate matches
-        while(m.find())
+        // iterate matches
+        while (m.find())
         {
-            //find match
+            // find match
             argname = m.group();
             start = m.start();
-            end = m.end();//next after end
-            //add part of query before match
+            end = m.end();// next after end
+            // add part of query before match
             part = query.substring(lastEnd, start);
             sb.append(part);
-            //аргумент приходит из выражения со знаком % первым символом
-            //а в коллекции имена аргументов без %,
-            //поэтому надо первый символ убрать из имени аргумента из выражения.
-            //добавить значение простого аргумента по его индексу
+            // аргумент приходит из выражения со знаком % первым символом
+            // а в коллекции имена аргументов без %,
+            // поэтому надо первый символ убрать из имени аргумента из выражения.
+            // добавить значение простого аргумента по его индексу
             FuncArgument fa = args.GetByName(argname.substring(1));
-            // если аргумента нет в словаре, здесь будет выброшено исключение  Null reference.
+            // если аргумента нет в словаре, здесь будет выброшено исключение Null reference.
             // такое может быть если изначально задан неправильный шаблон команды
             // или строка запуска приложения
-            if(fa == null)
+            if (fa == null)
                 throw new Exception(String.format("Аргумент \"%s\" не найден! Неправильная командная строка Процедуры.", argname));
-            //write argument value
+            // write argument value
             sb.append(fa.get_ArgumentValue());
-            //set new lastend
+            // set new lastend
             lastEnd = end;
             // //increment loop counter
-            //argCounter++;
+            // argCounter++;
         }
-        //add last part after last match
-        //if no matches found, then lastEnd = 0, all query be copied to result.
+        // add last part after last match
+        // if no matches found, then lastEnd = 0, all query be copied to result.
         sb.append(query.substring(lastEnd));
-               
-        return sb.toString();        
+
+        return sb.toString();
     }
-    
+
     /**
      * NR-Разделить строку запуска приложения на путь приложения и аргументы.
-     * @param cmdline Строка запуска приложения
+     * 
+     * @param cmdline
+     *            Строка запуска приложения
      * @return Функция возвращает массив строк: [0]= Путь к файлу приложения [1]= Строка аргументов приложения
      */
     public static String[] ParseCommandLine(String cmdline)
     {
-        //TODO: Надо изучать тему файлов приложений и запуска файлов приложений.
-        //Регекс пока нельзя применять - неясно, что куда зачем и чего ожидать при применении функции.
-        
-        //Старый код для виндовс-версии этой функции
-        
+        // TODO: Надо изучать тему файлов приложений и запуска файлов приложений.
+        // Регекс пока нельзя применять - неясно, что куда зачем и чего ожидать при применении функции.
+
+        // Старый код для виндовс-версии этой функции
+
         // // Можно было лучше сделать - последовательно брать куски с пробелами и
         // // проверять, существует ли такой путь и файл.
         // // Если существует, то значит это и есть приложение.
@@ -498,7 +516,7 @@ public class RegexManager
         // // так что просто пробуем выполнить.
         // // throw new Exception(String.Format("Неправильная строка запуска
         // // приложения: {0}", cmdline));
-        return null;//for debug only
+        return null;// for debug only
     }
 
 }

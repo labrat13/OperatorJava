@@ -2,12 +2,9 @@
  * @author Pavel Seliakov
  *         Copyright Pavel M Seliakov 2014-2021
  *         Created: Feb 6, 2022 4:59:55 AM
- *         State:  Требуется код сортировки
+ *         State: Mar 21, 2022 12:37:20 AM - Ported, Готов к отладке.
  */
 package OperatorEngine;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Абстрактный класс для Процедур и Мест Оператора
@@ -23,26 +20,26 @@ public class Item implements Comparable<Item>
      * Например, импортируется из какой-либо Библиотеки Процедур.
      */
     public static final int Id_ItemNotFromDatabase = -1;
-    
+
     /**
      * первичный ключ таблицы
      */
-    protected int    m_tableid;
+    protected int           m_tableid;
 
     /**
      * Название Сущности
      */
-    protected String m_title;
+    protected String        m_title;
 
     /**
      * Описание Сущности
      */
-    protected String m_descr;
+    protected String        m_descr;
 
     /**
      * Путь к Сущности
      */
-    protected String m_path;
+    protected String        m_path;
 
     // #endregion
 
@@ -55,7 +52,7 @@ public class Item implements Comparable<Item>
         this.m_path = "";
         this.m_tableid = 0;
         this.m_title = "";
-        
+
         return;
     }
 
@@ -143,8 +140,10 @@ public class Item implements Comparable<Item>
     {
         this.m_path = path;
     }
+
     /**
      * NT-Получить строку описания свойств Процедуры для отладчика.
+     * 
      * @return Функция возвращает описание свойств Процедуры одной строкой.
      */
     @Override
@@ -152,15 +151,17 @@ public class Item implements Comparable<Item>
     {
         return this.getSingleLineProperties();
     }
-    
+
     /**
      * NT-Проверить что элемент должен храниться в БД.
+     * 
      * @return Функция возвращает True, если элемент хранится в БД, False в противном случае.
      */
     public boolean isItemFromDatabase()
     {
-     return this.m_tableid == Item.Id_ItemNotFromDatabase;   
+        return this.m_tableid == Item.Id_ItemNotFromDatabase;
     }
+
     /**
      * NT-Получить одну строку описания свойств итема
      * 
@@ -177,13 +178,12 @@ public class Item implements Comparable<Item>
         sb.append(this.m_path);
         sb.append(";");
         sb.append(this.m_descr);
-        if (sb.length() > 80) sb.setLength(80);
+        if (sb.length() > 80)
+            sb.setLength(80);
         return sb.toString();
     }
 
     // Сортировка
-    
-
 
     /**
      * Сортировать список по Названию
@@ -192,8 +192,8 @@ public class Item implements Comparable<Item>
      *            Item object
      * @param y
      *            Item object
-     * @return 
-     *              Returns: -1 if x<y; 0 if x=y; 1 if x>y;
+     * @return
+     *         Returns: -1 if x<y; 0 if x=y; 1 if x>y;
      */
     public static int CompareByTitle(Item x, Item y)
     {

@@ -1,11 +1,10 @@
 /**
  * @author Селяков Павел
  *         Created: Mar 17, 2022 11:56:12 PM
- *         State: Mar 17, 2022 11:56:12 PM - initial
+ *         State: Mar 21, 2022 12:37:20 AM - Ported, Готов к отладке.
  */
 package OperatorEngine;
 
-import java.sql.SQLException;
 import java.util.LinkedList;
 
 import DbSubsystem.OperatorDbAdapter;
@@ -136,9 +135,11 @@ public class ElementCacheManager
     public String toString()
     {
         int procCount = 0;
-        if (this.m_procedures != null) procCount = this.m_procedures.getCount();
+        if (this.m_procedures != null)
+            procCount = this.m_procedures.getCount();
         int placeCount = 0;
-        if (this.m_places != null) placeCount = this.m_places.getCount();
+        if (this.m_places != null)
+            placeCount = this.m_places.getCount();
         String result = String.format("ElementCacheManager; procedures=%d; places=%d;", procCount, placeCount);
 
         return result;
@@ -185,7 +186,8 @@ public class ElementCacheManager
     public void AddProcedure(Procedure p) throws Exception
     {
         // Тут вообще-то не должно такого быть, так как все Процедуры добавляются только в БД Оператора.
-        if (!p.isItemFromDatabase()) throw new Exception(String.format("Error: cannot add Procedure \"%s\" to read-only Procedure library", p.get_Title()));
+        if (!p.isItemFromDatabase())
+            throw new Exception(String.format("Error: cannot add Procedure \"%s\" to read-only Procedure library", p.get_Title()));
         // else
         try
         {
@@ -231,10 +233,12 @@ public class ElementCacheManager
         // значит, это надо делать в пределах одной транзакции.
 
         // если список пустой, сразу выйти
-        if (procedures.size() <= 0) return;
+        if (procedures.size() <= 0)
+            return;
         // 1. Проверить, что все объекты списка предназначены для записи в бд, иначе выбросить исключение.
         for (Procedure p : procedures)
-            if (p.isItemFromDatabase() == false) throw new Exception(String.format("Error: cannot add Procedure \"%s\" to read-only Procedure library", p.get_Title()));
+            if (p.isItemFromDatabase() == false)
+                throw new Exception(String.format("Error: cannot add Procedure \"%s\" to read-only Procedure library", p.get_Title()));
         // 2. Добавить объект в БД
         Procedure p_ref = procedures.get(0);
         try
@@ -281,7 +285,7 @@ public class ElementCacheManager
      */
     public void RemoveProcedure(Procedure p) throws Exception
     {
-        if (!p.isItemFromDatabase()) 
+        if (!p.isItemFromDatabase())
             throw new Exception(String.format("Error: cannot delete Procedure \"%s\" from read-only Procedure library", p.get_Title()));
         // else
         try
@@ -324,7 +328,7 @@ public class ElementCacheManager
      */
     public void UpdateProcedure(Procedure p) throws Exception
     {
-        if (!p.isItemFromDatabase()) 
+        if (!p.isItemFromDatabase())
             throw new Exception(String.format("Error: cannot update Procedure \"%s\" from read-only Procedure library", p.get_Title()));
         // else
         try
@@ -369,7 +373,8 @@ public class ElementCacheManager
     public void AddPlace(Place p) throws Exception
     {
         // Тут вообще-то не должно такого быть, так как все Места добавляются только в БД Оператора.
-        if (!p.isItemFromDatabase()) throw new Exception(String.format("Error: cannot add Place \"%s\" to read-only Procedure library", p.get_Title()));
+        if (!p.isItemFromDatabase())
+            throw new Exception(String.format("Error: cannot add Place \"%s\" to read-only Procedure library", p.get_Title()));
         // else
         try
         {
@@ -415,10 +420,11 @@ public class ElementCacheManager
         // значит, это надо делать в пределах одной транзакции.
 
         // если список пустой, сразу выйти
-        if (places.size() <= 0) return;
+        if (places.size() <= 0)
+            return;
         // 1. Проверить, что все объекты списка предназначены для записи в бд, иначе выбросить исключение.
         for (Place p : places)
-            if (p.isItemFromDatabase() == false) 
+            if (p.isItemFromDatabase() == false)
                 throw new Exception(String.format("Error: cannot add Place \"%s\" to read-only Procedure library", p.get_Title()));
         // 2. Добавить объект в БД
         Place p_ref = places.get(0);
@@ -466,7 +472,8 @@ public class ElementCacheManager
      */
     public void RemovePlace(Place p) throws Exception
     {
-        if (!p.isItemFromDatabase()) throw new Exception(String.format("Error: cannot delete Place \"%s\" from read-only Procedure library", p.get_Title()));
+        if (!p.isItemFromDatabase())
+            throw new Exception(String.format("Error: cannot delete Place \"%s\" from read-only Procedure library", p.get_Title()));
         // else
         try
         {
@@ -509,7 +516,8 @@ public class ElementCacheManager
      */
     public void UpdatePlace(Place p) throws Exception
     {
-        if (!p.isItemFromDatabase()) throw new Exception(String.format("Error: cannot update Place \"%s\" from read-only Procedure library", p.get_Title()));
+        if (!p.isItemFromDatabase())
+            throw new Exception(String.format("Error: cannot update Place \"%s\" from read-only Procedure library", p.get_Title()));
         // else
         try
         {
@@ -564,13 +572,13 @@ public class ElementCacheManager
         // - TODO: проверить что постобработка объектов мест выполнена.
         // 4. Сортировка коллекции Мест по названию - невозможна, там словарь,
         // можно сортировать по названию только при получении общего списка Мест.
-        
-//clean up
+
+        // clean up
         llp.clear();
         llp = null;
         llp2.clear();
         llp2 = null;
-        
+
         return;
     }
 
@@ -598,12 +606,12 @@ public class ElementCacheManager
         // - TODO: проверить что постобработка объектов мест выполнена.
         // 4. Сортировка коллекции Процедур по весу - already done in Fill() function.
 
-      //clean up
+        // clean up
         llp.clear();
         llp = null;
         llp2.clear();
         llp2 = null;
-        
+
         return;
     }
 
@@ -634,6 +642,26 @@ public class ElementCacheManager
         }
 
         return;
+    }
+
+    /**
+     * NT-Получить список всех Процедур для перечисления.
+     * 
+     * @return Функция возвращает список всех Процедур для перечисления.
+     */
+    public LinkedList<Procedure> getProceduresAsList()
+    {
+        return this.m_procedures.get_Procedures();
+    }
+
+    /**
+     * NT-Получить список всех Мест для перечисления.
+     * 
+     * @return Функция возвращает список всех Мест для перечисления.
+     */
+    public LinkedList<Place> getPlacesAsList()
+    {
+        return this.m_places.getPlacesAsList();
     }
 
 }

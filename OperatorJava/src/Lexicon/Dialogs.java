@@ -2,7 +2,7 @@
  * @author Pavel Seliakov
  *         Copyright Pavel M Seliakov 2014-2021
  *         Created: Feb 6, 2022 4:59:55 AM
- *         State: Feb 6, 2022 4:59:55 AM - Готов к отладке.
+ *         State: Mar 21, 2022 12:37:20 AM - Ported, Готов к отладке.
  */
 package Lexicon;
 
@@ -48,7 +48,8 @@ public class Dialogs
     /**
      * Константа - массив стандартных слов Отмена
      */
-    protected static String[] СтандартныеОтмена     = { "Отмена", "отмени", "отменить" };
+    protected static String[] СтандартныеОтмена     = { "Отмена", "отмени",
+            "отменить" };
 
     /**
      * Константа - массив стандартных слов Отложить
@@ -63,12 +64,14 @@ public class Dialogs
     /**
      * Константа - массив стандартных слов Повторить
      */
-    protected static String[] СтандартныеПовторить  = { "Повтор", "Повторить", "Повтори" };
+    protected static String[] СтандартныеПовторить  = { "Повтор", "Повторить",
+            "Повтори" };
 
     /**
      * Константа - массив стандартных слов Пропустить
      */
-    protected static String[] СтандартныеПропустить = { "Пропуск", "Пропустить", "Пропусти" };
+    protected static String[] СтандартныеПропустить = { "Пропуск", "Пропустить",
+            "Пропусти" };
 
     /**
      * NT-Сформировать строку напоминания стандартных ответов для вывода их
@@ -83,31 +86,41 @@ public class Dialogs
      *             Функция выбрасывает исключение, если EnumSpeakDialogResult
      *             имеет неправильные значения.
      */
-    public static String makeСтрокаОжидаемыхОтветов(EnumSpeakDialogResult ожидаемыеОтветы) throws Exception
+    public static String makeСтрокаОжидаемыхОтветов(
+            EnumSpeakDialogResult ожидаемыеОтветы) throws Exception
     {
         // 0 если флаги не установлены, возвращаем пустую строку
-        if (ожидаемыеОтветы.isEqualValue(EnumSpeakDialogResult.Unknown)) return ""; // as
-                                                                                    // String.Empty
+        if (ожидаемыеОтветы.isEqualValue(EnumSpeakDialogResult.Unknown))
+            return ""; // as
+                       // String.Empty
 
         // 1 собираем список ожидаемых ответов
         LinkedList<String> lis = new LinkedList<String>();
         // все варианты перебираем в коде
-        if (ожидаемыеОтветы.hasFlag(EnumSpeakDialogResult.Да)) lis.add(Dialogs.СтандартныеДа[0]);
+        if (ожидаемыеОтветы.hasFlag(EnumSpeakDialogResult.Да))
+            lis.add(Dialogs.СтандартныеДа[0]);
 
-        if (ожидаемыеОтветы.hasFlag(EnumSpeakDialogResult.Нет)) lis.add(Dialogs.СтандартныеНет[0]);
+        if (ожидаемыеОтветы.hasFlag(EnumSpeakDialogResult.Нет))
+            lis.add(Dialogs.СтандартныеНет[0]);
 
-        if (ожидаемыеОтветы.hasFlag(EnumSpeakDialogResult.Отмена)) lis.add(Dialogs.СтандартныеОтмена[0]);
+        if (ожидаемыеОтветы.hasFlag(EnumSpeakDialogResult.Отмена))
+            lis.add(Dialogs.СтандартныеОтмена[0]);
 
-        if (ожидаемыеОтветы.hasFlag(EnumSpeakDialogResult.Отложить)) lis.add(Dialogs.СтандартныеОтложить[0]);
+        if (ожидаемыеОтветы.hasFlag(EnumSpeakDialogResult.Отложить))
+            lis.add(Dialogs.СтандартныеОтложить[0]);
 
-        if (ожидаемыеОтветы.hasFlag(EnumSpeakDialogResult.Прервать)) lis.add(Dialogs.СтандартныеПрервать[0]);
+        if (ожидаемыеОтветы.hasFlag(EnumSpeakDialogResult.Прервать))
+            lis.add(Dialogs.СтандартныеПрервать[0]);
 
-        if (ожидаемыеОтветы.hasFlag(EnumSpeakDialogResult.Повторить)) lis.add(Dialogs.СтандартныеПовторить[0]);
+        if (ожидаемыеОтветы.hasFlag(EnumSpeakDialogResult.Повторить))
+            lis.add(Dialogs.СтандартныеПовторить[0]);
 
-        if (ожидаемыеОтветы.hasFlag(EnumSpeakDialogResult.Пропустить)) lis.add(Dialogs.СтандартныеПропустить[0]);
+        if (ожидаемыеОтветы.hasFlag(EnumSpeakDialogResult.Пропустить))
+            lis.add(Dialogs.СтандартныеПропустить[0]);
 
         // если флагов не найдено, возвращаем пустую строку
-        if (lis.size() == 0) return ""; // as String.Empty;
+        if (lis.size() == 0)
+            return ""; // as String.Empty;
 
         // 2 формируем строку ожидаемых ответов
         StringBuilder sb = new StringBuilder();
@@ -221,10 +234,13 @@ public class Dialogs
      * @return Возвращает True, если массив содержит указанную строку; False в
      *         противном случае.
      */
-    private static boolean arrayContainsStringOrdinalIgnoreCase(String[] array, String sample)
+    private static boolean arrayContainsStringOrdinalIgnoreCase(
+            String[] array,
+            String sample)
     {
         for (String s : array)// as foreach
-            if (sample.equalsIgnoreCase(s)) return true;
+            if (sample.equalsIgnoreCase(s))
+                return true;
 
         return false;
     }
@@ -236,7 +252,8 @@ public class Dialogs
     /**
      * Команды завершить Оператор
      */
-    private static String[] ExitAppCommands      = { "выход", "выйти", "закрыть", "quit", "close", "exit" };
+    private static String[] ExitAppCommands      = { "выход", "выйти",
+            "закрыть", "quit", "close", "exit" };
 
     /**
      * Команды перейти в спящий режим
@@ -246,19 +263,22 @@ public class Dialogs
     /**
      * Команды перезагрузить компьютер
      */
-    private static String[] ExitReloadCommands   = { "перезагрузить", "перезагрузись", "перезагрузка",
+    private static String[] ExitReloadCommands   = { "перезагрузить",
+            "перезагрузись", "перезагрузка",
             "перезагрузить компьютер", "reload", "restart" };
 
     /**
      * Команды выключить компьютер
      */
-    private static String[] ExitShutdownCommands = { "выключись", "выключайся", "выключить компьютер", "poweroff",
+    private static String[] ExitShutdownCommands = { "выключись", "выключайся",
+            "выключить компьютер", "poweroff",
             "shutdown" };
 
     /**
      * Команды завершить сеанс текущего пользователя
      */
-    private static String[] ExitLogoffCommands   = { "завершить сеанс", "завершение сеанса", "logoff" };
+    private static String[] ExitLogoffCommands   = { "завершить сеанс",
+            "завершение сеанса", "logoff" };
 
     /**
      * NT-Обработать команду завершения работы приложения.

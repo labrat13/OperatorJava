@@ -2,7 +2,7 @@
  * @author Pavel Seliakov
  *         Copyright Pavel M Seliakov 2014-2021
  *         Created: Feb 6, 2022 4:59:55 AM
- *         State: Feb 6, 2022 4:59:55 AM - Допилить тодо.
+ *         State: Mar 21, 2022 12:37:20 AM - Ported, Готов к отладке.
  */
 package Lexicon;
 
@@ -212,7 +212,8 @@ public class DialogConsole
      *            True - требовать повторный ввод, если ответ пустая строка;
      *            False - принимать пустые ответы
      * @return Возвращает строку, введенную пользователем.
-     * @throws Exception Функция выбрасывает исключение, если параметр keys имеет неправильные значения.
+     * @throws Exception
+     *             Функция выбрасывает исключение, если параметр keys имеет неправильные значения.
      */
     public String PrintQuestionAnswer(
             EnumSpeakDialogResult keys,
@@ -229,7 +230,8 @@ public class DialogConsole
         Terminal.Write(Dialogs.makeСтрокаОжидаемыхОтветов(keys));
         this.ResetColors();
         // если указан флаг, вывести символ конца строки
-        if (newLine) Terminal.WriteLine();
+        if (newLine)
+            Terminal.WriteLine();
         String result = ""; // String.Empty;
         do
         {
@@ -239,11 +241,13 @@ public class DialogConsole
             else result = result.trim();// удалить пробелы и всякие там
                                         // случайности
             // no empty answers
-            if ((noEmptyAnswer == false) && (Utility.StringIsNullOrEmpty(result))) break;// answer
-                                                                                         // can
-                                                                                         // be
-                                                                                         // empty
-        } while (Utility.StringIsNullOrEmpty(result));
+            if ((noEmptyAnswer == false) && (Utility.StringIsNullOrEmpty(result)))
+                break;// answer
+                      // can
+                      // be
+                      // empty
+        }
+        while (Utility.StringIsNullOrEmpty(result));
 
         return result;
     }
@@ -265,9 +269,11 @@ public class DialogConsole
      *            конце!
      * @return Функция возвращает SpeakDialogResult код стандартного ответа Да,
      *         Нет или Отмена.
-     * @throws Exception Функция выбрасывает исключение от Dialogs.makeСтрокаОжидаемыхОтветов().
+     * @throws Exception
+     *             Функция выбрасывает исключение от Dialogs.makeСтрокаОжидаемыхОтветов().
      */
-    public EnumSpeakDialogResult PrintДаНетОтмена(String question) throws Exception
+    public EnumSpeakDialogResult PrintДаНетОтмена(String question)
+            throws Exception
     {
         this.SureConsoleCursorStart();// убедиться что курсор находится в начале
                                       // строки
@@ -282,8 +288,9 @@ public class DialogConsole
         do
         {
             result = this.ReadLine();
-            if (result == null) result = ""; // String.Empty;//случается, если
-                                             // нажата Ctrl+C
+            if (result == null)
+                result = ""; // String.Empty;//случается, если
+                             // нажата Ctrl+C
             // no empty answers
             if (Dialogs.этоДа(result))
                 return new EnumSpeakDialogResult(EnumSpeakDialogResult.Да);
@@ -297,7 +304,8 @@ public class DialogConsole
                                               // в начале строки
                 this.PrintTextLine("Принимаются только ответы Да, Нет или Отмена!", EnumDialogConsoleColor.Предупреждение);
             }
-        } while (true);
+        }
+        while (true);
 
         // unreachable code: return new EnumSpeakDialogResult(
         // EnumSpeakDialogResult.Unknown);
@@ -315,10 +323,9 @@ public class DialogConsole
     public void PrintExceptionMessage(String title, Exception ex)
     {
         String s;
-        if(Utility.StringIsNullOrEmpty(title))
+        if (Utility.StringIsNullOrEmpty(title))
             s = "Ошибка";
-        else
-            s = title;
+        else s = title;
         //
         StringBuilder sb = new StringBuilder(s);
         // добавим разделительный пробел
@@ -393,20 +400,21 @@ public class DialogConsole
 
     /**
      * NT-Вывести на экран список существующих мест - только названия мест
-     * @throws Exception 
-     * @throws SQLException 
+     * 
+     * @throws Exception
+     * @throws SQLException
      */
     public void PrintListOfPlaces() throws SQLException, Exception
     {
         this.SureConsoleCursorStart();
         // получить список мест
-        LinkedList<Place> places = this.m_Engine.get_Database().GetAllPlaces();
-        // TODO: database here
+        LinkedList<Place> places = this.m_Engine.get_ECM().getPlacesAsList();
+
         // сортировать список мест по алфавиту
-        Collections.sort(places); //Sort by Title over interface Comparable
+        Collections.sort(places); // Sort by Title over interface Comparable
         // вывести на экран одни только названия мест
-        //TODO: перенести формирование строки в объект Места
-        //TODO: Удобство - если строк много, вывести порциями по 20 штук с
+        // TODO: перенести формирование строки в объект Места
+        // TODO: Удобство - если строк много, вывести порциями по 20 штук с
         // перерывом на Enter
         for (Place p : places)
             this.PrintTextLine(String.format("%s [%s]", p.get_Title(), p.get_Path()), EnumDialogConsoleColor.Сообщение);
@@ -417,19 +425,20 @@ public class DialogConsole
     /**
      * NT-Вывести на экран список существующих Процедур - только названия
      * процедур
-     * @throws SQLException 
+     * 
+     * @throws SQLException
      */
     public void PrintListOfProcedures() throws SQLException
     {
         this.SureConsoleCursorStart();
         // получить список процедур
-        LinkedList<Procedure> procedures = this.m_Engine.get_Database().GetAllProcedures();
-        // TODO: database here
+        LinkedList<Procedure> procedures = this.m_Engine.get_ECM().getProceduresAsList();
+
         // сортировать список мест по алфавиту
-        Collections.sort(procedures); //Sort by Title over interface Comparable
+        Collections.sort(procedures); // Sort by Title over interface Comparable
         // вывести на экран одни только названия процедур
-        //TODO: перенести формирование строки в объект Места
-        //TODO: Удобство - если строк много, вывести порциями по 20 штук с
+        // TODO: перенести формирование строки в объект Места
+        // TODO: Удобство - если строк много, вывести порциями по 20 штук с
         // перерывом на Enter
         for (Procedure p : procedures)
             this.PrintTextLine(String.format("%s [%s]", p.get_Title(), p.get_Description()), EnumDialogConsoleColor.Сообщение);
@@ -458,7 +467,7 @@ public class DialogConsole
     public void PrintProcedureForm(Procedure p)
     {
         this.SureConsoleCursorStart();
-        //тут надо вывести описание свойств Процедуры в виде
+        // тут надо вывести описание свойств Процедуры в виде
         // многострочной формы или списка свойств.
         String[] sar = new String[8];
         sar[0] = String.format("Свойства Команды \"%s\":", p.get_Title());

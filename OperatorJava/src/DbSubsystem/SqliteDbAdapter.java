@@ -2,7 +2,7 @@
  * @author Pavel Seliakov
  *         Copyright Pavel M Seliakov 2014-2021
  *         Created: Feb 6, 2022 4:59:55 AM
- *         State: Feb 6, 2022 4:59:55 AM - Ported, Готов к отладке.
+ *         State: Mar 21, 2022 12:37:20 AM - Ported, Готов к отладке.
  */
 package DbSubsystem;
 
@@ -16,7 +16,7 @@ import java.sql.Statement;
 import OperatorEngine.Utility;
 
 /**
- * NT-Общая версия адаптера для БД sqlite3 
+ * NT-Общая версия адаптера для БД sqlite3
  * 
  * @author Pavel Seliakov
  */
@@ -110,7 +110,8 @@ public class SqliteDbAdapter
         boolean result = false;
         try
         {
-            if (this.m_connection != null) result = this.m_connection.isValid(m_Timeout);
+            if (this.m_connection != null)
+                result = this.m_connection.isValid(m_Timeout);
         }
         catch (Exception ex)
         {
@@ -129,7 +130,7 @@ public class SqliteDbAdapter
      */
     protected void ClearCommands() throws Exception
     {
-        ; //throw new Exception("Function not implemented in this class.");
+        ; // throw new Exception("Function not implemented in this class.");
     }
 
     /**
@@ -179,8 +180,10 @@ public class SqliteDbAdapter
      */
     public void Close() throws Exception
     {
-        if (this.m_connection == null) return;
-        if (!this.m_connection.isClosed()) this.m_connection.close();
+        if (this.m_connection == null)
+            return;
+        if (!this.m_connection.isClosed())
+            this.m_connection.close();
         this.m_connection = null;
         this.ClearCommands();
 
@@ -295,7 +298,8 @@ public class SqliteDbAdapter
      * @throws SQLException
      *             Ошибка при использовании БД.
      */
-    public ResultSet ExecuteReader(String query, int timeout) throws SQLException
+    public ResultSet ExecuteReader(String query, int timeout)
+            throws SQLException
     {
         Statement sqLiteCommand = this.m_connection.createStatement();
         sqLiteCommand.setQueryTimeout(timeout);
@@ -348,10 +352,12 @@ public class SqliteDbAdapter
      * @throws SQLException
      *             Ошибка при использовании БД.
      */
-    public static String getDbString(ResultSet rdr, int index) throws SQLException
+    public static String getDbString(ResultSet rdr, int index)
+            throws SQLException
     {
         String result = rdr.getString(index);
-        if (result == null) result = "";
+        if (result == null)
+            result = "";
 
         return result;
     }
@@ -392,7 +398,8 @@ public class SqliteDbAdapter
      * @throws SQLException
      *             Ошибка при использовании БД.
      */
-    public int DeleteRow(String table, String column, int val, int timeout) throws SQLException
+    public int DeleteRow(String table, String column, int val, int timeout)
+            throws SQLException
     {
         // SQLiteCommand sqLiteCommand = new
         // SQLiteCommand(String.Format((IFormatProvider)
@@ -419,7 +426,8 @@ public class SqliteDbAdapter
      * @throws SQLException
      *             Ошибка при использовании БД.
      */
-    public int getTableMaxInt32(String table, String column, int timeout) throws SQLException
+    public int getTableMaxInt32(String table, String column, int timeout)
+            throws SQLException
     {
         // SQLiteCommand sqLiteCommand = new
         // SQLiteCommand(String.Format((IFormatProvider)
@@ -458,7 +466,8 @@ public class SqliteDbAdapter
      * @throws SQLException
      *             Ошибка при использовании БД.
      */
-    public int getTableMinInt32(String table, String column, int timeout) throws SQLException
+    public int getTableMinInt32(String table, String column, int timeout)
+            throws SQLException
     {
         // SQLiteCommand sqLiteCommand = new
         // SQLiteCommand(String.Format((IFormatProvider)
@@ -495,7 +504,8 @@ public class SqliteDbAdapter
      * @throws SQLException
      *             Ошибка при использовании БД.
      */
-    public int GetRowCount(String table, String column, int timeout) throws SQLException
+    public int GetRowCount(String table, String column, int timeout)
+            throws SQLException
     {
         // SQLiteCommand sqLiteCommand = new
         // SQLiteCommand(String.Format((IFormatProvider)
@@ -535,7 +545,8 @@ public class SqliteDbAdapter
      * @throws SQLException
      *             Ошибка при использовании БД.
      */
-    public int GetRowCount(String table, String column, int val, int timeout) throws SQLException
+    public int GetRowCount(String table, String column, int val, int timeout)
+            throws SQLException
     {
         // SQLiteCommand sqLiteCommand = new
         // SQLiteCommand(String.Format((IFormatProvider)
@@ -573,7 +584,8 @@ public class SqliteDbAdapter
      * @throws SQLException
      *             Ошибка при использовании БД.
      */
-    public boolean IsRowExists(String table, String column, int id, int timeout) throws SQLException
+    public boolean IsRowExists(String table, String column, int id, int timeout)
+            throws SQLException
     {
         return (this.GetRowCount(table, column, id, timeout) > 0);
     }
@@ -633,7 +645,8 @@ public class SqliteDbAdapter
      */
     protected void CloseAndClearCmd(PreparedStatement cmd) throws SQLException
     {
-        if (cmd != null) cmd.close();
+        if (cmd != null)
+            cmd.close();
         cmd = null;
 
         return;

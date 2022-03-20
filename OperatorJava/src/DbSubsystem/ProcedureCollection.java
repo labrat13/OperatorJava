@@ -2,7 +2,7 @@
  * @author Pavel Seliakov
  *         Copyright Pavel M Seliakov 2014-2021
  *         Created: Feb 6, 2022 4:59:55 AM
- *         State: Feb 6, 2022 4:59:55 AM - Ported, Готов к отладке.
+ *         State: Mar 21, 2022 12:37:20 AM - Ported, Готов к отладке.
  */
 package DbSubsystem;
 
@@ -13,9 +13,9 @@ import java.util.LinkedList;
 import OperatorEngine.Procedure;
 
 /**
- * Список процедур
+ * Коллекция - список Процедур
  * 
- * @author 1
+ * @author Pavel Seliakov
  */
 public class ProcedureCollection
 {
@@ -152,7 +152,8 @@ public class ProcedureCollection
         LinkedList<Procedure> result = new LinkedList<Procedure>();
         for (Procedure p : this.m_proclist)
         {
-            if (title.equalsIgnoreCase(p.get_Title())) result.add(p);
+            if (title.equalsIgnoreCase(p.get_Title()))
+                result.add(p);
         }
 
         return result;

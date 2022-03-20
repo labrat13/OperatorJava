@@ -2,7 +2,7 @@
  * @author Pavel Seliakov
  *         Copyright Pavel M Seliakov 2014-2021
  *         Created: Feb 6, 2022 4:59:55 AM
- *         State: Готов к отладке.
+ *         State: Mar 21, 2022 12:37:20 AM - Ported, Готов к отладке.
  */
 package OperatorEngine;
 
@@ -91,6 +91,7 @@ public class Procedure extends Item
     // #endregion
     /**
      * NT-Получить строку описания свойств Процедуры для отладчика.
+     * 
      * @return Функция возвращает описание свойств Процедуры одной строкой.
      */
     @Override
@@ -102,6 +103,7 @@ public class Procedure extends Item
     /**
      * NT-Получить одну строку описания свойств Процедуры.
      * Для вывода списка Процедур в разных случаях работы программы.
+     * 
      * @return Функция возвращает описание свойств Процедуры одной строкой.
      */
     @Override
@@ -150,7 +152,7 @@ public class Procedure extends Item
     // bool res = RegexManager.IsMatchQuery(rx, cmdline);
     // return res;
     // }
-    
+
     ///// <summary>
     ///// Должна вернуть облом при неподходящих параметрах, успех при
     ///// исполнении, выход если требуется завершение работы приложения или
@@ -182,8 +184,7 @@ public class Procedure extends Item
     // return asmPath;
     // }
     //
-    
-    
+
     // /// <summary>
     // /// NT-Load assembly and get MethodInfo of method implementation function
     // /// </summary>
@@ -206,8 +207,7 @@ public class Procedure extends Item
     // return m;
     // }
     //
-    
-    
+
     // /// <summary>
     // /// Get state of method implementation function
     // /// </summary>
@@ -226,39 +226,37 @@ public class Procedure extends Item
     // return ist;
     // }
     //
-    
-    
-     /// <summary>
-     /// NT-Запустить процедуру
-     /// </summary>
-     /// <param name="command">Текст команды пользователя</param>
-     /// <param name="names">Путь к процедуре</param>
-     /// <param name="args">Готовый для применения список аргументов</param>
-     /// <returns></returns>
-     //public EnumProcedureResult invokeProcedure(String command, String[] names, Engine engine, ArgumentCollection args) 
-     //{
-//     //получить сборку и метод в ней
-//     MethodInfo mi = getMethodInfo(names);
-//     //проверить готовность кода процедуры
-//     if (getStateOfImplement(mi) == ImplementationState.NotRealized) 
-//     {
-//          throw new Exception(String.Format("Процедура {0}.{1}.{2} не готова для исполнения.", names[0], names[1], names[2]));
-//     }
-//     //загрузить в нее аргументы
-//     //make arguments array
-//     List<Object> li = new List<object>();
-//     li.Add(engine);//Engine object
-//     li.Add(command);//user command text
-//     li.Add(args);//Argument collection
-//     //запустить метод
-//     Object resval = mi.Invoke(null, li.ToArray());
-//     //вернуть результат
-//     return (EnumProcedureResult) resval;
-         
-     //}
+
+    /// <summary>
+    /// NT-Запустить процедуру
+    /// </summary>
+    /// <param name="command">Текст команды пользователя</param>
+    /// <param name="names">Путь к процедуре</param>
+    /// <param name="args">Готовый для применения список аргументов</param>
+    /// <returns></returns>
+    // public EnumProcedureResult invokeProcedure(String command, String[] names, Engine engine, ArgumentCollection args)
+    // {
+    // //получить сборку и метод в ней
+    // MethodInfo mi = getMethodInfo(names);
+    // //проверить готовность кода процедуры
+    // if (getStateOfImplement(mi) == ImplementationState.NotRealized)
+    // {
+    // throw new Exception(String.Format("Процедура {0}.{1}.{2} не готова для исполнения.", names[0], names[1], names[2]));
+    // }
+    // //загрузить в нее аргументы
+    // //make arguments array
+    // List<Object> li = new List<object>();
+    // li.Add(engine);//Engine object
+    // li.Add(command);//user command text
+    // li.Add(args);//Argument collection
+    // //запустить метод
+    // Object resval = mi.Invoke(null, li.ToArray());
+    // //вернуть результат
+    // return (EnumProcedureResult) resval;
+
+    // }
 
     // #endregion
-    
 
     /**
      * NT-Проверить на допустимость значение Вес Процедуры, введенное

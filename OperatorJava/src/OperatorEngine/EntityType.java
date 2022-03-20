@@ -2,7 +2,7 @@
  * @author Pavel Seliakov
  *         Copyright Pavel M Seliakov 2014-2021
  *         Created: Feb 6, 2022 4:59:55 AM
- *         State: Feb 11, 2022 2:36:55 AM - Готов к отладке
+ *         State: Mar 21, 2022 12:37:20 AM - Ported, Готов к отладке.
  */
 package OperatorEngine;
 
@@ -97,7 +97,8 @@ public class EntityType
      * @param abstractionSuperClasses
      *            the abstractionSuperClasses to set
      */
-    void set_AbstractionSuperClasses(HashMap<String, EntityType> abstractionSuperClasses)
+    void set_AbstractionSuperClasses(
+            HashMap<String, EntityType> abstractionSuperClasses)
     {
         this.m_AbstractionSuperClasses = abstractionSuperClasses;
     }
@@ -118,7 +119,8 @@ public class EntityType
      * @param aggregationSubClasses
      *            the aggregationSubClasses to set
      */
-    void set_AggregationSubClasses(HashMap<String, EntityType> aggregationSubClasses)
+    void set_AggregationSubClasses(
+            HashMap<String, EntityType> aggregationSubClasses)
     {
         this.m_AggregationSubClasses = aggregationSubClasses;
     }
@@ -155,7 +157,8 @@ public class EntityType
             for (Map.Entry<String, EntityType> kvp : this.m_AbstractionSuperClasses.entrySet())
             {
                 EntityType res = kvp.getValue().ContainsType(nameOfType);
-                if (res != null) return res;
+                if (res != null)
+                    return res;
             }
         }
         // ничего не нашли
@@ -169,7 +172,8 @@ public class EntityType
             for (Map.Entry<String, EntityType> kvp : this.m_AggregationSubClasses.entrySet())
             {
                 EntityType res = kvp.getValue().ContainsType(nameOfType);
-                if (res != null) return res;
+                if (res != null)
+                    return res;
             }
         }
         // ничего не нашли
@@ -209,10 +213,12 @@ public class EntityType
         ParseClassTitle(sar[0]);
 
         // 3.2) парсим агрегатные субклассы, если они есть
-        if (sar.length == 1) return; // все распарсили, выходим
+        if (sar.length == 1)
+            return; // все распарсили, выходим
         // если более 2 элементов массива, это неправильный формат, выбрасываем
         // исключение.
-        if (sar.length > 2) throw new Exception(String.format("Неправильное выражение: %s", expression));
+        if (sar.length > 2)
+            throw new Exception(String.format("Неправильное выражение: %s", expression));
         if (sar.length == 2)
         {
             String s = sar[1];
@@ -222,16 +228,17 @@ public class EntityType
             String[] sar2 = Utility.StringSplit(s, ",", true);
             // теперь получаем 1 и более элементов вида Файл::ФайлМузыки
             // Файловая система::Папка Файл
-            if (sar2.length == 0) throw new Exception(String.format("Неправильная запись агрегированных субклассов: %s", expression));
+            if (sar2.length == 0)
+                throw new Exception(String.format("Неправильная запись агрегированных субклассов: %s", expression));
             for (String ss : sar2)
             {
                 // trim делается в функции
                 // создаем новый объект для класса
-                EntityType tt = new EntityType(); 
+                EntityType tt = new EntityType();
                 // отправляем на парсинг для выделения суперкласса и название класса
                 tt.ParseClassTitle(ss);
-                // Добавляем в коллекцию агрегатных субклассов. 
-                // Обратной ссылки не делаем - некуда ее писать.               
+                // Добавляем в коллекцию агрегатных субклассов.
+                // Обратной ссылки не делаем - некуда ее писать.
                 this.m_AggregationSubClasses.put(tt.get_Title(), tt);
             }
         }

@@ -1,19 +1,19 @@
 /**
  * @author Селяков Павел
- * Created: Feb 22, 2022 5:05:11 PM
- * State: Feb 23, 2022 11:29:32 PM - ready to test
+ *         Created: Feb 22, 2022 5:05:11 PM
+ *         State: Mar 21, 2022 12:37:20 AM - Ported, Готов к отладке.
  */
 package LogSubsystem;
 
-
 /**
  * NR-Код класса события лога
+ * 
  * @author Селяков Павел
  *
  */
 public enum EnumLogMsgClass
 {
-    //TODO: Добавить новые классы событий лога здесь.
+    // TODO: Добавить новые классы событий лога здесь.
     /**
      * Default (0) or Unknown
      */
@@ -42,7 +42,7 @@ public enum EnumLogMsgClass
      * Exception suppressed or processed by engine
      */
     ExceptionSuppressed(6);
-    
+
     /**
      * Object value
      */
@@ -67,7 +67,7 @@ public enum EnumLogMsgClass
     {
         return Integer.toString(this.m_Value);
     }
-    
+
     /**
      * Set object value
      * 

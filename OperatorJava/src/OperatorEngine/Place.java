@@ -2,7 +2,7 @@
  * @author Pavel Seliakov
  *         Copyright Pavel M Seliakov 2014-2021
  *         Created: Feb 6, 2022 4:59:55 AM
- *         State: Feb 6, 2022 4:59:55 AM - Готов к отладке.
+ *         State: Mar 21, 2022 12:37:20 AM - Ported, Готов к отладке.
  */
 package OperatorEngine;
 
@@ -45,7 +45,7 @@ public class Place extends Item
      * NT-Конструктор копирования
      * 
      * @param p
-     * @throws Exception 
+     * @throws Exception
      */
     public Place(Place p) throws Exception
     {
@@ -137,6 +137,7 @@ public class Place extends Item
     // #endregion
     /**
      * NT-Получить строку описания свойств Процедуры для отладчика.
+     * 
      * @return Функция возвращает описание свойств Процедуры одной строкой.
      */
     @Override
@@ -165,7 +166,8 @@ public class Place extends Item
         sb.append(this.m_path);
         sb.append(";");
         sb.append(this.m_descr);
-        if (sb.length() > 80) sb.setLength(80);
+        if (sb.length() > 80)
+            sb.setLength(80);
         return sb.toString();
     }
 
@@ -174,7 +176,8 @@ public class Place extends Item
      * Вызывается вручную, после загрузки места из БД через проперти.
      * Заполняет коллекцию типов места из внутренней переменной, которая хранит
      * упакованное значение.
-     * @throws Exception 
+     * 
+     * @throws Exception
      */
     public void ParseEntityTypeString() throws Exception
     {
@@ -204,7 +207,8 @@ public class Place extends Item
         {
             String sss = ss.trim();
             // добавить синонимы в список, если они не пустые и не повторяются
-            if ((sss.length() > 0) && (listNotContains(lis, sss))) lis.add(sss);
+            if ((sss.length() > 0) && (listNotContains(lis, sss)))
+                lis.add(sss);
         }
         return lis;
     }
@@ -226,7 +230,8 @@ public class Place extends Item
         /// StringComparison mode)
 
         for (String s : lis)
-            if (sss.equalsIgnoreCase(s)) return false;
+            if (sss.equalsIgnoreCase(s))
+                return false;
         return true;
     }
 

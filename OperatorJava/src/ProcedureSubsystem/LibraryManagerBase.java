@@ -1,7 +1,7 @@
 /**
  * @author Селяков Павел
  *         Created: Mar 14, 2022 10:19:37 PM
- *         State: Mar 14, 2022 10:19:37 PM - initial
+ *         State: Mar 21, 2022 12:37:20 AM - Ported, Готов к отладке.
  */
 package ProcedureSubsystem;
 
@@ -35,10 +35,10 @@ public class LibraryManagerBase
     // так как в каждой библиотеке путь свой, то придется подставлять этот путь во время сборки массива Процедур для передачи в Оператор.
     // Задача эта выглядит сложной пока что..
 
-    //TODO: в производном классе переопределить методы onInit() и onExit() для реализации новых ресурсов данного класса
-    
-    //*** Fields and constants ***
-    
+    // TODO: в производном классе переопределить методы onInit() и onExit() для реализации новых ресурсов данного класса
+
+    // *** Fields and constants ***
+
     /**
      * Backreference to Operator Engine object
      */
@@ -63,7 +63,8 @@ public class LibraryManagerBase
      * Название библиотеки Процедур как идентификатор Библиотеки.
      */
     protected String        m_LibraryTitle;
-    //*** Constructors ***
+
+    // *** Constructors ***
     /**
      * NT-Constructor
      */
@@ -95,9 +96,9 @@ public class LibraryManagerBase
 
         return;
     }
-    
-    //*** Member access functions ***
-    
+
+    // *** Member access functions ***
+
     /**
      * NT- Get current library file path.
      * 
@@ -108,16 +109,16 @@ public class LibraryManagerBase
         return this.m_LibraryPath;
     }
 
-//    /**
-//     * NT- Set current library file path.
-//     * 
-//     * @param p
-//     *            Current library file path.
-//     */
-//    public void set_LibraryPath(String p)
-//    {
-//        this.m_LibraryPath = p;
-//    }
+    // /**
+    // * NT- Set current library file path.
+    // *
+    // * @param p
+    // * Current library file path.
+    // */
+    // public void set_LibraryPath(String p)
+    // {
+    // this.m_LibraryPath = p;
+    // }
 
     /**
      * NT- Получить флаг инициализации Менеджера Библиотеки Процедур.
@@ -139,19 +140,18 @@ public class LibraryManagerBase
         return m_LibraryTitle;
     }
 
-//    /**
-//     * NT-Set library title
-//     * 
-//     * @param libraryTitle
-//     *            the libraryTitle to set
-//     */
-//    public void set_LibraryTitle(String libraryTitle)
-//    {
-//        this.m_LibraryTitle = libraryTitle;
-//    }
+    // /**
+    // * NT-Set library title
+    // *
+    // * @param libraryTitle
+    // * the libraryTitle to set
+    // */
+    // public void set_LibraryTitle(String libraryTitle)
+    // {
+    // this.m_LibraryTitle = libraryTitle;
+    // }
 
-    
-    //*** Public API *** 
+    // *** Public API ***
     /**
      * NT- Initialize library manager.
      * This function must be overriden in child class.
@@ -183,7 +183,7 @@ public class LibraryManagerBase
     {
         if (this.m_Initialized == true)
         {
-            //тут вызвать метод де-инициализации Библиотеки процедур, переопределяемый в производных классах.
+            // тут вызвать метод де-инициализации Библиотеки процедур, переопределяемый в производных классах.
             this.onExit();
             // clear init flag
             this.m_Initialized = false;
@@ -214,13 +214,13 @@ public class LibraryManagerBase
      */
     public Place[] getLibraryPlaces() throws Exception
     {
-        if(this.m_Initialized == false)
+        if (this.m_Initialized == false)
         {
-            
+
         }
         else
         {
-            
+
         }
         throw new Exception("Function not implemented");
     }
@@ -235,122 +235,130 @@ public class LibraryManagerBase
      */
     public Procedure[] getLibraryProcedures() throws Exception
     {
-        if(this.m_Initialized == false)
+        if (this.m_Initialized == false)
         {
-            
+
         }
         else
         {
-            
+
         }
         throw new Exception("Function not implemented");
     }
 
-    //*** Override this in child classes ***
+    // *** Override this in child classes ***
     /**
      * NT-Initialize Library Data. This function must be overrided in child classes.
      */
     protected void onInit() throws Exception
     {
-      return;   
+        return;
     }
+
     /**
      * NT-De-initialize Library Data. This function must be overrided in child classes.
      */
-    protected void onExit()  throws Exception
+    protected void onExit() throws Exception
     {
         return;
     }
-    
-    
-    //*** Статические функции загрузки классов ***
-    
-    /** 
+
+    // *** Статические функции загрузки классов ***
+
+    /**
      * NT-Try get library manager from specified jar file.
-     * @param engine Operator engine reference.
-     * @param title Library title.
-     * @param path JAR file path.
+     * 
+     * @param engine
+     *            Operator engine reference.
+     * @param title
+     *            Library title.
+     * @param path
+     *            JAR file path.
      * @return Function returns library manager object or null if it is not found.
-     * @throws Exception Error on loading.
-     *  
+     * @throws Exception
+     *             Error on loading.
+     * 
      */
-    public  static LibraryManagerBase loadLibraryManager(Engine engine, String title, String path) throws Exception
+    public static LibraryManagerBase loadLibraryManager(
+            Engine engine,
+            String title,
+            String path) throws Exception
     {
-        //throw exceptions if any error
-        //return null if no manager in that file       
-        //TODO: не забыть вписать в объект менеджера путь к его файлу path!
+        // throw exceptions if any error
+        // return null if no manager in that file
+        // TODO: не забыть вписать в объект менеджера путь к его файлу path!
         LibraryManagerBase result = null;
         URLClassLoader loader = null;
         String classTitle = title + ".LibraryManager";
-        
-        try 
-        {
-        if (Utility.StringIsNullOrEmpty(path) || (FileSystemManager.isFileExists(path) == false)) 
-            throw new Exception("Не найдена библиотека Процедур: " + title);
-        
-        // 2. load class from specified JarFile
-        URL classUrl = new URL("file://" + path);
-        URL[] classUrls = new URL[] { classUrl };
-        loader = new URLClassLoader(classUrls, engine.getClass().getClassLoader());
-        //Если класслоадер потребуется более одного раза, следует как-то сделать его постоянным? 
-        Class<?> cls = null;
-        //try load class, return null if not exists
+
         try
         {
-            cls = loader.loadClass(classTitle);
-        }
-        catch(ClassNotFoundException ex)
-        {
-            //close loader before exit
-            if(loader != null)
-                loader.close();
-            
-            return null;
-        }
-        
-        // 3. Package annotation check
-        Package pg = cls.getPackage();
-        // не может не быть корневого пакета
-        if (pg == null) 
-            throw new Exception("Root package not found in Procedure Library " + path);
-        OperatorProcedure packageAnnot = pg.getAnnotation(OperatorProcedure.class);
-        if (packageAnnot == null) 
-            throw new Exception(String.format("Root package in Procedure Library %s not marked with OperatorProcedure annotation.", path));
-        if (packageAnnot.State() == ImplementationState.NotRealized) 
-            throw new Exception(String.format("Root package in Procedure Library %s marked as ImplementationState.NotRealized.", path));
+            if (Utility.StringIsNullOrEmpty(path) || (FileSystemManager.isFileExists(path) == false))
+                throw new Exception("Не найдена библиотека Процедур: " + title);
 
-        // 4. if class not annotated, stop work
-        OperatorProcedure annot = cls.getAnnotation(OperatorProcedure.class);
-        if (annot == null) 
-            throw new Exception(String.format("LibraryManager class in %s not marked with OperatorProcedure annotation.", path));
-        // 5. find method
-        ImplementationState state = annot.State();
-        // String class_title = annot.Title();
-        // String class_description = annot.Description();
-        if (state == ImplementationState.NotRealized) 
-            throw new Exception(String.format("LibraryManager class in %s marked as ImplementationState.NotRealized.", path));
-        if (state == ImplementationState.NotTested)
-        {
-            // print warning "This Procedure method class %s marked as not tested"
-            String msg1 = String.format("LibraryManager класс в библиотеке Процедур \"%s\" помечен как NotTested", path);
-            engine.get_OperatorConsole().PrintTextLine(msg1, EnumDialogConsoleColor.Предупреждение);
-            //add msg to log
-            engine.getLogManager().AddMessage(EnumLogMsgClass.Default, EnumLogMsgState.Default, msg1);
-        }
-        //6. create object
-        Constructor<?> cs = cls.getConstructor(Engine.class, String.class, String.class);
-        result = (LibraryManagerBase) cs.newInstance(engine, title, path);
+            // 2. load class from specified JarFile
+            URL classUrl = new URL("file://" + path);
+            URL[] classUrls = new URL[] { classUrl };
+            loader = new URLClassLoader(classUrls, engine.getClass().getClassLoader());
+            // Если класслоадер потребуется более одного раза, следует как-то сделать его постоянным?
+            Class<?> cls = null;
+            // try load class, return null if not exists
+            try
+            {
+                cls = loader.loadClass(classTitle);
+            }
+            catch (ClassNotFoundException ex)
+            {
+                // close loader before exit
+                if (loader != null)
+                    loader.close();
+
+                return null;
+            }
+
+            // 3. Package annotation check
+            Package pg = cls.getPackage();
+            // не может не быть корневого пакета
+            if (pg == null)
+                throw new Exception("Root package not found in Procedure Library " + path);
+            OperatorProcedure packageAnnot = pg.getAnnotation(OperatorProcedure.class);
+            if (packageAnnot == null)
+                throw new Exception(String.format("Root package in Procedure Library %s not marked with OperatorProcedure annotation.", path));
+            if (packageAnnot.State() == ImplementationState.NotRealized)
+                throw new Exception(String.format("Root package in Procedure Library %s marked as ImplementationState.NotRealized.", path));
+
+            // 4. if class not annotated, stop work
+            OperatorProcedure annot = cls.getAnnotation(OperatorProcedure.class);
+            if (annot == null)
+                throw new Exception(String.format("LibraryManager class in %s not marked with OperatorProcedure annotation.", path));
+            // 5. find method
+            ImplementationState state = annot.State();
+            // String class_title = annot.Title();
+            // String class_description = annot.Description();
+            if (state == ImplementationState.NotRealized)
+                throw new Exception(String.format("LibraryManager class in %s marked as ImplementationState.NotRealized.", path));
+            if (state == ImplementationState.NotTested)
+            {
+                // print warning "This Procedure method class %s marked as not tested"
+                String msg1 = String.format("LibraryManager класс в библиотеке Процедур \"%s\" помечен как NotTested", path);
+                engine.get_OperatorConsole().PrintTextLine(msg1, EnumDialogConsoleColor.Предупреждение);
+                // add msg to log
+                engine.getLogManager().AddMessage(EnumLogMsgClass.Default, EnumLogMsgState.Default, msg1);
+            }
+            // 6. create object
+            Constructor<?> cs = cls.getConstructor(Engine.class, String.class, String.class);
+            result = (LibraryManagerBase) cs.newInstance(engine, title, path);
 
         }
-        finally 
+        finally
         {
-            //close loader before exit
-            if(loader != null)
+            // close loader before exit
+            if (loader != null)
                 loader.close();
         }
         return result;
     }
-    
+
     /**
      * NT-Invoke procedure method
      * 
@@ -358,12 +366,12 @@ public class LibraryManagerBase
      *            Procedure for execution
      * @param names
      *            assembly.class.method titles array
-     * @param jarFilePath           
-     *            Path to library JAR file.                               
+     * @param jarFilePath
+     *            Path to library JAR file.
      * @param engine
-     *            Engine object reference 
-     * @param manager 
-     *            Library manager object reference.                
+     *            Engine object reference
+     * @param manager
+     *            Library manager object reference.
      * @param command
      *            Query text string
      * @param args
@@ -393,7 +401,7 @@ public class LibraryManagerBase
             String MethodTitle = names[2];
 
             // 1. Получить абсолютный путь к JAR файлу сборки.
-            if (Utility.StringIsNullOrEmpty(jarFilePath) || (FileSystemManager.isFileExists(jarFilePath) == false)) 
+            if (Utility.StringIsNullOrEmpty(jarFilePath) || (FileSystemManager.isFileExists(jarFilePath) == false))
                 throw new Exception("Не найдена библиотека Процедур: " + AssemblyTitle);
             // а далее - по коду из прототипа
 
@@ -406,38 +414,38 @@ public class LibraryManagerBase
             // 3. Package annotation check
             Package pg = cls.getPackage();
             // не может не быть корневого пакета
-            if (pg == null) 
+            if (pg == null)
                 throw new Exception("Root package not found in Procedure Library " + jarFilePath);
             OperatorProcedure packageAnnot = pg.getAnnotation(OperatorProcedure.class);
-            if (packageAnnot == null) 
+            if (packageAnnot == null)
                 throw new Exception(String.format("Root package in Procedure Library \"%s\" not marked with OperatorProcedure annotation.", jarFilePath));
-            if (packageAnnot.State() == ImplementationState.NotRealized) 
+            if (packageAnnot.State() == ImplementationState.NotRealized)
                 throw new Exception(String.format("Root package in Procedure Library \"%s\" marked as ImplementationState.NotRealized.", jarFilePath));
             if (packageAnnot.State() == ImplementationState.NotTested)
             {
                 // print warning "This Procedure method class %s marked as not tested"
                 String msg1 = "Пакет библиотеки \"" + AssemblyTitle + "\", содержащий данную Процедуру, помечен как NotTested";
                 engine.get_OperatorConsole().PrintTextLine(msg1, EnumDialogConsoleColor.Предупреждение);
-                //add msg to log
+                // add msg to log
                 engine.getLogManager().AddMessage(EnumLogMsgClass.Default, EnumLogMsgState.Default, msg1);
             }
 
             // 4. if class not annotated, stop work
             OperatorProcedure annot = cls.getAnnotation(OperatorProcedure.class);
-            if (annot == null) 
+            if (annot == null)
                 throw new Exception("Specified class not marked with OperatorProcedure annotation.");
             // 5. find method
             ImplementationState state = annot.State();
             // String class_title = annot.Title();
             // String class_description = annot.Description();
-            if (state == ImplementationState.NotRealized) 
+            if (state == ImplementationState.NotRealized)
                 throw new Exception("Specified class marked as ImplementationState.NotRealized.");
             if (state == ImplementationState.NotTested)
             {
                 // print warning "This Procedure method class %s marked as not tested"
                 String msg1 = "Класс \"" + ClassTitle + "\", содержащий данную Процедуру, помечен как NotTested";
                 engine.get_OperatorConsole().PrintTextLine(msg1, EnumDialogConsoleColor.Предупреждение);
-                //add msg to log
+                // add msg to log
                 engine.getLogManager().AddMessage(EnumLogMsgClass.Default, EnumLogMsgState.Default, msg1);
             }
             // 6. get method
@@ -446,12 +454,12 @@ public class LibraryManagerBase
 
             // 7. check method annotation
             OperatorProcedure annot2 = m.getAnnotation(OperatorProcedure.class);
-            if (annot2 == null) 
+            if (annot2 == null)
                 throw new Exception("Specified method not marked with OperatorProcedure annotation.");
             ImplementationState state2 = annot2.State();
             // String method_title = annot2.Title();
             // String method_description = annot2.Description();
-            if (state2 == ImplementationState.NotRealized) 
+            if (state2 == ImplementationState.NotRealized)
                 throw new Exception("Specified method marked as ImplementationState.NotRealized.");
             // запросить у пользователя подтверждение на запуск процедуры, помеченной как требующая отладки.
             if (state2 == ImplementationState.NotTested)
@@ -473,7 +481,8 @@ public class LibraryManagerBase
             {
                 Object returned = m.invoke(null, engine, manager, command, args);
                 // 8. return result
-                if (returned == null) throw new Exception(String.format("Error: Method \"%s.%s\" returns null.", ClassTitle, MethodTitle));
+                if (returned == null)
+                    throw new Exception(String.format("Error: Method \"%s.%s\" returns null.", ClassTitle, MethodTitle));
 
                 result = (EnumProcedureResult) returned;
             }
@@ -482,11 +491,11 @@ public class LibraryManagerBase
         finally
         {
             // close class loader
-            if (loader != null) loader.close();
+            if (loader != null)
+                loader.close();
         }
 
         return result;
     }
 
-     
 }

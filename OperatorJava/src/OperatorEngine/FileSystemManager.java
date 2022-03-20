@@ -1,7 +1,7 @@
 /**
  * @author Селяков Павел
  *         Created: Feb 22, 2022 1:14:49 PM
- *         State: Feb 22, 2022 1:14:49 PM - initial
+ *         State: Mar 21, 2022 12:37:20 AM - Ported, Готов к отладке.
  */
 package OperatorEngine;
 
@@ -26,7 +26,6 @@ public class FileSystemManager
      * File path separator as string
      */
     public final static String FileSeparator  = File.separator;
-    
 
     /**
      * User home directory
@@ -49,20 +48,24 @@ public class FileSystemManager
         String appFolderPath = FileSystemManager.getAppFolderPath();
         boolean result = false;
         result = FileSystemManager.CreateDirectory(appFolderPath);
-        if (result == false) throw new Exception("Error: cannot create application folder " + appFolderPath);
+        if (result == false)
+            throw new Exception("Error: cannot create application folder " + appFolderPath);
         // 2. Create log folder
         String logFolderPath = FileSystemManager.getAppLogFolderPath();
         result = FileSystemManager.CreateDirectory(logFolderPath);
-        if (result == false) throw new Exception("Error: cannot create log folder " + logFolderPath);
+        if (result == false)
+            throw new Exception("Error: cannot create log folder " + logFolderPath);
         // 3. Create assemblies folder
         String asmFolderPath = FileSystemManager.getAssembliesFolderPath();
         result = FileSystemManager.CreateDirectory(asmFolderPath);
-        if (result == false) throw new Exception("Error: cannot create assemblies folder " + asmFolderPath);
-     // 4. Create procedure apps folder
+        if (result == false)
+            throw new Exception("Error: cannot create assemblies folder " + asmFolderPath);
+        // 4. Create procedure apps folder
         String procFolderPath = FileSystemManager.getProcedureAppsFolderPath();
         result = FileSystemManager.CreateDirectory(procFolderPath);
-        if (result == false) throw new Exception("Error: cannot create procedure application folder " + procFolderPath);
-     // 5. TODO: Create other folders here
+        if (result == false)
+            throw new Exception("Error: cannot create procedure application folder " + procFolderPath);
+        // 5. TODO: Create other folders here
 
         return;
     }
@@ -150,24 +153,28 @@ public class FileSystemManager
     {
         return isFileExists(getAppDbFilePath());
     }
+
     /**
      * NT-Get procedure application folder path string.
      * Возвращает путь к папке, которая должна содержать подпапки программ, используемых в Процедурах, определенных пользователем.
+     * 
      * @return Return procedure application folder path string.
      */
     public static String getProcedureAppsFolderPath()
     {
-        return getAppFolderPath() + File.separator + "apps";    
+        return getAppFolderPath() + File.separator + "apps";
     }
-    
+
     /**
      * NT-Получить путь к папке, которая должна содержать подпапки Сборок Процедур.
+     * 
      * @return Return assemblies folder path string.
      */
     public static String getAssembliesFolderPath()
     {
-        return getAppFolderPath() + File.separator + "proc";    
+        return getAppFolderPath() + File.separator + "proc";
     }
+
     /**
      * NR-Get current user temporary folder path string
      * 
@@ -277,7 +284,7 @@ public class FileSystemManager
 
         return;
     }
-    
+
     /**
      * NT- Get from top directory all files with specified extensions.
      * 
@@ -296,7 +303,8 @@ public class FileSystemManager
             {
                 // check filename ends
                 for (String ext : exts)
-                    if (name.endsWith(ext)) return true;
+                    if (name.endsWith(ext))
+                        return true;
                 return false;
             }
         };
@@ -305,72 +313,80 @@ public class FileSystemManager
         return files;
     }
 
-/**
- * NT-Get directory files
- * @param dir Directory object.
- * @param exts Array of file endings (extension).
- * @param recursive If True, read all subdirectories recursive. Else read specified directory only.
- * @return Function returns array of founded files.
- */
+    /**
+     * NT-Get directory files
+     * 
+     * @param dir
+     *            Directory object.
+     * @param exts
+     *            Array of file endings (extension).
+     * @param recursive
+     *            If True, read all subdirectories recursive. Else read specified directory only.
+     * @return Function returns array of founded files.
+     */
     public static File[] getDirectoryFiles(
             File dir,
             String[] exts,
             boolean recursive)
     {
-            LinkedList<File> result = new LinkedList<File>();
-            getDirectoryFilesRecurse(result, dir, exts, recursive);
-            
-            return result.toArray(new File[result.size()]);
+        LinkedList<File> result = new LinkedList<File>();
+        getDirectoryFilesRecurse(result, dir, exts, recursive);
+
+        return result.toArray(new File[result.size()]);
     }
-    
-    /** NT - Get directory files recursively.
-     * @param result Result list of founded File objects
-     * @param dir Directory object.
-     * @param exts Array of file endings (extension).
-     * @param recursive If True, read all subdirectories recursive. Else read specified directory only.
+
+    /**
+     * NT - Get directory files recursively.
+     * 
+     * @param result
+     *            Result list of founded File objects
+     * @param dir
+     *            Directory object.
+     * @param exts
+     *            Array of file endings (extension).
+     * @param recursive
+     *            If True, read all subdirectories recursive. Else read specified directory only.
      */
     private static void getDirectoryFilesRecurse(
             LinkedList<File> result,
             File dir,
             String[] exts,
-            boolean recursive )
+            boolean recursive)
     {
-          File[] files = dir.listFiles();
-          if (files != null && files.length > 0)
-          {
-              for (File f : files)
-              {
-                  if(f.isDirectory() && (recursive == true))
-                      getDirectoryFilesRecurse(result, f, exts, recursive);
-                  else
-                      if(f.isFile() && (checkFileExt(f, exts) == true))
-                          result.add(f);
-              }
-          }
-      
-      return;  
+        File[] files = dir.listFiles();
+        if (files != null && files.length > 0)
+        {
+            for (File f : files)
+            {
+                if (f.isDirectory() && (recursive == true))
+                    getDirectoryFilesRecurse(result, f, exts, recursive);
+                else if (f.isFile() && (checkFileExt(f, exts) == true))
+                    result.add(f);
+            }
+        }
+
+        return;
     }
-/**
- * NT-Check file extension matched array contents.
- * @param f File or Directory object.
- * @param exts Array of name ending string's.
- * @return Function returns True if file title matched with any of specified title ending's.
- * Function returns False otherwise.
- */
+
+    /**
+     * NT-Check file extension matched array contents.
+     * 
+     * @param f
+     *            File or Directory object.
+     * @param exts
+     *            Array of name ending string's.
+     * @return Function returns True if file title matched with any of specified title ending's.
+     *         Function returns False otherwise.
+     */
     private static boolean checkFileExt(File f, String[] exts)
     {
         // check filename ends
         String name = f.getAbsolutePath();
         for (String ext : exts)
-            if (name.endsWith(ext)) return true;
-        
+            if (name.endsWith(ext))
+                return true;
+
         return false;
     }
 
-
-    
-    
-    
-    
-    
 }

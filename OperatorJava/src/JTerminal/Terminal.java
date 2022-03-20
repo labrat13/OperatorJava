@@ -2,9 +2,13 @@
  * @author Pavel Seliakov
  *         Copyright Pavel M Seliakov 2014-2021
  *         Created: Feb 6, 2022 4:59:55 AM
- *         State: Feb 6, 2022 4:59:55 AM - Не написаны несколько функций класса.
+ *         State: Mar 21, 2022 12:37:20 AM - Не написаны несколько функций класса.
  */
 package JTerminal;
+
+import java.io.BufferedReader;
+import java.io.Console;
+import java.io.InputStreamReader;
 
 /**
  * @author jsmith
@@ -572,6 +576,13 @@ public class Terminal
 
     // TODO: Нужны функции чтения с консоли
     /**
+     * NT- замена для чтения с консоли под Эклипсой.
+     * Но ридер не закрывается нигде здесь до конца работы приложения.
+     * Вроде бы это нормально должно быть.
+     */
+    private static BufferedReader s_reader = null;
+
+    /**
      * NT-Read text line from terminal
      * 
      * @return Returns text line from terminal without \r\n; returns null if no
@@ -579,9 +590,26 @@ public class Terminal
      */
     public static String ReadLine()
     {
-        // TODO: add valid code here
-        return System.console().readLine();
+        String result = null;
+        try
+        {
+            Console c = System.console();
+            if (c != null)
+                return c.readLine();
+            else
+            {
+                if (s_reader == null)
+                    s_reader = new BufferedReader(new InputStreamReader(System.in));
+                // read
+                result = s_reader.readLine();
+            }
+        }
+        catch (Exception e)
+        {
+            ;
+        }
 
+        return result;
     }
 
 }

@@ -2,8 +2,7 @@
  * @author Pavel Seliakov
  *         Copyright Pavel M Seliakov 2014-2021
  *         Created: Feb 6, 2022 4:59:55 AM
- *         State: Feb 11, 2022 2:36:55 AM - Ported, Готов к отладке.
- *         и адаптер для нее.
+ *         State: Mar 21, 2022 12:37:20 AM - Ported, удалить после отладки.
  */
 package DbSubsystem;
 
@@ -112,9 +111,11 @@ public class CachedDbAdapter extends OperatorDbAdapter
         boolean active = this.isConnectionActive();
         String cstr = Utility.GetStringTextNull(this.m_connectionString);
         int procCount = 0;
-        if (this.m_procedures != null) procCount = this.m_procedures.getCount();
+        if (this.m_procedures != null)
+            procCount = this.m_procedures.getCount();
         int placeCount = 0;
-        if (this.m_places != null) placeCount = this.m_places.getCount();
+        if (this.m_places != null)
+            placeCount = this.m_places.getCount();
         String result = String.format("CachedDbAdapter; connection=\"%s\"; active=%s; procedures=%d; places=%d;", cstr, active, procCount, placeCount);
 
         return result;
@@ -235,7 +236,8 @@ public class CachedDbAdapter extends OperatorDbAdapter
      * @throws SQLException
      *             Ошибка при использовании БД.
      */
-    public void AddProcedure(LinkedList<Procedure> procedures) throws SQLException
+    public void AddProcedure(LinkedList<Procedure> procedures)
+            throws SQLException
     {
         // Добавить объект в БД
         for (Procedure p : procedures)

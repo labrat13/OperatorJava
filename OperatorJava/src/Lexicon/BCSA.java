@@ -2,7 +2,7 @@
  * @author Pavel Seliakov
  *         Copyright Pavel M Seliakov 2014-2021
  *         Created: Feb 6, 2022 4:59:55 AM
- *         State: Feb 6, 2022 4:59:55 AM - Код готов к отладке.
+ *         State: Mar 21, 2022 12:37:20 AM - Ported, Готов к отладке.
  */
 package Lexicon;
 
@@ -29,9 +29,11 @@ public class BCSA // BigCommandSemanticAnalyser - такое длинное на
      * @param query
      *            Текст исходного запроса
      * @return Функция возвращает код результата исполнения процедуры
-     * @throws Exception Error on DoQuery()
+     * @throws Exception
+     *             Error on DoQuery()
      */
-    public static EnumProcedureResult ProcessQuery(Engine engine, String query) throws Exception
+    public static EnumProcedureResult ProcessQuery(Engine engine, String query)
+            throws Exception
     {
         // сейчас тупо исполним весь запрос целиком
         EnumProcedureResult result = engine.DoQuery(query);
@@ -92,14 +94,17 @@ public class BCSA // BigCommandSemanticAnalyser - такое длинное на
         // Но я точно не представляю себе эту ситуацию, так что почему два
         // символа, а не один или три?
         String q = query.trim();
-        if (q.length() < 2) return true;// вернуть истину, поскольку если букв
-                                        // всего 1, то это точно не русские
+        if (q.length() < 2)
+            return true;// вернуть истину, поскольку если букв
+                        // всего 1, то это точно не русские
         return (!(IsRussianLetter(q.charAt(0)) && IsRussianLetter(q.charAt(1))));
     }
 
     /**
      * NT-Возвращает True если проверяемый символ - русская буква
-     * @param p Проверяемый символ
+     * 
+     * @param p
+     *            Проверяемый символ
      * @return Возвращает True если проверяемый символ - русская буква
      */
     private static boolean IsRussianLetter(char p)

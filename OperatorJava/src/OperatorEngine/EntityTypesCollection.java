@@ -2,7 +2,7 @@
  * @author Pavel Seliakov
  *         Copyright Pavel M Seliakov 2014-2021
  *         Created: Feb 6, 2022 4:59:55 AM
- *         State: Feb 10, 2022 19:44:55 AM - переведен на java.
+ *         State: Mar 21, 2022 12:37:20 AM - Ported, Готов к отладке.
  */
 package OperatorEngine;
 
@@ -32,51 +32,59 @@ public class EntityTypesCollection
     }
     // #region *** Properties ***
 
-        /**
-         * Словарь типов сущностей первого уровня
-         * @return Словарь типов сущностей первого уровня
-         */
-        public HashMap<String, EntityType> get_EntityTypes()
-        {
-           return this.m_EntityTypes;   
-        }
-        /**
-         * Словарь типов сущностей первого уровня
-         * @param value Словарь типов сущностей первого уровня
-         */
-        public void set_EntityTypes(HashMap<String, EntityType> value)
-        {
-            this.m_EntityTypes = value;
-        }
-        
+    /**
+     * Словарь типов сущностей первого уровня
+     * 
+     * @return Словарь типов сущностей первого уровня
+     */
+    public HashMap<String, EntityType> get_EntityTypes()
+    {
+        return this.m_EntityTypes;
+    }
+
+    /**
+     * Словарь типов сущностей первого уровня
+     * 
+     * @param value
+     *            Словарь типов сущностей первого уровня
+     */
+    public void set_EntityTypes(HashMap<String, EntityType> value)
+    {
+        this.m_EntityTypes = value;
+    }
+
     // #endregion
 
     /**
-         * NT-Ищет запись типа по его названию. Если тип не упомянут, возвращается null
-         * @param nameOfType Название типа
-         * @return Возвращает первый найденный объект записи типа или null если объект не найден
-         */
-        public EntityType ContainsType(String nameOfType)
+     * NT-Ищет запись типа по его названию. Если тип не упомянут, возвращается null
+     * 
+     * @param nameOfType
+     *            Название типа
+     * @return Возвращает первый найденный объект записи типа или null если объект не найден
+     */
+    public EntityType ContainsType(String nameOfType)
+    {
+        if (m_EntityTypes.containsKey(nameOfType))
+            return m_EntityTypes.get(nameOfType);
+        else
         {
-            if (m_EntityTypes.containsKey(nameOfType))
-                return m_EntityTypes.get(nameOfType);
-            else
+            for (Map.Entry<String, EntityType> kvp : m_EntityTypes.entrySet())
             {
-                for (Map.Entry<String, EntityType> kvp : m_EntityTypes.entrySet())
-                {
-                    EntityType res = kvp.getValue().ContainsType(nameOfType);
-                    if (res != null) return res;
-                }
-                return null;
+                EntityType res = kvp.getValue().ContainsType(nameOfType);
+                if (res != null)
+                    return res;
             }
+            return null;
         }
+    }
 
     /**
      * NT-Распарсить строку описания классов сущности в дерево классов
      * 
      * @param expression
      *            Выражение описания классов сущности
-     * @throws Exception Exception from EntityTypesCollection.ParseExpression()
+     * @throws Exception
+     *             Exception from EntityTypesCollection.ParseExpression()
      */
     public void ParseExpression(String expression) throws Exception
     {
@@ -92,7 +100,7 @@ public class EntityTypesCollection
         // 1) удаляем пробелы с начала и конца выражения
         String exp = expression.trim();
         // 2) разделяем на элементы по ;
-        //String[] sar = exp.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+        // String[] sar = exp.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
         String[] sar = Utility.StringSplit(exp, ";", true);
         // тут мы получим несколько элементов:
         // [0] Мои места:: Коллекция музыки<Файл::ФайлМузыки>

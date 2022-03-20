@@ -2,7 +2,7 @@
  * @author Pavel Seliakov
  *         Copyright Pavel M Seliakov 2014-2021
  *         Created: Feb 6, 2022 4:59:55 AM
- *         State: Feb 11, 2022 2:36:55 AM - Готов к отладке
+ *         State: Mar 21, 2022 12:37:20 AM - Ported, Готов к отладке.
  */
 package Lexicon;
 
@@ -98,9 +98,7 @@ public final class EnumSpeakDialogResult
      * Служебная комбинация всех флагов субкоманд для проверки максимально
      * допустимого значения
      */
-    private static final int AllFlags    = EnumSpeakDialogResult.Да | EnumSpeakDialogResult.Нет | EnumSpeakDialogResult.Отложить 
-            | EnumSpeakDialogResult.Отмена | EnumSpeakDialogResult.Повторить | EnumSpeakDialogResult.Прервать 
-            | EnumSpeakDialogResult.Пропустить;
+    private static final int AllFlags    = EnumSpeakDialogResult.Да | EnumSpeakDialogResult.Нет | EnumSpeakDialogResult.Отложить | EnumSpeakDialogResult.Отмена | EnumSpeakDialogResult.Повторить | EnumSpeakDialogResult.Прервать | EnumSpeakDialogResult.Пропустить;
 
     /**
      * Object value
@@ -188,7 +186,8 @@ public final class EnumSpeakDialogResult
      */
     private void checkValue(int value) throws Exception
     {
-        if ((value < 0) || (value > EnumSpeakDialogResult.AllFlags)) throw new Exception("Invalid argument value");
+        if ((value < 0) || (value > EnumSpeakDialogResult.AllFlags))
+            throw new Exception("Invalid argument value");
 
         return;
     }
@@ -217,17 +216,19 @@ public final class EnumSpeakDialogResult
         return (this.m_Value == esdr.m_Value);
     }
 
-    /** 
+    /**
      * NT-Результат это Да
+     * 
      * @return Функция возвращает true, если значение = Да, false в остальных случаях.
      */
     public boolean isДа()
     {
         return this.m_Value == EnumSpeakDialogResult.Да;
     }
-    
-    /** 
+
+    /**
      * NT-Результат это Нет
+     * 
      * @return Функция возвращает true, если значение = Нет, false в остальных случаях.
      */
     public boolean isНет()
@@ -235,14 +236,14 @@ public final class EnumSpeakDialogResult
         return this.m_Value == EnumSpeakDialogResult.Нет;
     }
 
-    /** 
+    /**
      * NT-Результат это Отмена
+     * 
      * @return Функция возвращает true, если значение = Отмена, false в остальных случаях.
      */
     public boolean isОтмена()
     {
         return this.m_Value == EnumSpeakDialogResult.Отмена;
     }
-    
-    
+
 }

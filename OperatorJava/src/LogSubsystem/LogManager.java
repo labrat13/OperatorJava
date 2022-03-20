@@ -1,7 +1,7 @@
 /**
  * @author Селяков Павел
  *         Created: Feb 22, 2022 4:52:59 PM
- *         State: Feb 23, 2022 11:29:32 PM - ready to test
+ *         State: Mar 21, 2022 12:37:20 AM - Ported, Готов к отладке.
  */
 package LogSubsystem;
 
@@ -13,10 +13,8 @@ import java.time.LocalDateTime;
 
 import javax.xml.stream.XMLStreamException;
 
-import Lexicon.EnumDialogConsoleColor;
 import OperatorEngine.Engine;
 import OperatorEngine.FileSystemManager;
-import OperatorEngine.SystemInfoManager;
 import OperatorEngine.Utility;
 
 /*
@@ -115,12 +113,14 @@ public class LogManager
         // - if log folder not exists, try create it.
         // - if log folder not writable, throw exception.
         File logFolder = new File(LogManager.AppLogFolderPath);
-        if (!logFolder.exists()) logFolder.mkdir();
+        if (!logFolder.exists())
+            logFolder.mkdir();
         // 2. create filename as log-datetime.xml
         String filename = logFolder.getPath() + FileSystemManager.FileSeparator + this.makeNewFileName();// session_timestamp.xml
         File logfile = new File(filename);
         // если файл сессии уже существует, выбросить исключение об этом
-        if (logfile.exists()) throw new Exception("Session already exists");
+        if (logfile.exists())
+            throw new Exception("Session already exists");
         // open or create file with StreamWriter with UTF-8 encoding and path
         // Operator/logs directory/
         // 4. create writer object

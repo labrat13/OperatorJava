@@ -1,7 +1,7 @@
 /**
  * @author Селяков Павел
  *         Created: Mar 5, 2022 5:55:16 PM
- *         State: Mar 5, 2022 5:55:16 PM - Ported, Готов к отладке.
+ *         State: Mar 21, 2022 12:37:20 AM - Ported, Готов к отладке.
  */
 package DbSubsystem;
 
@@ -112,12 +112,16 @@ public class OperatorDbAdapter extends SqliteDbAdapter
      * @throws XMLStreamException
      *             Error on writing to log file.
      */
-    protected void safeAddLogMsg(EnumLogMsgClass c, EnumLogMsgState s, String text)
+    protected void safeAddLogMsg(
+            EnumLogMsgClass c,
+            EnumLogMsgState s,
+            String text)
             throws IOException, XMLStreamException
     {
         // проверить существование движка и лога, и затем добавить сообщение в
         // лог.
-        if (Engine.isLogReady(this.m_Engine)) this.m_Engine.getLogManager().AddMessage(c, s, text);
+        if (Engine.isLogReady(this.m_Engine))
+            this.m_Engine.getLogManager().AddMessage(c, s, text);
 
         return;
     }
@@ -146,7 +150,8 @@ public class OperatorDbAdapter extends SqliteDbAdapter
      * @throws Exception
      *             Error on database access occured.
      */
-    public static void CreateNewDatabase(Engine engine, String dbFile) throws Exception
+    public static void CreateNewDatabase(Engine engine, String dbFile)
+            throws Exception
     {
         // try
         // {
@@ -223,7 +228,8 @@ public class OperatorDbAdapter extends SqliteDbAdapter
 
         return result;
     }
-//==============================================================================
+
+    // ==============================================================================
     /**
      * RT-Получить все записи таблицы Places
      * 
@@ -362,18 +368,22 @@ public class OperatorDbAdapter extends SqliteDbAdapter
     {
         return this.DeleteRow(OperatorDbAdapter.TablePlaces, "id", placeId, this.m_Timeout);
     }
-    
+
     /**
      * NR-Update Place
-     * @param p Place object
+     * 
+     * @param p
+     *            Place object
      * @return Функция возвращает число измененных строк таблицы.
-     * @throws Exception Ошибка при использовании БД.
+     * @throws Exception
+     *             Ошибка при использовании БД.
      */
     public int UpdatePlace(Place p) throws Exception
     {
-        throw new Exception("Function not implemented"); //TODO: add code here
+        throw new Exception("Function not implemented"); // TODO: add code here
     }
-//=======================================================================
+
+    // =======================================================================
     /**
      * NT-Получить все записи таблицы Процедур
      * 
@@ -499,19 +509,21 @@ public class OperatorDbAdapter extends SqliteDbAdapter
     {
         return this.DeleteRow(OperatorDbAdapter.TableProcs, "id", id, this.m_Timeout);
     }
-    
+
     /**
      * NR-Update Procedure
-     * @param p Procedure object
+     * 
+     * @param p
+     *            Procedure object
      * @return Функция возвращает число измененных строк таблицы.
-     * @throws Exception Ошибка при использовании БД.
+     * @throws Exception
+     *             Ошибка при использовании БД.
      */
     public int UpdateProcedure(Procedure p) throws Exception
     {
-        throw new Exception("Function not implemented"); //TODO: add code here
+        throw new Exception("Function not implemented"); // TODO: add code here
     }
-    
-//============================================================
 
+    // ============================================================
 
 }
