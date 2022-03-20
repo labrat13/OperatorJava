@@ -25,25 +25,38 @@ import ProcedureSubsystem.OperatorProcedure;
         Description = "Library manager for GeneralProcedures library")
 public class LibraryManager extends LibraryManagerBase
 {
-
-    // /**
+    //Памятка: переменные родительского класса LibraryManagerBase:
     // * Backreference to Operator Engine object
-    // */
     // protected Engine m_Engine;
-
+    // * Флаг что менеджер был инициализирован
+    // protected boolean       m_Initialized;
+    // * Путь к файлу библиотеки Процедур.
+    // protected String        m_LibraryPath;
+    // * Название библиотеки Процедур как идентификатор Библиотеки.
+    // protected String        m_LibraryTitle;
+    
+    
     /**
      * Static Version string for current library
      */
     protected static String m_VersionString = "1.0.0.0";// TODO: add valid library version here
 
     /**
-     * NT-Constructor
+     * NT-Конструктор
+     * 
+     * @param engine
+     *            Backreference for Engine
+     * @param title
+     *            Library title
+     * @param libPath
+     *            Library JAR file path
      */
-    public LibraryManager()
+    public LibraryManager(Engine engine, String title, String libPath)
     {
-        this.m_Initialized = false;
-        this.m_Engine = null;
+        super(engine, title, libPath);
 
+        //Добавлять код только для новых ресурсов.
+        
         return;
     }
 
@@ -51,24 +64,12 @@ public class LibraryManager extends LibraryManagerBase
      * NT- Initialize library manager.
      * This function must be overriden in child class.
      * 
-     * @param engine
-     *            Operator Engine object backreference
      * @throws Exception
      *             Error in processing.
      */
     @Override
-    public void Init(Engine engine) throws Exception
+    protected void onInit() throws Exception
     {
-        if (this.m_Initialized == false)
-        {
-            // set backreference
-            m_Engine = engine;
-
-            // TODO: add code here
-
-            // mark object as initialized
-            this.m_Initialized = true;
-        }
         return;
     }
 
@@ -80,22 +81,13 @@ public class LibraryManager extends LibraryManagerBase
      *             Error in processing.
      */
     @Override
-    public void Exit() throws Exception
+    protected void onExit() throws Exception
     {
-        if (this.m_Initialized == true)
-        {
-            m_Engine = null;
-
-            // TODO: add code here
-
-            this.m_Initialized = false;
-        }
-
         return;
     }
 
     /**
-     * NR- Get Places collection from this library.
+     * NT- Get Places collection from this library.
      * This function must be overriden in child class.
      * 
      * @return Function returns array of Places, defined in this library.
@@ -105,7 +97,9 @@ public class LibraryManager extends LibraryManagerBase
     @Override
     public Place[] getLibraryPlaces() throws Exception
     {
-        throw new Exception("Function not implemented");// TODO: add code here
+        Place[] result = new Place[0];// TODO: add library places here
+        
+        return result;
     }
 
     /**
@@ -120,10 +114,12 @@ public class LibraryManager extends LibraryManagerBase
     public Procedure[] getLibraryProcedures() throws Exception
     {
 
-        // Тут надо вернуть вызывающему коду массив объектов Процедур, реализоыванных в этой библиотеке Процедур.
+        // Тут надо вернуть вызывающему коду массив объектов Процедур, реализованных в этой библиотеке Процедур.
         // Пока просто создаем их в коде, но если Процедур очень много, то следует внести заранее их в XML файл,
         // добавить его в jar-файл этой библиотеки и тут загрузить их из файла XML.
         // Это сэкономит немного памяти VM.
+        
+        //TODO: добавить ссылку на текущую библиотеку в каждый объект здесь.
 
         // создать выходной массив
         Procedure[] result = new Procedure[1];
@@ -133,7 +129,7 @@ public class LibraryManager extends LibraryManagerBase
         p.set_TableId(Item.Id_ItemNotFromDatabase);
         p.set_Title("Тест хеловорд");
         p.set_Description("Тестовая процедура: выводит на консоль helloworld  и звуковой сигнал.");
-        p.set_Path("GeneralProcedures.TestProcedures.testHelloWorld");
+        p.set_Path("GeneralProcedures.TestProcedures.testHelloWorld()");
         p.set_Regex("запустить тест хеловорд");
         //вес процедуры надо подобрать более точно, он зависит от общего набора Процедур.
         //TODO: придумать, как динамически изменять и определять вес Процедуры.

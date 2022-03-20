@@ -7,9 +7,11 @@ package GeneralProcedures;
 
 import ProcedureSubsystem.OperatorProcedure;
 import Lexicon.EnumDialogConsoleColor;
+import OperatorEngine.ArgumentCollection;
 import OperatorEngine.Engine;
 import OperatorEngine.EnumProcedureResult;
 import ProcedureSubsystem.ImplementationState;
+import ProcedureSubsystem.LibraryManagerBase;
 
 //TODO: Класс методов для Процедур должен быть помечен аннотацией OperatorProcedure  с  ImplementationState = NotTested либо Ready, чтобы его методы можно было вызывать в качестве процедур.
 //Класс может также содержать любые элементы, необходимые для методов Процедур.
@@ -28,6 +30,7 @@ public class TestProcedures
     /**
      * NT- Тестовая процедура: выводит на консоль helloworld  и звуковой сигнал.
      * @param engine    Ссылка на объект Движка Оператор для доступа к консоли, логу, БД итп.
+     * @param manager   Ссылка на объект Менеджера Библиотеки Процедур для доступа к инициализированным ресурсам библиотеки.
      * @param query     Текст исходного запроса пользователя.
      * @param args      Массив аргументов Процедуры, соответствующий запросу.
      * @return Функция возвращает результат как одно из значений EnumProcedureResult:
@@ -42,8 +45,8 @@ public class TestProcedures
      *  EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
      *  EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
      */
-    @OperatorProcedure(State = ImplementationState.NotTested, Title = "Test method", Description = "Test procedures engine method.")
-    public static EnumProcedureResult testHelloWorld(Engine engine, String query, String[] args)
+    @OperatorProcedure(State = ImplementationState.Ready, Title = "Test method", Description = "Test procedures engine method.")
+    public static EnumProcedureResult testHelloWorld(Engine engine, LibraryManagerBase manager, String query, ArgumentCollection args)
     {
         //print helloworld message to console and exit
         engine.get_OperatorConsole().PrintTextLine("helloworld", EnumDialogConsoleColor.Сообщение);

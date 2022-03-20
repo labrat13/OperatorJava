@@ -266,47 +266,36 @@ public class RegexManager
         LinkedList<String> lis = new LinkedList<String>();
         String p = path.trim();
         // p.Split(new char[] { '(' }, StringSplitOptions.RemoveEmptyEntries);
-        String[] sar1 = Utility.StringSplit(p, "\\(", true);// TODO:
-                                                            // Оптимизация:
-                                                            // можно ли обойтись
-                                                            // без регекса? Он
-                                                            // наверно медленнее
-                                                            // поиска в строке?
+        String[] sar1 = Utility.StringSplit(p, "\\(", true);
+        // TODO: Оптимизация: можно ли обойтись без регекса? Он наверно медленнее поиска в строке?
 
         String names = sar1[0];
         String args = sar1[1];
 
         // names.Split( new char[] { '.'},
         // StringSplitOptions.RemoveEmptyEntries);
-        String[] sar2 = Utility.StringSplit(names, "\\.", true);// TODO:
-                                                                // Оптимизация:
-                                                                // можно ли
-                                                                // обойтись без
-                                                                // регекса?
-        lis.add(sar2[0]);// assembly name
-        lis.add(sar2[1]);// class name
-        lis.add(sar2[2]);// func name
+        String[] sar2 = Utility.StringSplit(names, "\\.", true);
+        // TODO: Оптимизация: можно ли обойтись без регекса?
+        
+        lis.add(sar2[0].trim());// assembly name
+        lis.add(sar2[1].trim());// class name
+        lis.add(sar2[2].trim());// func name
         //TODO: можно ли уместить путь к методу в Java в 3 элемента? 
 
         // отсечь все что после закрывающей скобки
-        int pos = args.indexOf("\\)");// TODO: Оптимизация: можно ли обойтись
-                                      // без регекса?
+        int pos = args.indexOf(")");
         if (pos < 0) throw new Exception(String.format("Неправильный путь: %s", path));
         // но этого не может быть - ведь мы уже проверили формат пути ранее
 
-        args = args.substring(0, pos); //как .Remove(pos);? - проверить!
+        args = args.substring(0, pos).trim(); //как .Remove(pos);? - проверить!
         // если там еще что-то есть, это должны быть аргументы
         if (args.length() > 0)
         {
             // разделить на аргументы
             // String[] sar4 = args.Split(new char[] { ',' },
             // StringSplitOptions.RemoveEmptyEntries);
-            String[] sar4 = Utility.StringSplit(args, "\\,", true);// TODO:
-                                                                   // Оптимизация:
-                                                                   // можно ли
-                                                                   // обойтись
-                                                                   // без
-                                                                   // регекса?
+            String[] sar4 = Utility.StringSplit(args, "\\,", true);
+            // TODO: Оптимизация: можно ли обойтись без регекса?
 
             for (String s : sar4)
             {
@@ -509,6 +498,7 @@ public class RegexManager
         // // так что просто пробуем выполнить.
         // // throw new Exception(String.Format("Неправильная строка запуска
         // // приложения: {0}", cmdline));
+        return null;//for debug only
     }
 
 }

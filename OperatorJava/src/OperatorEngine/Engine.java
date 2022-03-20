@@ -242,10 +242,10 @@ public class Engine
             // но работать с пустой БД - начинать все сначала.
         }
         // else
-        // open existing database
+        // open existing database and close - as test
         this.m_db.Open(connectionString);
-        // БД оставим открытой на весь сеанс работы Оператора.      
-        // TODO: Следует переделать адаптер так, чтобы он открывал БД только на
+        this.m_db.Close();     
+        // Использовать адаптер так, чтобы он открывал БД только на
         // время чтения или записи, а не держал ее постоянно открытой.
         // Так меньше вероятность повредить бд при глюках линукса.
         
@@ -447,37 +447,37 @@ public class Engine
     /// Подтверждение не выводится, если завершение процедуры - успешное.
     /// </summary>
     /// <param name="result">Результат исполнения процедуры</param>
-    private void describeProcedureResult(ProcedureResult result)
+    private void describeProcedureResult(EnumProcedureResult result)
     {
         String msg = null;
-        bool ErrorAndBeep = false;
+        boolean ErrorAndBeep = false;
         switch (result)
         {
-            case ProcedureResult.CancelledByUser:
+            case CancelledByUser:
                 msg = "Процедура прервана пользователем";
                 break;
-            case ProcedureResult.Error:
-            case ProcedureResult.Unknown:
+            case Error:
+            case Unknown:
                 msg = "Ошибка при исполнении процедуры";
                 ErrorAndBeep = true;
                 break;
-            case ProcedureResult.Exit:
+            case Exit:
                 msg = "Завершение программы...";
                 break;
-            case ProcedureResult.ExitAndHybernate:
-            case ProcedureResult.ExitAndSleep:
+            case ExitAndHybernate:
+            case ExitAndSleep:
                 msg = "Переход в спящий режим...";
                 break;
-            case ProcedureResult.ExitAndLogoff:
+            case ExitAndLogoff:
                 msg = "Завершение сеанса пользователя...";
                 break;
-            case ProcedureResult.ExitAndReload:
+            case ExitAndReload:
                 msg = "Перезагрузка компьютера...";
                 break;
-            case ProcedureResult.ExitAndShutdown:
+            case ExitAndShutdown:
                 msg = "Выключение компьютера...";
                 break;
-            case ProcedureResult.WrongArguments:
+            case WrongArguments:
                 msg = "Ошибка: неправильные аргументы";
                 ErrorAndBeep = true;
                 break;
@@ -486,17 +486,17 @@ public class Engine
         }
         // выбрать цвет сообщения о результате процедуры
         // подать звуковой сигнал при ошибке
-        DialogConsoleColors color;
+        EnumDialogConsoleColor color;
         if (ErrorAndBeep == true)
         {
-            this.OperatorConsole.Beep();
-            color = DialogConsoleColors.Предупреждение;
+            this.m_OperatorConsole.Beep();
+            color = EnumDialogConsoleColor.Предупреждение;
         }
-        else color = DialogConsoleColors.Сообщение;
+        else color = EnumDialogConsoleColor.Сообщение;
         // выдать сообщение о результате процедуры
         // если курсор не в начале строки, начать сообщение с новой строки.
-        this.OperatorConsole.SureConsoleCursorStart();
-        this.OperatorConsole.PrintTextLine(msg, color);
+        this.m_OperatorConsole.SureConsoleCursorStart();
+        this.m_OperatorConsole.PrintTextLine(msg, color);
 
         return;
     }
@@ -506,7 +506,7 @@ public class Engine
     /// Возвращаем false для завершения работы приложения
     /// </summary>
     /// <param name="cmdline">Текст запроса</param>
-    public EnumProcedureResult DoQuery(String query)
+    public EnumProcedureResult DoQuery(String query) throws Exception
     {
         // найти подходящую процедуру для запроса
         // перебором всех процедур.
@@ -516,8 +516,8 @@ public class Engine
         // 22052020 - фича: если запрос не русскоязычный, то передать его в
         // терминал. Иначе - исполнять.
         if (BCSA.IsNotRussianFirst(query)) return ExecuteWithTerminal(query);
-        // для каждой процедуры из списка процедур из кеша БД:
-        for (Procedure p : this.m_db.Procedures.Procedures)
+        // для каждой процедуры из списка процедур из кеша элементов:
+        for (Procedure p : this.m_ECM.get_ProcedureCollection().get_Procedures()) // this.m_db.Procedures.Procedures)
         {
             // собрать нормальный регекс для процедуры
             // TODO: optimization - можно же это сделать после загрузки регекса
@@ -537,7 +537,7 @@ public class Engine
                 // и если они не подходят, то завершиться с флагом
                 // ProcedureResult.WrongArguments.
                 result = Execute(query, regex, p, args);
-                if (result != ProcedureResult.WrongArguments) return result;
+                if (result != EnumProcedureResult.WrongArguments) return result;
             }
         }
         // Тут состояние "Не удалось подобрать процедуру для исполнения запроса"
@@ -631,7 +631,7 @@ public class Engine
     /// <param name="p">Объект процедуры</param>
     /// <param name="args">Коллекция аргументов</param>
     /// <returns></returns>
-    private EnumProcedureResult Execute(String command, String regex, Procedure p, ArgumentCollection args)
+    private EnumProcedureResult Execute(String command, String regex, Procedure p, ArgumentCollection args) throws Exception
     {
         // и еще нужно этим аргументам сопоставить типы мест хотя бы
         TryAssignPlaces(args);
@@ -744,27 +744,24 @@ public class Engine
         return result;
     }
 
-    /// <summary>
-    /// NR-Сопоставить данные аргументов и места из коллекции мест, насколько
-    /// это возможно.
-    /// </summary>
-    /// <param name="args"></param>
-    private void TryAssignPlaces(ArgumentCollection args)
+    /**
+     * NT-Сопоставить данные аргументов и места из коллекции мест, насколько это возможно.
+     * @param args
+     * @throws Exception
+     */
+    private void TryAssignPlaces(ArgumentCollection args) throws Exception
         {
 
             //тут надо если у аргумента название есть в словаре мест, то скопировать в аргумент значение этого места
             //пока без проверки типов и всего такого, так как это должна бы делать процедура.
-            foreach (FuncArgument f in args.Arguments)
+            for (FuncArgument f : args.get_Arguments())
             {
-                String name = f.ArgumentValue;
-                if (this.m_db.Places.ContainsPlace(name))
+                String name = f.get_ArgumentValue();
+                if (this.m_ECM.get_PlaceCollection().ContainsPlace(name))  //.m_db.Places.ContainsPlace(name))
                 {
                     //извлечем место
-                    Place p = this.m_db.Places.GetPlace(name);
+                    Place p = this.m_ECM.get_PlaceCollection().GetPlace(name); //this.m_db.Places.GetPlace(name);
                     //копируем свойства места в аргумент
-                    //f.ArgumentType = String.Copy(p.PlaceTypeExpression);
-                    //f.ArgumentValue = String.Copy(p.Path);
-                    //заменены на 
                     f.ПодставитьМесто(p);
                 }
             }
@@ -772,21 +769,37 @@ public class Engine
             return;
         }
 
-    /// <summary>
-    /// NR-Вывести на консоль информацию об исключении
-    /// </summary>
-    /// <param name="e"></param>
+    /**
+     * NT-Вывести на консоль информацию об исключении
+     * @param e Объект исключения.
+     */
     private void PrintExceptionToConsole(Exception e)
     {
-        // вложенное исключение выводить, если есть, вместо первого.
+        // TODO: вложенное исключение выводить, если есть, вместо первого.
         // так как в процедурах сборок процедур они упаковываются в исключение
         // механизма отражения
-        if (e.InnerException != null)
-            this.OperatorConsole.PrintExceptionMessage(e.InnerException);
-        else this.OperatorConsole.PrintExceptionMessage(e);
+//        if (e. != null)
+//            this.OperatorConsole.PrintExceptionMessage(e.InnerException);
+        //else 
+            this.m_OperatorConsole.PrintExceptionMessage(e);
 
         return;
     }
+
+    /** NT-Add exception message to Log and Console.
+     * @param msg Message title.
+     * @param ex Exception object.
+     */
+    public void PrintExceptionMessageToConsoleAndLog(String msg, Exception ex)
+    {
+        this.m_OperatorConsole.PrintExceptionMessage(msg, ex);
+        this.m_logman.AddExceptionMessage(msg, ex);
+        
+        return;
+    }
+    //TODO: создать такую же функцию для вывода обычных сообщений не получается пока 
+    //- необходимо указать класс сообщения консоли как цвет текста.
+    //- необходимо указать класс сообщения лога 
 
     // #endregion
 

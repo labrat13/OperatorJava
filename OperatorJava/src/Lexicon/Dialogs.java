@@ -121,7 +121,7 @@ public class Dialogs
         // sb.Append('/');
         // }
         // заменено на join()
-        String[] sar = (String[]) lis.toArray();
+        String[] sar = lis.toArray(new String[lis.size()]);
         String s = String.join("/", sar);
         sb.append(s);
         sb.append(']');

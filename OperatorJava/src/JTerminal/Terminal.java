@@ -581,6 +581,7 @@ public class Terminal
     {
         // TODO: add valid code here
         return System.console().readLine();
+
     }
 
 }

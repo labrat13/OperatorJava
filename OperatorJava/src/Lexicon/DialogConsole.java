@@ -314,7 +314,13 @@ public class DialogConsole
      */
     public void PrintExceptionMessage(String title, Exception ex)
     {
-        StringBuilder sb = new StringBuilder(title);
+        String s;
+        if(Utility.StringIsNullOrEmpty(title))
+            s = "Ошибка";
+        else
+            s = title;
+        //
+        StringBuilder sb = new StringBuilder(s);
         // добавим разделительный пробел
         sb.append(' ');
         // добавим название исключения

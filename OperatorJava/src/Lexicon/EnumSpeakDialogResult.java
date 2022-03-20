@@ -98,7 +98,9 @@ public final class EnumSpeakDialogResult
      * Служебная комбинация всех флагов субкоманд для проверки максимально
      * допустимого значения
      */
-    private static final int AllFlags    = EnumSpeakDialogResult.Да & EnumSpeakDialogResult.Нет & EnumSpeakDialogResult.Отложить & EnumSpeakDialogResult.Отмена & EnumSpeakDialogResult.Повторить & EnumSpeakDialogResult.Прервать & EnumSpeakDialogResult.Пропустить;
+    private static final int AllFlags    = EnumSpeakDialogResult.Да | EnumSpeakDialogResult.Нет | EnumSpeakDialogResult.Отложить 
+            | EnumSpeakDialogResult.Отмена | EnumSpeakDialogResult.Повторить | EnumSpeakDialogResult.Прервать 
+            | EnumSpeakDialogResult.Пропустить;
 
     /**
      * Object value
@@ -172,7 +174,7 @@ public final class EnumSpeakDialogResult
         // проверить входное значение - это набор флагов или что-то случайное
         checkValue(flag);
 
-        return ((this.getValue() & flag) == 0);
+        return ((this.getValue() & flag) != 0);
     }
 
     /**

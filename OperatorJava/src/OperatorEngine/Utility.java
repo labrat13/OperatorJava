@@ -168,6 +168,7 @@ public class Utility
         else return sar;
     }
 
+    
     /** 
      * NT-Faster split string at first match delimiter string
      * @param text Source string

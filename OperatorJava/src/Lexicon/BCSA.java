@@ -29,8 +29,9 @@ public class BCSA // BigCommandSemanticAnalyser - такое длинное на
      * @param query
      *            Текст исходного запроса
      * @return Функция возвращает код результата исполнения процедуры
+     * @throws Exception Error on DoQuery()
      */
-    public static EnumProcedureResult ProcessQuery(Engine engine, String query)
+    public static EnumProcedureResult ProcessQuery(Engine engine, String query) throws Exception
     {
         // сейчас тупо исполним весь запрос целиком
         EnumProcedureResult result = engine.DoQuery(query);

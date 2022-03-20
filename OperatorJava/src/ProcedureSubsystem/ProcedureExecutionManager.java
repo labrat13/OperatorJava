@@ -16,6 +16,8 @@ import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -70,70 +72,94 @@ public class ProcedureExecutionManager
     }
 
     /**
-     * NR-Initialize Execution manager
+     * NT-Initialize Execution manager
+     * @throws Exception Exception on errors.
      */
-    public void Open()
+    public void Open() throws Exception
     {
-        // Заполнить HashMap <String, String> парами <AssemblyTitle, JarFilePath>.
-        this.m_Libraries = loadLibraries();
-        // TODO: init all libraries
-        // TODO: тут нужен код для загрузки менеджеров библиотек из этих библиотек.
-        // TODO: тут нужен код для выгрузки Процедур и Мест из кажддой библиотеки в
-        // Оператор. Но не в БД, а в общий такой буфер для них.
-        // Поверх CachedDbAdapter такой буфер нужно добавить в Движок Оператора.
+        // Заполнить HashMap 
+        this.m_Libraries = loadLibraries();//TODO: как обрабатывать исключения в Open() всех менеджеров?
+        // init all libraries
+        this.initLibraries();
+
         return;
     }
+
+
 
 
 
     /**
-     * NR-Close execution manager
+     * NT-Close execution manager
      */
     public void Close()
     {
-        // TODO: free all libraries
-
+        //free all libraries
+        this.сloseLibraries();
+        //clear dictionary
+        this.m_Libraries.clear();
+            
         return;
     }
 
-//    /**
-//     * NT-Fill dictionary with jar files pathes
-//     * 
-//     * @return Function returns dictionary (title, path) of each jar file in
-//     *         main libraries folder.
-//     */
-//    private HashMap<String, String> findLibraries()
-//    {
-//        // TODO Тут jar файлы библиотек процедур должны быть сложены
-//        // непосредственно в каталог Процедур, а не как положено.
-//        // Надо переделать этот код после отладки.
-//
-//        // создать словарь название библиотеки -путь к jar-файлу библиотеки.
-//        HashMap<String, String> result = new HashMap<String, String>();
-//        // получить путь к корневой папке хранилища библиотек
-//        String libraryFolder = FileSystemManager.getAssembliesFolderPath();
-//        // сейчас просто извлечь все jar-файлы из этой папки, но не подпапок,
-//        // хотя это неправильно, но для отладки на первое время сойдет.
-//        // TODO: переделать после отладки код здесь на правильную структуру
-//        // папок и файлов Процедур.
-//        // а правильно - каждый файл в свою одноименную папку помещать
-//        // так как там еще должны быть всякие папки и файлы ресурсов потом.
-//        File libFolder = new File(libraryFolder);
-//        // собираем файлы только в указанном каталоге, но не в подкаталогах.
-//        File[] files = FileSystemManager.getDirectoryFiles(libFolder, new String[] {
-//                ".jar", ".JAR" });
-//        // извлечь имя файла без расширения и путь к файлу и поместить в словарь
-//        for (File f : files)
-//        {
-//            String filetitle = f.getName();
-//            filetitle = Utility.getFileExtension(filetitle);
-//            String path = f.getAbsolutePath();
-//
-//            result.put(filetitle, path);
-//        }
-//
-//        return result;
-//    }
+    /** 
+     * NT-Получить объект менеджера библиотеки по названию библиотеки
+     * @param key Название библиотеки.
+     * @return Функция возвращает объект менеджера библиотеки.
+     */
+    private LibraryManagerBase getManager(String key)
+    {
+        return this.m_Libraries.get(key);
+    }
+    
+    /**
+     * NT-initialize all libraries
+     */
+    private void initLibraries()
+    {
+        Set<Entry<String, LibraryManagerBase>> values = this.m_Libraries.entrySet();
+        for(Entry<String, LibraryManagerBase> en : values)
+        {
+            try 
+            {
+                en.getValue().Init();
+            }
+            catch(Exception ex)
+            {
+              //тут вывести сообщение о ошибке инициализации библиотеки
+                //на консоль и в лог
+                String msg = String.format("Error on init library \"%s\" (path=\"%s\")", en.getKey(), en.getValue().m_LibraryPath);
+                this.m_Engine.PrintExceptionMessageToConsoleAndLog(msg, ex);  
+            }
+        }
+        
+        return;
+    }
+    /**
+     * NT-deinitialize all libraries
+     */
+    private void сloseLibraries()
+    {
+        Set<Entry<String, LibraryManagerBase>> values = this.m_Libraries.entrySet();
+        for(Entry<String, LibraryManagerBase> en : values)
+        {
+            try 
+            {
+                LibraryManagerBase lmb = en.getValue();
+                if(lmb.get_Initialized() == true)
+                    lmb.Exit();
+            }
+            catch(Exception ex)
+            {
+              //тут вывести сообщение о ошибке инициализации библиотеки
+                //на консоль и в лог
+                String msg = String.format("Error on exit library \"%s\" (path=\"%s\")", en.getKey(), en.getValue().m_LibraryPath);
+                this.m_Engine.PrintExceptionMessageToConsoleAndLog(msg, ex); 
+            }
+        }
+        
+        return;
+    }
 
     /** 
      * NT-Load LibraryManager object from each of founded Procedure Library JAR file.
@@ -161,7 +187,7 @@ public class ProcedureExecutionManager
             filetitle = Utility.getFilenameWithoutExtension(filetitle);
             String path = f.getAbsolutePath();
             //get library manager object from class loader
-            LibraryManagerBase manager = this.loadLibraryManager(path);
+            LibraryManagerBase manager = LibraryManagerBase.loadLibraryManager(this.m_Engine, filetitle, path);
             //поместить объект в словарь только если файл является правильным файлом библиотеки 
             if(manager != null)
                 result.put(filetitle, manager);
@@ -169,10 +195,7 @@ public class ProcedureExecutionManager
             catch(Exception e)
             {
                 String title = "Исключение при загрузке библиотеки Процедур " + f.getAbsolutePath();
-                this.m_Engine.get_OperatorConsole().PrintExceptionMessage(title, e);
-                //add exception to log - TODO: надо бы и текст описательный выводить.
-                this.m_Engine.getLogManager().AddMessage(EnumLogMsgClass.ExceptionRaised, EnumLogMsgState.Default, title);
-                this.m_Engine.getLogManager().AddExceptionMessage(e);
+                this.m_Engine.PrintExceptionMessageToConsoleAndLog(title, e);
             }
         }
         
@@ -180,167 +203,122 @@ public class ProcedureExecutionManager
     }
     
     
-    /** 
-     * NR- Try get library manager from specified jar file.
-     * @param path JAR file path.
-     * @return Function returns library manager object or null if it is not found.
-     * @throws Exception Error on loading.
-     *  
+    //==============================================
+    /**
+     * NT-Получить все объекты Places
+     * 
+     * @return Функция возвращает список объектов Places
+     * @throws Exception
+     *             Ошибка
      */
-    private LibraryManagerBase loadLibraryManager(String path) throws Exception
+    public LinkedList<Place> GetAllPlaces() throws  Exception
     {
-        //throw exceptions if any error
-        //return null if no manager in that file       
-        //TODO: не забыть вписать в объект менеджера путь к его файлу path!
+        LinkedList<Place> result = new LinkedList<Place>();
+        Set<Entry<String, LibraryManagerBase>> values = this.m_Libraries.entrySet();
         
-        throw new Exception("Function not implemented"); //TODO: add code here
-        //return null;
+        for(Entry<String, LibraryManagerBase> en : values)
+        {
+            try 
+            {
+                LibraryManagerBase lmb = en.getValue();
+                if(lmb.get_Initialized() == true)
+                {                    
+                Place[] par = lmb.getLibraryPlaces();
+                //add to result list
+                for(Place p : par)
+                    result.add(p);
+                }
+            }
+            catch(Exception ex)
+            {
+              //тут вывести сообщение о ошибке библиотеки на консоль и в лог
+                String msg = String.format("Error on getAllPlaces() for library \"%s\" (path=\"%s\")", en.getKey(), en.getValue().m_LibraryPath);
+                this.m_Engine.PrintExceptionMessageToConsoleAndLog(msg, ex); 
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * NT-Получить все объекты Процедур
+     * 
+     * @return Функция возвращает список объектовПроцедур.
+     * @throws Exception
+     *             Ошибка .
+     */
+    public LinkedList<Procedure> GetAllProcedures() throws Exception
+    {
+        LinkedList<Procedure> result = new LinkedList<Procedure>();
+        Set<Entry<String, LibraryManagerBase>> values = this.m_Libraries.entrySet();
+        
+        for(Entry<String, LibraryManagerBase> en : values)
+        {
+            try 
+            {
+                LibraryManagerBase lmb = en.getValue();
+                if(lmb.get_Initialized() == true)
+                { 
+                Procedure[] par = lmb.getLibraryProcedures();
+                //add to result list
+                for(Procedure p : par)
+                    result.add(p);
+                }
+            }
+            catch(Exception ex)
+            {
+              //тут вывести сообщение о ошибке библиотеки на консоль и в лог
+                String msg = String.format("Error on getAllProcedures() for library \"%s\" (path=\"%s\")", en.getKey(), en.getValue().m_LibraryPath);
+                this.m_Engine.PrintExceptionMessageToConsoleAndLog(msg, ex); 
+            }
+        }
+        
+        return result;
     }
 
-    /**
-     * NT-Invoke procedure method
-     * 
-     * @param p
-     *            Procedure for execution
-     * @param command
-     *            Query text string
-     * @param names
-     *            assembly.class.method titles array
-     * @param engine
-     *            Engine object reference
-     * @param args
-     *            Procedure arguments array
-     * @return Function returns Procedure result code.
-     * @throws Exception
-     *             "Не найдена библиотека Процедур" и другие.
+    /** 
+     * NT- Запустить процедуру на исполнение
+     * @param p Объект Процедуры.
+     * @param names Массив частей пути Процедуры.
+     * @param command Текст запроса пользователя.
+     * @param engine Ссылка на Движок Оператора.
+     * @param args Мвассив аргументов для Процедуры.
+     * @return Функция возвращает код результата исполнения Процедуры.
+     * @throws Exception Error on execution.
      */
     public EnumProcedureResult invokeProcedure(
             Procedure p,
             String[] names,
             String command,
             Engine engine,
-            ArgumentCollection args)
-            throws Exception
+            ArgumentCollection args) throws Exception
     {
-        URLClassLoader loader = null;
-        EnumProcedureResult result = EnumProcedureResult.Error;
-
-        try
-        {
-
-            String AssemblyTitle = names[0];
-            String ClassTitle = AssemblyTitle + "." + names[1]; // "AssemblyTitle.ClassTitle"
-            String MethodTitle = names[2];
-
-            // 1. Получить абсолютный путь к JAR файлу сборки.
-            // Файл должен называться по names[0] и иметь расширение jar.
-            // Путь к файлу следует получить из HashMap по ключу names[0].
-            String jarFilePath = this.getLibraryPathByAssemblyTitle(AssemblyTitle);
-            if (Utility.StringIsNullOrEmpty(jarFilePath) || (FileSystemManager.isFileExists(jarFilePath) == false)) throw new Exception("Не найдена библиотека Процедур: " + AssemblyTitle);
-            // а далее - по коду из прототипа
-
-            // 2. load class from specified JarFile
-            URL classUrl = new URL(jarFilePath);
-            URL[] classUrls = new URL[] { classUrl };
-            loader = new URLClassLoader(classUrls);
-            Class<?> cls = loader.loadClass(ClassTitle);
-
-            // 3. Package annotation check
-            Package pg = cls.getPackage();
-            // не может не быть корневого пакета
-            if (pg == null) 
-                throw new Exception("Root package not found in Procedure Library " + jarFilePath);
-            OperatorProcedure packageAnnot = pg.getAnnotation(OperatorProcedure.class);
-            if (packageAnnot == null) 
-                throw new Exception(String.format("Root package in Procedure Library %s not marked with OperatorProcedure annotation.", jarFilePath));
-            if (packageAnnot.State() == ImplementationState.NotRealized) 
-                throw new Exception(String.format("Root package in Procedure Library %s marked as ImplementationState.NotRealized.", jarFilePath));
-
-            // 4. if class not annotated, stop work
-            OperatorProcedure annot = cls.getAnnotation(OperatorProcedure.class);
-            if (annot == null) 
-                throw new Exception("Specified class not marked with OperatorProcedure annotation.");
-            // 5. find method
-            ImplementationState state = annot.State();
-            // String class_title = annot.Title();
-            // String class_description = annot.Description();
-            if (state == ImplementationState.NotRealized) 
-                throw new Exception("Specified class marked as ImplementationState.NotRealized.");
-            if (state == ImplementationState.NotTested)
-            {
-                // print warning "This Procedure method class %s marked as not tested"
-                String msg1 = "Класс " + ClassTitle + ", содержащий данную Процедуру, помечен как NotTested";
-                engine.get_OperatorConsole().PrintTextLine(msg1, EnumDialogConsoleColor.Предупреждение);
-                //add msg to log
-                engine.getLogManager().AddMessage(EnumLogMsgClass.Default, EnumLogMsgState.Default, msg1);
-            }
-            // 6. get method
-            Method m = cls.getMethod(MethodTitle, String.class, Engine.class, ArgumentCollection.class);
-            // throw NoSuchMethodException if cannot find method
-
-            // 7. check method annotation
-            OperatorProcedure annot2 = m.getAnnotation(OperatorProcedure.class);
-            if (annot2 == null) 
-                throw new Exception("Specified method not marked with OperatorProcedure annotation.");
-            ImplementationState state2 = annot2.State();
-            // String method_title = annot2.Title();
-            // String method_description = annot2.Description();
-            if (state2 == ImplementationState.NotRealized) 
-                throw new Exception("Specified method marked as ImplementationState.NotRealized.");
-            // запросить у пользователя подтверждение на запуск процедуры, помеченной как требующая отладки.
-            if (state2 == ImplementationState.NotTested)
-            {
-                String question = String.format("Исполняемый метод %s.%s помечен как NotTested. Продолжить выполнение?", ClassTitle, MethodTitle);
-                EnumSpeakDialogResult esdr = engine.get_OperatorConsole().PrintДаНетОтмена(question);
-                // если пользователь ответил не "Да", то отменить исполнение Процедуры.
-                if (!esdr.isДа())
-                {
-                    // TODO: тут надо прервать выполнение и вернуть результат EnumProcedureResult.CancelledByUser
-                    // Я накидал сейчас что попало, это не то, что нужно.
-                    result = EnumProcedureResult.CancelledByUser;
-                    // throw new Exception("Процедура прервана пользователем.");
-                }
-            }
-
-            // 8. execute method if not previous cancelled by user
-            if (result != EnumProcedureResult.CancelledByUser)
-            {
-                Object returned = m.invoke(null, command, engine, args);
-                // 8. return result
-                if (returned == null) throw new Exception(String.format("Error: Method %s.%s returns null.", ClassTitle, MethodTitle));
-
-                result = (EnumProcedureResult) returned;
-            }
-        }
-        // ловить тут ничего не будем - все вызывающему коду передаем.
-        finally
-        {
-            // close class loader
-            if (loader != null) loader.close();
-        }
-
-        return result;
+        //get manager reference
+        LibraryManagerBase manager = this.getManager(names[0]);
+        String jarFilePath = manager.get_LibraryPath();
+            if(manager.get_Initialized() == false)
+                throw new Exception("Library manager not initialized for " +  jarFilePath);
+            else
+                return LibraryManagerBase.invokeProcedure(p, names, jarFilePath, engine, manager, command, args);
     }
-
-     
     
     
     
-    /**
-     * NT- Получить путь к файлу по названию сборки из пути Процедуры
-     * 
-     * @param title
-     *            Assembly title = library file title = library package title
-     * @return Function returns library file path or null if title not exists
-     */
-    protected String getLibraryPathByAssemblyTitle(String title)
-    {
-        // if(this.m_Libraries.containsKey(title))
-        // return this.m_Libraries.get(title);
-        // else return null;
-
-        return this.m_Libraries.get(title);
-    }
+//    /**
+//     * NT- Получить путь к файлу по названию сборки из пути Процедуры
+//     * 
+//     * @param title
+//     *            Assembly title = library file title = library package title
+//     * @return Function returns library file path or null if title not exists
+//     */
+//    protected String getLibraryPathByAssemblyTitle(String title)
+//    {
+//        // if(this.m_Libraries.containsKey(title))
+//        // return this.m_Libraries.get(title);
+//        // else return null;
+//
+//        return this.m_Libraries.get(title);
+//    }
 
     // /**
     // * NR-Test of invoking Procedure from
@@ -528,11 +506,14 @@ public class ProcedureExecutionManager
     // }
     //
     
-    //=== Java Reflection debug functions ===
+
+
+//=== Java Reflection debug functions ===
 /**
  * RT-Вывести на экран информацию о классе.
  * @param c Объект класса.
  */
+    @SuppressWarnings("unused")
     private static void printClassInfo(Class<?> c)
     {
         if (c == null)
@@ -617,29 +598,8 @@ public class ProcedureExecutionManager
         return;
     }
 
-    //==============================================
-    /**
-     * NR-Получить все объекты Places
-     * 
-     * @return Функция возвращает список объектов Places
-     * @throws Exception
-     *             Ошибка
-     */
-    public LinkedList<Place> GetAllPlaces() throws  Exception
-    {
-        throw new Exception("Function not implemented"); //TODO: add code here
-    }
-    
-    /**
-     * NR-Получить все объекты Процедур
-     * 
-     * @return Функция возвращает список объектовПроцедур.
-     * @throws Exception
-     *             Ошибка .
-     */
-    public LinkedList<Procedure> GetAllProcedures() throws Exception
-    {
-        throw new Exception("Function not implemented"); //TODO: add code here
-    }
+
+
+
     
 }

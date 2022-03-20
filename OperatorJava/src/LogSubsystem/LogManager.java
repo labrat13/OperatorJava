@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 
 import javax.xml.stream.XMLStreamException;
 
+import Lexicon.EnumDialogConsoleColor;
 import OperatorEngine.Engine;
 import OperatorEngine.FileSystemManager;
 import OperatorEngine.SystemInfoManager;
@@ -38,42 +39,42 @@ public class LogManager
     // - когда ее запускать? Подсчет размера каталога лога - долгое дело?
     // - предел размера каталога лога - задавать в настройках Оператор.
     // - - LogFolderSizeLimitMB = 1024
-    // - - LogFileCountLimit = 4096 
+    // - - LogFileCountLimit = 4096
     // Нужна функция подсчета числа файлов в каталоге и их размера.
     // TODO: Надо добавить предельный размер файла лога, и создавать его продолжения при превышении предела.
     // - Но это уже немного другой процесс лога получается!
-    //   Придется переделывать подсистему лога.
+    // Придется переделывать подсистему лога.
     // - предел размера файла задаватьв настройках Оператор.
     // - - LogFileSizeLimitMB = 4096
-    //Надо чтобы это все работало для производных классов, они и будут далее использоваться.
-    
+    // Надо чтобы это все работало для производных классов, они и будут далее использоваться.
+
     /**
      * Application log folder path
      */
-    protected final static String   AppLogFolderPath = FileSystemManager.getAppLogFolderPath();
-    //SystemInfoManager.GetUserHomeFolderPath() + File.separator + "Operator" + File.separator + "logs";
+    protected final static String AppLogFolderPath = FileSystemManager.getAppLogFolderPath();
+    // SystemInfoManager.GetUserHomeFolderPath() + File.separator + "Operator" + File.separator + "logs";
     // = FileSystemManager.AppLogFolderPath; - заменено на время отладки,
     // поскольку Engine класс не готов.
 
     /**
      * Line break symbol "/n"
      */
-    protected final static String   LineSeparator    = System.lineSeparator();
+    protected final static String LineSeparator    = System.lineSeparator();
 
     /**
      * Log writer object
      */
-    protected OutputStreamWriter m_Writer;
+    protected OutputStreamWriter  m_Writer;
 
     /**
      * Backreference to Engine object
      */
-    protected Engine             m_Engine;
+    protected Engine              m_Engine;
 
     /**
      * Log subsystem is ready to serve
      */
-    protected boolean            m_Ready;
+    protected boolean             m_Ready;
 
     /**
      * Default constructor
@@ -148,7 +149,8 @@ public class LogManager
      * 
      * @throws IOException
      *             Error on writing to log file
-     * @throws XMLStreamException Error on writing to log file.
+     * @throws XMLStreamException
+     *             Error on writing to log file.
      */
     public void Close() throws IOException, XMLStreamException
     {
@@ -180,9 +182,11 @@ public class LogManager
      *            New message object.
      * @throws IOException
      *             Error on writing to log file.
-     * @throws XMLStreamException Error on writing to log file.
+     * @throws XMLStreamException
+     *             Error on writing to log file.
      */
-    public void AddMessage(LogMessage msg) throws IOException, XMLStreamException
+    public void AddMessage(LogMessage msg)
+            throws IOException, XMLStreamException
     {
         String s = msg.ToXmlString();
         this.m_Writer.write(s);
@@ -206,7 +210,8 @@ public class LogManager
      * @throws XMLStreamException
      *             Error on writing to log file.
      */
-    public void AddMessage(EnumLogMsgClass c, EnumLogMsgState s, String text) throws IOException, XMLStreamException
+    public void AddMessage(EnumLogMsgClass c, EnumLogMsgState s, String text)
+            throws IOException, XMLStreamException
     {
         LogMessage msg = new LogMessage(c, s, text);
         this.AddMessage(msg);
@@ -229,17 +234,51 @@ public class LogManager
 
     /**
      * NT-Add log message about exception. This function not thrown (suppress) any exceptions.
-     * @param e Exception object to log
+     * 
+     * @param e
+     *            Exception object to log
      */
     public void AddExceptionMessage(Exception e)
     {
-        try {
-        LogMessage msg = new LogMessage(EnumLogMsgClass.ExceptionRaised, EnumLogMsgState.Fail, e.toString());
-        this.AddMessage(msg);
-        }
-        catch(Exception ex)
+        try
         {
-            //add debug breakpoint here;
+            LogMessage msg = new LogMessage(EnumLogMsgClass.ExceptionRaised, EnumLogMsgState.Fail, e.toString());
+            this.AddMessage(msg);
+        }
+        catch (Exception ex)
+        {
+            ;// add debug breakpoint here;
+        }
+        return;
+    }
+
+    /**
+     * NT-Add log message about exception. This function not thrown (suppress) any exceptions.
+     * 
+     * @param title
+     *            Вводный текст сообщения. Если пустая строка, то используется "Ошибка".
+     * @param ex
+     *            Объект исключения.
+     */
+    public void AddExceptionMessage(String title, Exception ex)
+    {
+        try
+        {
+            StringBuilder sb = new StringBuilder(title);
+            // добавим разделительный пробел
+            sb.append(' ');
+            // добавим название исключения
+            sb.append(ex.getClass().getName());
+            // добавим текст исключения
+            sb.append(": ");
+            sb.append(ex.toString());
+            //
+            LogMessage msg = new LogMessage(EnumLogMsgClass.ExceptionRaised, EnumLogMsgState.Fail, sb.toString());
+            this.AddMessage(msg);
+        }
+        catch (Exception e)
+        {
+            ;// add debug breakpoint here;
         }
         return;
     }

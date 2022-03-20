@@ -28,6 +28,7 @@ import OperatorEngine.EntityTypesCollection;
 import OperatorEngine.FileSystemManager;
 import OperatorEngine.Place;
 import OperatorEngine.Procedure;
+import OperatorEngine.RegexManager;
 import OperatorEngine.Utility;
 import OperatorEngine.Version;
 import Settings.ApplicationSettingsBase;
@@ -49,6 +50,8 @@ public class Operator
         //Сейчас тут уже построен каркас Оператор для запуска движка.
         //Тесты вставлять только в виде вызовов функций тестирования!
 
+        
+        
         Engine engine = null;
         try
         {
@@ -72,6 +75,10 @@ public class Operator
             //А в Линукс все не так, тут теперь просто приложение закрывается.
             // m_exitcode = m_engine.ProcessLoop();
             //processExitCode(m_exitcode);
+            
+            //test query
+            String query = "запустить тест хеловорд";
+            BCSA.ProcessQuery(engine, query);
             
             //TODO: разобраться с исключениями в engine.Exit()
             engine.Exit();
@@ -103,6 +110,23 @@ public class Operator
 
         return;
     }
+
+//    /**
+//     * @throws Exception 
+//     * 
+//     */
+//    private static void testRegexACP() throws Exception
+//    {
+//        String s1 = "a.b.c()";
+//        String s2 = "aa.bb.cc ( arg1, arg2, arg3 ) ";
+//        String s3 = "aa.bb.cc (arg1, arg2, arg3) ";
+//        
+//        String[] result1 = RegexManager.ParseAssemblyCodePath(s1);
+//        String[] result2 = RegexManager.ParseAssemblyCodePath(s2);
+//        String[] result3 = RegexManager.ParseAssemblyCodePath(s3);
+//        
+//        return;
+//    }
 
 //    /**
 //     * @throws Exception 

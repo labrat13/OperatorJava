@@ -88,9 +88,9 @@ public class ElementCacheManager
     /**
      * NT-Список процедур, все процедуры держим здесь в памяти.
      * 
-     * @return the procedures
+     * @return the procedures collection object.
      */
-    public ProcedureCollection get_Procedures()
+    public ProcedureCollection get_ProcedureCollection()
     {
         return m_procedures;
     }
@@ -109,9 +109,9 @@ public class ElementCacheManager
     /**
      * NT-Список мест, все места держим здесь в памяти.
      * 
-     * @return the places
+     * @return the places collection object.
      */
-    public PlacesCollection get_Places()
+    public PlacesCollection get_PlaceCollection()
     {
         return m_places;
     }
@@ -564,7 +564,13 @@ public class ElementCacheManager
         // - TODO: проверить что постобработка объектов мест выполнена.
         // 4. Сортировка коллекции Мест по названию - невозможна, там словарь,
         // можно сортировать по названию только при получении общего списка Мест.
-
+        
+//clean up
+        llp.clear();
+        llp = null;
+        llp2.clear();
+        llp2 = null;
+        
         return;
     }
 
@@ -592,6 +598,12 @@ public class ElementCacheManager
         // - TODO: проверить что постобработка объектов мест выполнена.
         // 4. Сортировка коллекции Процедур по весу - already done in Fill() function.
 
+      //clean up
+        llp.clear();
+        llp = null;
+        llp2.clear();
+        llp2 = null;
+        
         return;
     }
 
