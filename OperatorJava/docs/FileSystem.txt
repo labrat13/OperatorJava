@@ -1,3 +1,9 @@
+================================
+Документация проект OperatorJava
+(C) 2022 Павел Селяков.
+================================
+
+
 /home/jsmith - user folder
 .cache/appname - app cache folder
 .config/appname - app settings folder

@@ -1,3 +1,9 @@
+================================
+Документация проект OperatorJava
+(C) 2022 Павел Селяков.
+================================
+
+
     m_home_user = getenv("HOME");
     m_filedb = "appname.db";
     m_userdir = m_home_user + "/.config/appname";
