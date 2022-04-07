@@ -339,6 +339,42 @@ public class Engine
         return l.isReady();
     }
 
+    /**
+     * NT-Вывести на консоль информацию об исключении
+     * 
+     * @param e
+     *            Объект исключения.
+     */
+    private void PrintExceptionToConsole(Exception e)
+    {
+        // TODO: вложенное исключение выводить, если есть, вместо первого.
+        // так как в процедурах сборок процедур они упаковываются в исключение
+        // механизма отражения
+        // if (e. != null)
+        // this.OperatorConsole.PrintExceptionMessage(e.InnerException);
+        // else
+        this.m_OperatorConsole.PrintExceptionMessage(e);
+
+        return;
+    }
+
+    /**
+     * NT-Add exception message to Log and Console.
+     * 
+     * @param msg
+     *            Message title.
+     * @param ex
+     *            Exception object.
+     */
+    public void PrintExceptionMessageToConsoleAndLog(String msg, Exception ex)
+    {
+        this.m_OperatorConsole.PrintExceptionMessage(msg, ex);
+        this.m_logman.AddExceptionMessage(msg, ex);
+
+        return;
+    }
+    
+    
     // #endregion
 
     // #region Основной цикл исполнения механизма
@@ -792,40 +828,7 @@ public class Engine
         return;
     }
 
-    /**
-     * NT-Вывести на консоль информацию об исключении
-     * 
-     * @param e
-     *            Объект исключения.
-     */
-    private void PrintExceptionToConsole(Exception e)
-    {
-        // TODO: вложенное исключение выводить, если есть, вместо первого.
-        // так как в процедурах сборок процедур они упаковываются в исключение
-        // механизма отражения
-        // if (e. != null)
-        // this.OperatorConsole.PrintExceptionMessage(e.InnerException);
-        // else
-        this.m_OperatorConsole.PrintExceptionMessage(e);
 
-        return;
-    }
-
-    /**
-     * NT-Add exception message to Log and Console.
-     * 
-     * @param msg
-     *            Message title.
-     * @param ex
-     *            Exception object.
-     */
-    public void PrintExceptionMessageToConsoleAndLog(String msg, Exception ex)
-    {
-        this.m_OperatorConsole.PrintExceptionMessage(msg, ex);
-        this.m_logman.AddExceptionMessage(msg, ex);
-
-        return;
-    }
     // TODO: создать такую же функцию для вывода обычных сообщений не получается пока
     // - необходимо указать класс сообщения консоли как цвет текста.
     // - необходимо указать класс сообщения лога

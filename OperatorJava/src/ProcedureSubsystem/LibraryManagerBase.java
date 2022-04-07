@@ -20,6 +20,7 @@ import OperatorEngine.EnumProcedureResult;
 import OperatorEngine.FileSystemManager;
 import OperatorEngine.Place;
 import OperatorEngine.Procedure;
+import OperatorEngine.UserQuery;
 import OperatorEngine.Utility;
 import OperatorEngine.Version;
 
@@ -214,15 +215,15 @@ public class LibraryManagerBase
      */
     public Place[] getLibraryPlaces() throws Exception
     {
-        if (this.m_Initialized == false)
-        {
-
-        }
-        else
-        {
-
-        }
-        throw new Exception("Function not implemented");
+//        if (this.m_Initialized == false)
+//        {
+//
+//        }
+//        else
+//        {
+//
+//        }
+        throw new Exception("Function must be overridden");
     }
 
     /**
@@ -235,15 +236,15 @@ public class LibraryManagerBase
      */
     public Procedure[] getLibraryProcedures() throws Exception
     {
-        if (this.m_Initialized == false)
-        {
-
-        }
-        else
-        {
-
-        }
-        throw new Exception("Function not implemented");
+//        if (this.m_Initialized == false)
+//        {
+//
+//        }
+//        else
+//        {
+//
+//        }
+        throw new Exception("Function must be overridden");
     }
 
     // *** Override this in child classes ***
@@ -252,7 +253,7 @@ public class LibraryManagerBase
      */
     protected void onInit() throws Exception
     {
-        return;
+        throw new Exception("Function must be overridden");
     }
 
     /**
@@ -260,7 +261,7 @@ public class LibraryManagerBase
      */
     protected void onExit() throws Exception
     {
-        return;
+        throw new Exception("Function must be overridden");
     }
 
     // *** Статические функции загрузки классов ***
@@ -373,7 +374,7 @@ public class LibraryManagerBase
      * @param manager
      *            Library manager object reference.
      * @param command
-     *            Query text string
+     *            Query object
      * @param args
      *            Procedure arguments array
      * @return Function returns Procedure result code.
@@ -386,7 +387,7 @@ public class LibraryManagerBase
             String jarFilePath,
             Engine engine,
             LibraryManagerBase manager,
-            String command,
+            UserQuery command,
             ArgumentCollection args)
             throws Exception
     {

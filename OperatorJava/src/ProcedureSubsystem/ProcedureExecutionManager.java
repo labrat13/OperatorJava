@@ -19,6 +19,7 @@ import OperatorEngine.EnumProcedureResult;
 import OperatorEngine.FileSystemManager;
 import OperatorEngine.Place;
 import OperatorEngine.Procedure;
+import OperatorEngine.UserQuery;
 import OperatorEngine.Utility;
 
 /**
@@ -274,7 +275,7 @@ public class ProcedureExecutionManager
      * @param names
      *            Массив частей пути Процедуры.
      * @param command
-     *            Текст запроса пользователя.
+     *            Объект запроса пользователя.
      * @param engine
      *            Ссылка на Движок Оператора.
      * @param args
@@ -286,7 +287,7 @@ public class ProcedureExecutionManager
     public EnumProcedureResult invokeProcedure(
             Procedure p,
             String[] names,
-            String command,
+            UserQuery command,
             Engine engine,
             ArgumentCollection args) throws Exception
     {

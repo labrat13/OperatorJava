@@ -77,7 +77,7 @@ public class LibraryManager extends LibraryManagerBase
     @Override
     protected void onInit() throws Exception
     {
-        // Добавить код инициализации ресурсов библиотеки процедур здесь.
+        // TODO: Добавить код инициализации ресурсов библиотеки процедур здесь.
         return;
     }
 
@@ -91,7 +91,7 @@ public class LibraryManager extends LibraryManagerBase
     @Override
     protected void onExit() throws Exception
     {
-        // Добавить код завершения ресурсов библиотеки процедур здесь.
+        // TODO: Добавить код завершения ресурсов библиотеки процедур здесь.
         return;
     }
 

@@ -1,12 +1,23 @@
 Список объектов и их ключей настроек
+//ключи пред-обработки
 - String[] Dialogs.ExitAppCommands =  "выход", "выйти", "закрыть", "quit", "close", "exit"
 - String[] Dialogs.ExitSleepCommands = "спать", "спи", "sleep" 
 - String[] Dialogs.ExitReloadCommands = "перезагрузить", "перезагрузись", "перезагрузка", "перезагрузить компьютер", "reload", "restart"
 - String[] Dialogs.ExitShutdownCommands = "выключись", "выключайся", "выключить компьютер", "poweroff", "shutdown"
 - String[] Dialogs.ExitLogoffCommands = "завершить сеанс", "завершение сеанса", "logoff" 
 
-- startup
-- onexit
+//команды стартапа
+- String cmd_startup  = ""  //текст команды или путь Процедуры, исполняемой при запуске Оператора
+- String cmd_finish   = ""  //текст команды или путь Процедуры, исполняемой при завершении Оператора
+- Boolean ignore_settings 		= false //флаг, игнорировать ли настройки файла настроек и БД при загрузке и завершении Оператора.
+
+//команды пост-обработки
+- String cmd_sleep = ""  //текст команды или путь Процедуры, исполняемой при EnumProcedureResult.ExitAndSleep
+- String cmd_reload = ""  //текст команды или путь Процедуры, исполняемой при EnumProcedureResult.ExitAndReload
+- String cmd_shutdown = ""  //текст команды или путь Процедуры, исполняемой при EnumProcedureResult.ExitAndShutdown
+- String cmd_logoff = ""  //текст команды или путь Процедуры, исполняемой при EnumProcedureResult.ExitAndLogoff
+- String cmd_hybernate = ""  //текст команды или путь Процедуры, исполняемой при EnumProcedureResult.ExitAndHybernate
+
 
 
 

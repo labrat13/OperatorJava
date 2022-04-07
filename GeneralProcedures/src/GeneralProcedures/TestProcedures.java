@@ -10,6 +10,7 @@ import Lexicon.EnumDialogConsoleColor;
 import OperatorEngine.ArgumentCollection;
 import OperatorEngine.Engine;
 import OperatorEngine.EnumProcedureResult;
+import OperatorEngine.UserQuery;
 import ProcedureSubsystem.ImplementationState;
 import ProcedureSubsystem.LibraryManagerBase;
 
@@ -46,8 +47,17 @@ public class TestProcedures
      *  EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
      */
     @OperatorProcedure(State = ImplementationState.Ready, Title = "Test method", Description = "Test procedures engine method.")
-    public static EnumProcedureResult testHelloWorld(Engine engine, LibraryManagerBase manager, String query, ArgumentCollection args)
+    public static EnumProcedureResult testHelloWorld(Engine engine, LibraryManagerBase manager, UserQuery query, ArgumentCollection args)
     {
+        /* 07042022 - Добавлена возможность внутри Процедуры изменять текст запроса, 
+         * чтобы применить новый текст запроса к дальнейшему поиску Процедур.
+         * Изменение запроса не перезапускает поиск Процедур (в текущей версии Оператора).
+         * Поэтому изменять запрос следует только в хорошо продуманных случаях.
+         *  
+         * Пример вызова функции переопределения запроса, с выводом в лог старого и нового значений.
+         * Example: query.ChangeQuery(engine, "New query text");
+         */
+        
         //print helloworld message to console and exit
         engine.get_OperatorConsole().PrintTextLine("helloworld", EnumDialogConsoleColor.Сообщение);
         engine.get_OperatorConsole().Beep();

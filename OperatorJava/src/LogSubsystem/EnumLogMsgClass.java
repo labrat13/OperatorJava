@@ -31,17 +31,21 @@ public enum EnumLogMsgClass
      */
     QueryStarted(3),
     /**
+     * Query text has been changed
+     */
+    QueryReplaced(4),
+    /**
      * User query processing finished
      */
-    QueryFinished(4),
+    QueryFinished(5),
     /**
      * Exception raised to break execution of Operator
      */
-    ExceptionRaised(5),
+    ExceptionRaised(6),
     /**
      * Exception suppressed or processed by engine
      */
-    ExceptionSuppressed(6);
+    ExceptionSuppressed(7);
 
     /**
      * Object value
