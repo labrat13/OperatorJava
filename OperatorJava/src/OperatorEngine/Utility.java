@@ -8,6 +8,7 @@ package OperatorEngine;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedList;
 
 import Lexicon.BCSA;
 
@@ -179,6 +180,30 @@ public class Utility
         else return sar;
     }
 
+    /**
+     * NT-Разделить строку ключевых слов на отдельные слова по , и ; 
+     * @param text Входная строка
+     * @return Возвращает массив ключевых слов, очищенных от разделителей и пробельных символов по краям.
+     */
+    public static String[] SplitCommaDelimitedString(String text)
+    {
+        //1. split text to array
+        String[] sar = text.split("[,;]");
+        //2. trim each string in array
+        LinkedList<String> li = new LinkedList<String>();
+        String t;
+        for(String s: sar)
+        {
+        //3. put each string in array to output list
+            if(s == null) continue;
+            t = s.trim();
+            if(t.isEmpty()) continue;
+            li.add(t);
+        }
+        //4. return list as array
+        return li.toArray(new String[li.size()]);
+    }
+    
     /**
      * NT-Faster split string at first match delimiter string
      * 

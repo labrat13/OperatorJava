@@ -51,10 +51,8 @@ public class Operator
             // А в Линукс все не так, тут теперь просто приложение закрывается.
             // m_exitcode = m_engine.ProcessLoop();
             // processExitCode(m_exitcode);
-
-            // test query
-            String query = "запустить тест хеловорд";
-            BCSA.ProcessQuery(engine, query);
+            engine.CommandLoop();
+            
 
             // TODO: разобраться с исключениями в engine.Exit()
             engine.Exit();

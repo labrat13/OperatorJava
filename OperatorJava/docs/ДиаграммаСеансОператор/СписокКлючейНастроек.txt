@@ -1,15 +1,12 @@
 Список объектов и их ключей настроек
 //ключи пред-обработки
 - String[] Dialogs.ExitAppCommands =  "выход", "выйти", "закрыть", "quit", "close", "exit"
-- String[] Dialogs.ExitSleepCommands = "спать", "спи", "sleep" 
-- String[] Dialogs.ExitReloadCommands = "перезагрузить", "перезагрузись", "перезагрузка", "перезагрузить компьютер", "reload", "restart"
-- String[] Dialogs.ExitShutdownCommands = "выключись", "выключайся", "выключить компьютер", "poweroff", "shutdown"
-- String[] Dialogs.ExitLogoffCommands = "завершить сеанс", "завершение сеанса", "logoff" 
+
 
 //команды стартапа
 - String cmd_startup  = ""  //текст команды или путь Процедуры, исполняемой при запуске Оператора
 - String cmd_finish   = ""  //текст команды или путь Процедуры, исполняемой при завершении Оператора
-- Boolean ignore_settings 		= false //флаг, игнорировать ли настройки файла настроек и БД при загрузке и завершении Оператора.
+- Boolean ignore_startup 		= false //флаг, игнорировать ли настройки файла настроек и БД при загрузке и завершении Оператора.
 
 //команды пост-обработки
 - String cmd_sleep = ""  //текст команды или путь Процедуры, исполняемой при EnumProcedureResult.ExitAndSleep

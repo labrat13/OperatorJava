@@ -250,35 +250,11 @@ public class Dialogs
     // #region *** Exit control functions ***
 
     /**
-     * Команды завершить Оператор
+     * Команды завершить Оператор.
      */
-    private static String[] ExitAppCommands      = { "выход", "выйти",
-            "закрыть", "quit", "close", "exit" };
+    static String[] ExitAppCommands;
+    //инициализируется в BCSA.Init(), поскольку надо загружать слова из файла настроек Оператора.
 
-    /**
-     * Команды перейти в спящий режим
-     */
-    private static String[] ExitSleepCommands    = { "спать", "спи", "sleep" };
-
-    /**
-     * Команды перезагрузить компьютер
-     */
-    private static String[] ExitReloadCommands   = { "перезагрузить",
-            "перезагрузись", "перезагрузка",
-            "перезагрузить компьютер", "reload", "restart" };
-
-    /**
-     * Команды выключить компьютер
-     */
-    private static String[] ExitShutdownCommands = { "выключись", "выключайся",
-            "выключить компьютер", "poweroff",
-            "shutdown" };
-
-    /**
-     * Команды завершить сеанс текущего пользователя
-     */
-    private static String[] ExitLogoffCommands   = { "завершить сеанс",
-            "завершение сеанса", "logoff" };
 
     /**
      * NT-Обработать команду завершения работы приложения.
@@ -292,53 +268,8 @@ public class Dialogs
         return arrayContainsStringOrdinalIgnoreCase(Dialogs.ExitAppCommands, query.trim());
     }
 
-    /**
-     * NT-Обработать команду завершения работы машины.
-     * 
-     * @param query
-     *            Строка команды
-     * @return Возвращает True для завершения работы приложения.
-     */
-    public static boolean isSleepCommand(String query)
-    {
-        return arrayContainsStringOrdinalIgnoreCase(Dialogs.ExitSleepCommands, query.trim());
-    }
-
-    /**
-     * NT-Обработать команду завершения работы машины.
-     * 
-     * @param query
-     *            Строка команды
-     * @return Возвращает True для завершения работы приложения.
-     */
-    public static boolean isExitReloadCommand(String query)
-    {
-        return arrayContainsStringOrdinalIgnoreCase(Dialogs.ExitReloadCommands, query.trim());
-    }
-
-    /**
-     * NT-Обработать команду завершения работы машины.
-     * 
-     * @param query
-     *            Строка команды
-     * @return Возвращает True для завершения работы приложения.
-     */
-    public static boolean isExitShutdownCommand(String query)
-    {
-        return arrayContainsStringOrdinalIgnoreCase(Dialogs.ExitShutdownCommands, query.trim());
-    }
-
-    /**
-     * NT-Обработать команду завершения работы машины.
-     * 
-     * @param query
-     *            Строка команды
-     * @return Возвращает True для завершения работы приложения.
-     */
-    public static boolean isExitLogoffCommand(String query)
-    {
-        return arrayContainsStringOrdinalIgnoreCase(Dialogs.ExitLogoffCommands, query.trim());
-    }
+ 
+    
     // #endregion
 
 }

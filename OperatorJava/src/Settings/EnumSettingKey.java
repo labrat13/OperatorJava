@@ -13,6 +13,9 @@ package Settings;
  */
 public enum EnumSettingKey
 {
+    
+    // *** Settings version ***
+    
     /**
      * Default (0) or Unknown
      */
@@ -21,6 +24,13 @@ public enum EnumSettingKey
      * Engine version string
      */
     EngineVersion("EngineVersion", "Engine version string."),
+    /**
+     * This settings file version string
+     */
+    SettingsFileVersion("SettingsFileVersion", "This settings file version string"),
+    
+    // *** Terminal command line templates ***
+    
     /**
      * Командная строка для запуска пустого Терминала
      */
@@ -32,8 +42,61 @@ public enum EnumSettingKey
     /**
      * Командная строка для запуска Процедуры в Терминале.
      */
-    ForProcedureTerminal("ForProcedureTerminal", "Командная строка для запуска Процедуры в Терминале.");
+    ForProcedureTerminal("ForProcedureTerminal", "Командная строка для запуска Процедуры в Терминале."),
+    
+    // *** Startup and finish settings ***
+    
+    /**
+     * Текст команды или путь Процедуры, исполняемой при запуске Оператора.
+     */
+    CmdStartup("CmdStartup", "Текст команды или путь Процедуры, исполняемой при запуске Оператора."),
+    /**
+     * Текст команды или путь Процедуры, исполняемой при завершении Оператора.
+     */
+    CmdFinish("CmdFinish", "Текст команды или путь Процедуры, исполняемой при завершении Оператора."),
+    /**
+     * Логическое значение true или false, игнорировать ли настройки файла настроек и БД при загрузке и завершении Оператора.
+     */
+    IgnoreStartup("IgnoreStartup", "Логическое значение, игнорировать ли настройки файла настроек и БД при загрузке и завершении Оператора."),
+    
+    // *** Internal command text's ***
+    
+    /**
+     * Перечиcление через запятую кодовых слов для встроенной команды Выход из Оператора.
+     */
+    ExitAppCommands("ExitAppCommands", "Перечисление через запятую кодовых слов для встроенной команды Выход из Оператора"),
+    
+    // *** Procedure result code processing settings ***
+    
+    /**
+     * Текст команды или путь Процедуры, исполняемой при EnumProcedureResult.ExitAndSleep..
+     */
+    CmdSleep("CmdSleep", "Текст команды или путь Процедуры, исполняемой при EnumProcedureResult.ExitAndSleep."),
 
+    /**
+     * Текст команды или путь Процедуры, исполняемой при EnumProcedureResult.ExitAndReload.
+     */
+    CmdReload("CmdReload", "Текст команды или путь Процедуры, исполняемой при EnumProcedureResult.ExitAndReload"),
+
+    /**
+     * Текст команды или путь Процедуры, исполняемой при EnumProcedureResult.ExitAndShutdown.
+     */
+    CmdShutdown("CmdShutdown", "Текст команды или путь Процедуры, исполняемой при EnumProcedureResult.ExitAndShutdown"),
+
+    /**
+     * Текст команды или путь Процедуры, исполняемой при EnumProcedureResult.ExitAndLogoff.
+     */
+    CmdLogoff("CmdLogoff", "Текст команды или путь Процедуры, исполняемой при EnumProcedureResult.ExitAndLogoff"),
+
+    /**
+     * Текст команды или путь Процедуры, исполняемой при EnumProcedureResult.ExitAndHybernate.
+     */
+    CmdHybernate("CmdHybernate", "Текст команды или путь Процедуры, исполняемой при EnumProcedureResult.ExitAndHybernate");
+
+
+    
+    // *** Enum members ***
+    
     /**
      * Key title string
      */
@@ -63,16 +126,7 @@ public enum EnumSettingKey
     {
         return this.m_Description;
     }
-    // /**
-    // * Set object value
-    // *
-    // * @param val
-    // * New object value
-    // */
-    // public void setValue(String val)
-    // {
-    // this.m_Value = val;
-    // }
+
 
     /**
      * Constructor

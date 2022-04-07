@@ -44,12 +44,25 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
         // added in base class: this.addItem("EngineVersion",
         // Engine.EngineVersionString, "Engine version string");
 
-        // Добавить сюда все настройки из енума
+        // TODO: Добавить сюда все настройки из енума
         // TODO: установить правильные значения настроек по умолчанию
         this.addItem(EnumSettingKey.LoneTerminal, "exo-open --launch TerminalEmulator");
         this.addItem(EnumSettingKey.ForCommandTerminal, "exo-open --launch TerminalEmulator");
         this.addItem(EnumSettingKey.ForProcedureTerminal, "exo-open --launch TerminalEmulator");
+        //тексты встроенных команд Оператор 
+        this.addItem(EnumSettingKey.ExitAppCommands, "выход, выйти, закрыть, quit, close, exit");
+        //Команды или Процедуры стартапа и финиша Оператор.
+        this.addItem(EnumSettingKey.CmdStartup, "");        
+        this.addItem(EnumSettingKey.CmdFinish, "");
+        this.addItem(EnumSettingKey.IgnoreStartup, "false");
+        //Команды или Процедуры результата исполнения Процедур.
+        this.addItem(EnumSettingKey.CmdLogoff, "");
+        this.addItem(EnumSettingKey.CmdReload, "");
+        this.addItem(EnumSettingKey.CmdShutdown, "");
+        this.addItem(EnumSettingKey.CmdSleep, "");
+        this.addItem(EnumSettingKey.CmdHybernate, "");
 
+        
         // TODO: определить, нужно ли тут сбрасывать флаг modified?
         return;
     }

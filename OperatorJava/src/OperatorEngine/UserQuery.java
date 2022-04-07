@@ -75,7 +75,33 @@ public static String GetNullOrString(String val)
     else
         return val;
 }
-
+/**
+ * NT- Trim user query text
+ */
+public void Trim()
+{
+  if(this.m_Query != null)
+      this.m_Query = this.m_Query.trim();
+  
+  return;
+}
+/**
+ * RT-Return True if query is null.
+ * @return Return True if query is null.
+ */
+public boolean isNull()
+{
+    return (this.m_Query == null);
+}
+/**
+ * RT-Return true if query is nullor empty string.
+ * @return Return true if query is nullor empty string.
+ */
+public boolean isNullOrEmpty()
+{
+    if(this.m_Query == null) return true;
+    return this.m_Query.isEmpty();
+}
     /**
      * NT- Change query text and write message to log.
      * @param en Current Engine object reference.

@@ -14,6 +14,8 @@ import LogSubsystem.EnumLogMsgClass;
 import LogSubsystem.EnumLogMsgState;
 import OperatorEngine.Engine;
 import OperatorEngine.EnumProcedureResult;
+import OperatorEngine.Utility;
+import Settings.EnumSettingKey;
 
 /**
  * @author jsmith
@@ -57,12 +59,21 @@ public class BCSA // BigCommandSemanticAnalyser - такое длинное на
         return this.m_Ready;
     }
     /**
-     * NR-Init subsystem
+     * NT-Init subsystem
      * @throws Exception Any errors here 
      */
     public void Open() throws Exception
     {
-        //TODO: add code here
+        //init array Dialogs.ExitAppCommands from settings file string
+        //это не потребуется очищать при завершении данной подсистемы.
+        String words = this.m_Engine.get_EngineSettings().getValue(EnumSettingKey.ExitAppCommands);//тут добавить функцию в класс настроек.
+        if(Utility.StringIsNullOrEmpty(words))
+        {
+            String msg = String.format("Ошибка! В файле настроек отсутствует необходимое поле \"%s\" или значение для него", EnumSettingKey.ExitAppCommands.getTitle());
+            throw new Exception(msg);
+        }
+        String[] sar = Utility.SplitCommaDelimitedString(words);
+        Dialogs.ExitAppCommands = sar;
         
         // set ready flag
         this.m_Ready = true;
