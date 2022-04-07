@@ -94,7 +94,10 @@ public class Engine
      * Объект Менеджера кэша Мест и Процедур Оператора
      */
     private ElementCacheManager       m_ECM;
-
+/**
+ * Объект семантического анализатора
+ */
+    private BCSA m_BCSA;
     /**
      * NR-Стандартный конструктор
      * 
@@ -114,7 +117,9 @@ public class Engine
         this.m_PEM = new ProcedureExecutionManager(this);
         // create cache manager object - after DB and PEM only.
         this.m_ECM = new ElementCacheManager(this, this.m_db, this.m_PEM);
-
+        //create semantic analyzer object
+        this.m_BCSA = new BCSA(this);
+        
         return;
     }
 
@@ -177,6 +182,14 @@ public class Engine
     public ProcedureExecutionManager get_PEM()
     {
         return this.m_PEM;
+    }
+    /**
+     * NT- получить объект семантического анализатора запросов.
+     * @return Функция возвращает объект семантического анализатора запросов.
+     */
+    public BCSA get_BCSA()
+    {
+        return this.m_BCSA;
     }
     // #endregion
 
@@ -259,6 +272,9 @@ public class Engine
         // TODO: дополнить код здесь полезными проверками
         this.m_ECM.Open();// TODO: this function not completed now.
 
+        //7. Open BCSA
+        this.m_BCSA.Open();// TODO: this function not completed now.
+        
         // выводим приветствие и описание программы
         this.m_OperatorConsole.PrintTextLine("Консоль речевого интерфейса. Версия " + Utility.getOperatorVersionString(), EnumDialogConsoleColor.Сообщение);
         this.m_OperatorConsole.PrintTextLine("Для завершения работы приложения введите слово выход или quit", EnumDialogConsoleColor.Сообщение);
@@ -274,7 +290,9 @@ public class Engine
      */
     public void Exit() throws Exception
     {
-
+        // закрыть BCSA
+        if(this.m_BCSA != null)
+            this.m_BCSA.Close();
         // закрыть ECM
         if (this.m_ECM != null)
             this.m_ECM.Close();

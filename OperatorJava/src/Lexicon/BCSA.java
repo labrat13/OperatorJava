@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
+import LogSubsystem.EnumLogMsgClass;
+import LogSubsystem.EnumLogMsgState;
 import OperatorEngine.Engine;
 import OperatorEngine.EnumProcedureResult;
 
@@ -20,6 +22,74 @@ import OperatorEngine.EnumProcedureResult;
 public class BCSA // BigCommandSemanticAnalyser - такое длинное название
 {
 
+    /**
+     * Backreference to Engine object
+     */
+    protected Engine              m_Engine;
+
+    /**
+     * This subsystem is ready to serve
+     */
+    protected boolean             m_Ready;
+    
+    /**
+     * Default constructor
+     * 
+     * @param en
+     *            Engine object reference
+     */
+    public BCSA(Engine en)
+    {
+        this.m_Engine = en;
+        // this subsystem not ready
+        this.m_Ready = false;
+        
+        return;
+    }
+    
+    /**
+     * Log subsystem is ready to serve
+     * 
+     * @return Function returns state of readiness of subsystem.
+     */
+    public boolean isReady()
+    {
+        return this.m_Ready;
+    }
+    /**
+     * NR-Init subsystem
+     * @throws Exception Any errors here 
+     */
+    public void Open() throws Exception
+    {
+        //TODO: add code here
+        
+        // set ready flag
+        this.m_Ready = true;
+
+        return;
+    }
+    /**
+     * NR- Close subsystem
+     * @throws Exception Any errors here
+     */
+    public void Close() throws Exception
+    {
+        // Cleanup log subsystem here
+        if (this.m_Ready == true)
+        {
+            //TODO: add cleanup code here
+        }
+        // clear ready flag
+        this.m_Ready = false;
+
+        return;
+    }
+    
+    
+    
+    
+    
     /**
      * NT-Разобрать входной запрос команды, построить граф исполнения и
      * исполнить команду
