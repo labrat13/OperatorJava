@@ -181,29 +181,33 @@ public class Utility
     }
 
     /**
-     * NT-Разделить строку ключевых слов на отдельные слова по , и ; 
-     * @param text Входная строка
+     * NT-Разделить строку ключевых слов на отдельные слова по , и ;
+     * 
+     * @param text
+     *            Входная строка
      * @return Возвращает массив ключевых слов, очищенных от разделителей и пробельных символов по краям.
      */
     public static String[] SplitCommaDelimitedString(String text)
     {
-        //1. split text to array
+        // 1. split text to array
         String[] sar = text.split("[,;]");
-        //2. trim each string in array
+        // 2. trim each string in array
         LinkedList<String> li = new LinkedList<String>();
         String t;
-        for(String s: sar)
+        for (String s : sar)
         {
-        //3. put each string in array to output list
-            if(s == null) continue;
+            // 3. put each string in array to output list
+            if (s == null)
+                continue;
             t = s.trim();
-            if(t.isEmpty()) continue;
+            if (t.isEmpty())
+                continue;
             li.add(t);
         }
-        //4. return list as array
+        // 4. return list as array
         return li.toArray(new String[li.size()]);
     }
-    
+
     /**
      * NT-Faster split string at first match delimiter string
      * 
@@ -287,6 +291,38 @@ public class Utility
         String result = s.substring(0, pos);
         return result;
 
+    }
+
+    /**
+     * NT-Проверить что указанный массив содержит указанную строку.
+     * 
+     * @param array
+     *            Массив строк.
+     * @param sample
+     *            Строка-образец для поиска.
+     * @param ignoreCase
+     *            Игнорировать регистр символов строки.
+     * @return Возвращает True, если массив содержит указанную строку; False в
+     *         противном случае.
+     */
+    public static boolean arrayContainsStringOrdinal(
+            String[] array,
+            String sample,
+            boolean ignoreCase)
+    {
+        for (String s : array)// as foreach
+            if (ignoreCase == true)
+            {
+                if (sample.equalsIgnoreCase(s))
+                    return true;
+            }
+            else
+            {
+                if (sample.compareTo(s) == 0)
+                    return true;
+            }
+
+        return false;
     }
 
     // 0123.4

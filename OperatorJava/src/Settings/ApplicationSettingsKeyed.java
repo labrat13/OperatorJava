@@ -87,7 +87,7 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
      * @return Returns SettingsItem; returns null if title not exists in
      *         collection.
      */
-    public SettingsItem getItem(EnumSettingKey key)
+    public SettingItem getItem(EnumSettingKey key)
     {
         return super.getItem(key.getTitle());
     }
@@ -100,7 +100,7 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
      * @param item
      *            Settings item object.
      */
-    public void addItem(EnumSettingKey key, SettingsItem item)
+    public void addItem(EnumSettingKey key, SettingItem item)
     {
         super.addItem(key.getTitle(), item);
     }

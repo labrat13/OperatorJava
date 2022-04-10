@@ -51,7 +51,7 @@ public class ApplicationSettingsBase
     /**
      * Dictionary<String, String> for application setings
      */
-    protected HashMap<String, SettingsItem> m_Dict;
+    protected HashMap<String, SettingItem> m_Dict;
 
     /**
      * Settings file pathname
@@ -68,7 +68,7 @@ public class ApplicationSettingsBase
      */
     public ApplicationSettingsBase()
     {
-        m_Dict = new HashMap<String, SettingsItem>();
+        m_Dict = new HashMap<String, SettingItem>();
         this.m_ModifiedFlag = false;
     }
 
@@ -322,7 +322,7 @@ public class ApplicationSettingsBase
         this.WriteLine(writer);
 
         // write each item
-        for (SettingsItem item : this.m_Dict.values())
+        for (SettingItem item : this.m_Dict.values())
         {
             // item.writeXml(writer);
             // write empty line
@@ -452,7 +452,7 @@ public class ApplicationSettingsBase
      * @return Returns SettingsItem; returns null if title not exists in
      *         collection.
      */
-    public SettingsItem getItem(String title)
+    public SettingItem getItem(String title)
     {
         if (this.m_Dict.containsKey(title))
             return this.m_Dict.get(title);
@@ -467,7 +467,7 @@ public class ApplicationSettingsBase
      * @param item
      *            Settings item object.
      */
-    public void addItem(String title, SettingsItem item)
+    public void addItem(String title, SettingItem item)
     {
         this.m_Dict.put(title, item);
         // set modified flag
@@ -488,7 +488,7 @@ public class ApplicationSettingsBase
      */
     public void addItem(String title, String value, String descr)
     {
-        SettingsItem item = new SettingsItem(title, value, descr);
+        SettingItem item = new SettingItem(title, value, descr);
         this.m_Dict.put(title, item);
         // set modified flag
         this.m_ModifiedFlag = true;
@@ -610,7 +610,7 @@ public class ApplicationSettingsBase
         // add or replace value by title
         if (this.m_Dict.containsKey(title))
             this.m_Dict.get(title).setValue(value);
-        else this.m_Dict.put(title, new SettingsItem(title, value, description));
+        else this.m_Dict.put(title, new SettingItem(title, value, description));
         // set modified flag
         this.m_ModifiedFlag = true;
 
@@ -634,7 +634,7 @@ public class ApplicationSettingsBase
             this.m_Dict.get(title).setValue(value);
         else
         {
-            SettingsItem t = new SettingsItem(title, "", description);
+            SettingItem t = new SettingItem(title, "", description);
             t.setValue(value);
             this.m_Dict.put(title, t);
         }
@@ -661,7 +661,7 @@ public class ApplicationSettingsBase
             this.m_Dict.get(title).setValue(value);
         else
         {
-            SettingsItem t = new SettingsItem(title, "", description);
+            SettingItem t = new SettingItem(title, "", description);
             t.setValue(value);
             this.m_Dict.put(title, t);
         }
