@@ -18,30 +18,31 @@ import OperatorEngine.Utility;
  */
 public class SettingItem
 {
-/**
- * Значение неправильного TableID, если итем не из ТаблицаНастроекОператора.
- */
-    public static final int Invalid_TableID = -1;
+
     /**
-     * Table ID for item from database. 
+     * Значение неправильного TableID, если итем не из ТаблицаНастроекОператора.
      */
-    protected int m_Id;
-    
+    public static final int Invalid_TableID = -1;
+
+    /**
+     * Table ID for item from database.
+     */
+    protected int           m_Id;
+
     /**
      * Setting title as dictionary key.
      */
-    protected String m_Title;
+    protected String        m_Title;
 
     /**
      * Settings description multiline text.
      */
-    protected String m_Description;
+    protected String        m_Description;
 
     /**
      * Settings value as String.
      */
-    protected String m_Value;
-
+    protected String        m_Value;
 
     /**
      * NT-Default constructor
@@ -55,9 +56,27 @@ public class SettingItem
     }
 
     /**
+     * NT - Constructor from EnumSettingKey.
+     * 
+     * @param key
+     *            EnumSettingKey member.
+     * @param value
+     *            Setting value as string.
+     */
+    public SettingItem(EnumSettingKey key, String value)
+    {
+        this.m_Id = SettingItem.Invalid_TableID;
+        this.m_Title = key.getTitle();
+        this.m_Description = key.getDescription();
+        this.m_Value = value;
+
+        return;
+    }
+
+    /**
      * NT-Parameter constructor
      * 
-     * @param id 
+     * @param id
      *            item table id or 0 if not.
      * @param title
      *            item title
@@ -76,36 +95,37 @@ public class SettingItem
         return;
     }
 
-    
-    
-    /** 
+    /**
      * NT- Table ID for item from database.
+     * 
      * @return the id
      */
-    public int getId()
+    public int getTableId()
     {
         return this.m_Id;
     }
 
-    
-    /** 
+    /**
      * NT-Table ID for item from database.
-     * @param id the id to set
+     * 
+     * @param id
+     *            the id to set
      */
-    public void setId(int id)
+    public void setTableId(int id)
     {
         this.m_Id = id;
     }
-    
-/**
- * NT- check current Item has InvalidTableID value.
- * @return Returns true if Item has not tableID value.
- */
+
+    /**
+     * NT- check current Item has InvalidTableID value.
+     * 
+     * @return Returns true if Item has not tableID value.
+     */
     public boolean isInvalidID()
     {
-     return (this.m_Id == SettingItem.Invalid_TableID);   
+        return (this.m_Id == SettingItem.Invalid_TableID);
     }
-    
+
     /**
      * NT-Setting title as dictionary key
      * 
@@ -169,8 +189,6 @@ public class SettingItem
         this.m_Value = value;
     }
 
-    
-    
     /**
      * NT-Return string for debug
      * 
@@ -181,7 +199,8 @@ public class SettingItem
     {
         String t = Utility.GetStringTextNull(this.m_Title);
         String v = Utility.GetStringTextNull(this.m_Value);
-        return String.format("%i: \"%s\" = \"%s\"", this.m_Id, t, v);
+        String d = Utility.GetStringTextNull(this.m_Description);
+        return String.format("%i: \"%s\" = \"%s\" : \"%s\"", this.m_Id, t, v, d);
     }
 
     /**

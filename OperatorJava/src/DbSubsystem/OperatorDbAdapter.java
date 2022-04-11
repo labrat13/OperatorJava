@@ -20,6 +20,7 @@ import OperatorEngine.Item;
 import OperatorEngine.Place;
 import OperatorEngine.Procedure;
 import OperatorEngine.Utility;
+import Settings.SettingItem;
 
 /**
  * NT-Адаптер приложения Оператор, для БД sqlite3
@@ -46,6 +47,10 @@ public class OperatorDbAdapter extends SqliteDbAdapter
      * Routines table title
      */
     public final static String  TableProcs    = "routines";
+    /**
+     * Settings table title
+     */
+    public final static String TableSetting  = "setting";
 
     /**
      * Backreference to Engine object - for logging
@@ -63,6 +68,14 @@ public class OperatorDbAdapter extends SqliteDbAdapter
      * SQL Command for AddProcedure function
      */
     protected PreparedStatement m_cmdAddProcedure;
+    /**
+     * SQL Command for AddSetting function
+     */
+    protected PreparedStatement m_cmdAddSetting;
+    /**
+     * SQL Command for UpdateSetting function
+     */
+    protected PreparedStatement m_cmdUpdateSetting;
 
     /**
      * NT-Default constructor
@@ -80,6 +93,8 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         // TODO: Add code for new command here!
         this.m_cmdAddPlace = null;
         this.m_cmdAddProcedure = null;
+        this.m_cmdAddSetting = null;
+        this.m_cmdUpdateSetting = null;
 
         return;
     }
@@ -139,6 +154,10 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         // TODO: add code for new command here!
         CloseAndClearCmd(this.m_cmdAddPlace);
         CloseAndClearCmd(this.m_cmdAddProcedure);
+        CloseAndClearCmd(this.m_cmdAddSetting);
+        CloseAndClearCmd(this.m_cmdUpdateSetting);
+        
+        return;
     }
 
     /**
@@ -185,39 +204,24 @@ public class OperatorDbAdapter extends SqliteDbAdapter
      */
     public boolean CreateDatabaseTables() throws SQLException
     {
-        // using(SQLiteTransaction
-        // sqLiteTransaction=this.m_connection.BeginTransaction())
-        // {
-        // using(SQLiteCommand sqLiteCommand=new
-        // SQLiteCommand(this.m_connection))
-        // {
-        // ((DbCommand)sqLiteCommand).CommandText=String.Format((IFormatProvider)CultureInfo.InvariantCulture,"DROP
-        // TABLE IF EXISTS `{0}`;",new object[1]{(object)"places"});
-        // ((DbCommand)sqLiteCommand).ExecuteNonQuery();
-        // ((DbCommand)sqLiteCommand).CommandText=String.Format((IFormatProvider)CultureInfo.InvariantCulture,"CREATE
-        // TABLE \"{0}\"(\"id\" Integer Primary Key Autoincrement,\"title\"
-        // Text,\"type\" Text,\"path\" Text,\"descr\" Text,\"syno\" Text);",new
-        // object[1]{(object)"places"});
-        // ((DbCommand)sqLiteCommand).ExecuteNonQuery();
-        // ((DbCommand)sqLiteCommand).CommandText=String.Format((IFormatProvider)CultureInfo.InvariantCulture,"DROP
-        // TABLE IF EXISTS `{0}`;",new object[1]{(object)"routines"});
-        // ((DbCommand)sqLiteCommand).ExecuteNonQuery();
-        // ((DbCommand)sqLiteCommand).CommandText=String.Format((IFormatProvider)CultureInfo.InvariantCulture,"CREATE
-        // TABLE \"{0}\"(\"id\" Integer Primary Key Autoincrement,\"title\"
-        // Text,\"ves\" Real,\"path\" Text,\"regex\" Text,\"descr\" Text);",new
-        // object[1]{(object)"routines"});
-        // ((DbCommand)sqLiteCommand).ExecuteNonQuery();
-        // }
-        // ((DbTransaction)sqLiteTransaction).Commit();
-        // }
+
         boolean result = true;
         try
         {
+            //create Places table
             TableDrop(OperatorDbAdapter.TablePlaces, 60);
-            String query = String.format("CREATE TABLE \"%s\" (\"id\" Integer Primary Key Autoincrement,\"title\" Text,\"type\" Text,\"path\" Text,\"descr\" Text,\"syno\" Text);", OperatorDbAdapter.TablePlaces);
+            String query = String.format("CREATE TABLE \"%s\" (\"id\" INTEGER PRIMARY KEY AUTOINCREMENT,\"title\" TEXT,\"type\" TEXT,\"path\" TEXT\"descr\" TEXT,\"syno\" TEXT);", OperatorDbAdapter.TablePlaces);
             this.ExecuteNonQuery(query, 60);
+            //create Procedures table
             TableDrop(OperatorDbAdapter.TableProcs, 60);
-            query = String.format("CREATE TABLE \"%s\"(\"id\" Integer Primary Key Autoincrement,\"title\" Text,\"ves\" Real,\"path\" Text,\"regex\" Text,\"descr\" Text);", OperatorDbAdapter.TableProcs);
+            query = String.format("CREATE TABLE \"%s\"(\"id\" INTEGER PRIMARY KEY AUTOINCREMENT,\"title\" TEXT,\"ves\" Real,\"path\" TEXT,\"regex\" TEXT,\"descr\" TEXT);", OperatorDbAdapter.TableProcs);
+            this.ExecuteNonQuery(query, 60);
+            //create Setting table
+            TableDrop(OperatorDbAdapter.TableSetting, 60);
+            query = String.format("CREATE TABLE \"%s\" ( \"id\" INTEGER PRIMARY KEY AUTOINCREMENT, \"title\" TEXT NOT NULL DEFAULT '', \"descr\" TEXT NOT NULL DEFAULT '', \"val\" TEXT NOT NULL DEFAULT '' )", OperatorDbAdapter.TableSetting);
+            this.ExecuteNonQuery(query, 60);
+            //create index
+            query = String.format("CREATE INDEX \"%s_ix_title\" ON \"%s\" (\"title\" ASC);", OperatorDbAdapter.TableSetting, OperatorDbAdapter.TableSetting);
             this.ExecuteNonQuery(query, 60);
             this.m_connection.commit();
         }
@@ -244,31 +248,9 @@ public class OperatorDbAdapter extends SqliteDbAdapter
     {
         LinkedList<Place> list = new LinkedList<Place>();
 
-        // SQLiteDataReader sqLiteDataReader =
-        // this.ExecuteReader(String.Format((IFormatProvider)
-        // CultureInfo.InvariantCulture, "SELECT * FROM \"{0}\"", new object[1]
-        // {
-        // (object) "places"
-        // }), this.m_Timeout);
         String query = String.format("SELECT * FROM \"%s\";", OperatorDbAdapter.TablePlaces);
         ResultSet reader = this.ExecuteReader(query, this.m_Timeout);
 
-        // if (((DbDataReader) sqLiteDataReader).HasRows)
-        // {
-        // while (((DbDataReader) sqLiteDataReader).Read())
-        // {
-        // Place place = new Place();
-        // place.TableId = ((DbDataReader) sqLiteDataReader).GetInt32(0);
-        // place.Title = ((DbDataReader) sqLiteDataReader).GetString(1);
-        // place.PlaceTypeExpression = ((DbDataReader)
-        // sqLiteDataReader).GetString(2);
-        // place.Path = ((DbDataReader) sqLiteDataReader).GetString(3);
-        // place.Description = ((DbDataReader) sqLiteDataReader).GetString(4);
-        // place.Synonim = ((DbDataReader) sqLiteDataReader).GetString(5);
-        // place.ParseEntityTypeString();
-        // list.Add(place);
-        // }
-        // }
         while (reader.next())
         {
             Place place = new Place();
@@ -287,7 +269,6 @@ public class OperatorDbAdapter extends SqliteDbAdapter
             list.add(place);
         }
 
-        // ((DbDataReader) sqLiteDataReader).Close();
         // close command and result set objects
         reader.getStatement().close();
 
@@ -304,18 +285,8 @@ public class OperatorDbAdapter extends SqliteDbAdapter
      */
     public void AddPlace(Place p) throws Exception
     {
-        // SQLiteCommand sqLiteCommand = this.m_cmdAddPlace;
         PreparedStatement ps = this.m_cmdAddPlace;
 
-        // if (sqLiteCommand == null)
-        // {
-        // sqLiteCommand = new SQLiteCommand(String.Format((IFormatProvider)
-        // CultureInfo.InvariantCulture, "INSERT INTO \"{0}\"(\"title\",
-        // \"type\", \"path\", \"descr\", \"syno\") VALUES (?,?,?,?,?);", new
-        // object[1] {
-        // (object) "places"
-        // }), this.m_connection, this.m_transaction);
-        // ((DbCommand) sqLiteCommand).CommandTimeout = this.m_Timeout;
         // create if not exists
         if (ps == null)
         {
@@ -323,27 +294,9 @@ public class OperatorDbAdapter extends SqliteDbAdapter
             ps = this.m_connection.prepareStatement(query);
             // set timeout here
             ps.setQueryTimeout(this.m_Timeout);
-
-            // Эти типы параметров не нужны
-            // sqLiteCommand.Parameters.Add("a0", DbType.String);
-            // sqLiteCommand.Parameters.Add("a1", DbType.String);
-            // sqLiteCommand.Parameters.Add("a2", DbType.String);
-            // sqLiteCommand.Parameters.Add("a3", DbType.String);
-            // sqLiteCommand.Parameters.Add("a4", DbType.String);
-            // this.m_cmdAddPlace = sqLiteCommand;
-            // }
             // write back
             this.m_cmdAddPlace = ps;
         }
-
-        // ((DbParameter) sqLiteCommand.Parameters[0]).Value = (object) p.Title;
-        // ((DbParameter) sqLiteCommand.Parameters[1]).Value = (object)
-        // p.PlaceTypeExpression;
-        // ((DbParameter) sqLiteCommand.Parameters[2]).Value = (object) p.Path;
-        // ((DbParameter) sqLiteCommand.Parameters[3]).Value = (object)
-        // p.Description;
-        // ((DbParameter) sqLiteCommand.Parameters[4]).Value = (object)
-        // p.Synonim;
 
         // set parameters
         ps.setString(1, p.get_Title());
@@ -352,7 +305,6 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         ps.setString(4, p.get_Description());
         ps.setString(5, p.get_Synonim());
 
-        // ((DbCommand) sqLiteCommand).ExecuteNonQuery();
         ps.executeUpdate();
         // Do not close command here - for next reusing
 
@@ -399,30 +351,9 @@ public class OperatorDbAdapter extends SqliteDbAdapter
     {
         LinkedList<Procedure> list = new LinkedList<Procedure>();
 
-        // SQLiteDataReader sqLiteDataReader =
-        // this.ExecuteReader(String.Format((IFormatProvider)
-        // CultureInfo.InvariantCulture, "SELECT * FROM \"{0}\"", new object[1]
-        // {
-        // (object) "routines"
-        // }), this.m_Timeout);
         String query = String.format("SELECT * FROM \"%s\";", OperatorDbAdapter.TableProcs);
         ResultSet reader = this.ExecuteReader(query, this.m_Timeout);
 
-        // if (((DbDataReader) sqLiteDataReader).HasRows)
-        // {
-        // while (((DbDataReader) sqLiteDataReader).Read())
-        // {
-        // Procedure procedure = new Procedure();
-        // procedure.TableId = ((DbDataReader) sqLiteDataReader).GetInt32(0);
-        // procedure.Title = ((DbDataReader) sqLiteDataReader).GetString(1);
-        // procedure.Ves = ((DbDataReader) sqLiteDataReader).GetDouble(2);
-        // procedure.Path = ((DbDataReader) sqLiteDataReader).GetString(3);
-        // procedure.Regex = ((DbDataReader) sqLiteDataReader).GetString(4);
-        // procedure.Description = ((DbDataReader)
-        // sqLiteDataReader).GetString(5);
-        // list.Add(procedure);
-        // }
-        // }
         while (reader.next())
         {
             Procedure proc = new Procedure();
@@ -437,7 +368,6 @@ public class OperatorDbAdapter extends SqliteDbAdapter
             //add to result list
             list.add(proc);
         }
-        // ((DbDataReader) sqLiteDataReader).Close();
         // close command and result set objects
         reader.getStatement().close();
 
@@ -454,25 +384,9 @@ public class OperatorDbAdapter extends SqliteDbAdapter
      */
     public void AddProcedure(Procedure p) throws SQLException
     {
-        // SQLiteCommand sqLiteCommand = this.m_cmdAddProcedure;
+
         PreparedStatement ps = this.m_cmdAddProcedure;
 
-        // if (sqLiteCommand == null)
-        // {
-        // sqLiteCommand = new SQLiteCommand(String.Format((IFormatProvider)
-        // CultureInfo.InvariantCulture, "INSERT INTO \"{0}\"(\"title\",
-        // \"ves\", \"path\", \"regex\", \"descr\") VALUES (?,?,?,?,?);", new
-        // object[1] {
-        // (object) "routines"
-        // }), this.m_connection, this.m_transaction);
-        // ((DbCommand) sqLiteCommand).CommandTimeout = this.m_Timeout;
-        // sqLiteCommand.Parameters.Add("a0", DbType.String);
-        // sqLiteCommand.Parameters.Add("a1", DbType.Double);
-        // sqLiteCommand.Parameters.Add("a2", DbType.String);
-        // sqLiteCommand.Parameters.Add("a3", DbType.String);
-        // sqLiteCommand.Parameters.Add("a4", DbType.String);
-        // this.m_cmdAddProcedure = sqLiteCommand;
-        // }
         if (ps == null)
         {
             String query = String.format("INSERT INTO \"%s\"(\"title\", \"ves\", \"path\", \"regex\", \"descr\") VALUES (?,?,?,?,?);", OperatorDbAdapter.TableProcs);
@@ -482,12 +396,7 @@ public class OperatorDbAdapter extends SqliteDbAdapter
             // write back
             this.m_cmdAddProcedure = ps;
         }
-        // ((DbParameter) sqLiteCommand.Parameters[0]).Value = (object) p.Title;
-        // ((DbParameter) sqLiteCommand.Parameters[1]).Value = (object) p.Ves;
-        // ((DbParameter) sqLiteCommand.Parameters[2]).Value = (object) p.Path;
-        // ((DbParameter) sqLiteCommand.Parameters[3]).Value = (object) p.Regex;
-        // ((DbParameter) sqLiteCommand.Parameters[4]).Value = (object)
-        // p.Description;
+
         // set parameters
         ps.setString(1, p.get_Title());
         ps.setDouble(2, p.get_Ves());
@@ -495,7 +404,6 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         ps.setString(4, p.get_Regex());
         ps.setString(5, p.get_Description());
 
-        // ((DbCommand) sqLiteCommand).ExecuteNonQuery();
         ps.executeUpdate();
         // Do not close command here - for next reusing
 
@@ -531,5 +439,115 @@ public class OperatorDbAdapter extends SqliteDbAdapter
     }
 
     // ============================================================
+    /**
+     * NT- Получить все записи таблицы настроек Оператора
+     * @return Функция возвращает все записи из ТаблицыНастроекОператора.
+     * @throws SQLException Ошибка при использовании БД.
+     */
+    public LinkedList<SettingItem> GetAllSettings() throws SQLException
+    {
+        //SELECT * FROM `setting` WHERE (`id` = 1);
+        
+        LinkedList<SettingItem> list = new LinkedList<SettingItem>();
 
+        String query = String.format("SELECT * FROM \"%s\";", OperatorDbAdapter.TableSetting);
+        ResultSet reader = this.ExecuteReader(query, this.m_Timeout);
+
+        while (reader.next())
+        {
+            SettingItem si = new SettingItem();
+            si.setTableId(reader.getInt(1));
+            si.setTitle(reader.getString(2));
+            si.setDescription(reader.getString(3));
+            si.setValue(reader.getString(4));
+            
+            //add to result list
+            list.add(si);
+        }
+
+        // close command and result set objects
+        reader.getStatement().close();
+
+        return list;
+        
+    }
+    /**
+     * NT-Добавить Настройку.
+     * @param item Добавляемая Настройка.
+     * @throws SQLException Ошибка при использовании БД.
+     */
+    public void AddSetting(SettingItem item) throws SQLException
+    {
+        //INSERT INTO `setting` (`title`, `descr`, `val`) VALUES('t1', 'd1', 'v1');
+        
+        PreparedStatement ps = this.m_cmdAddSetting;
+
+        if (ps == null)
+        {
+            String query = String.format("INSERT INTO \"%s\"(\"title\", \"descr\", \"val\") VALUES (?,?,?);", OperatorDbAdapter.TableSetting);
+            ps = this.m_connection.prepareStatement(query);
+            // set timeout here
+            ps.setQueryTimeout(this.m_Timeout);
+            // write back
+            this.m_cmdAddSetting = ps;
+        }
+
+        // set parameters
+        ps.setString(1, item.getTitle());
+        ps.setString(2, item.getDescription());
+        ps.setString(3, item.getValue());
+
+        ps.executeUpdate();
+        // Do not close command here - for next reusing
+
+        return;
+    }
+    /**
+     * NT-Удалить Настройку.
+     * @param id ИД Настройки.
+     * @return Функция возвращает число измененных строк таблицы.
+     * @throws SQLException Ошибка при использовании БД.
+     */
+    public int RemoveSetting( int id) throws SQLException
+    {
+        //DELETE FROM `setting` WHERE (`id` = 1);
+        return this.DeleteRow(OperatorDbAdapter.TableSetting, "id", id, this.m_Timeout);
+    }
+    /**
+     * NT- Изменить Настройку (title, descr, value)
+     * @param item Изменяемая Настройка
+     * @return Функция возвращает число измененных строк таблицы.
+     * @throws SQLException Ошибка при использовании БД.
+     */
+    public int UpdateSetting(SettingItem item) throws SQLException
+    {
+        //UPDATE `setting` SET `val` = 'new value', `descr` = 'new description'  WHERE (`id` = 1);
+        
+        PreparedStatement ps = this.m_cmdUpdateSetting;
+        
+        if (ps == null)
+        {
+            String query = String.format("UPDATE \"%s\" SET \"title\" = ?, \"descr\" = ?, \"val\" = ? WHERE (\"id\" = ?);", OperatorDbAdapter.TableSetting);
+            ps = this.m_connection.prepareStatement(query);
+            // set timeout here
+            ps.setQueryTimeout(this.m_Timeout);
+            // write back
+            this.m_cmdUpdateSetting = ps;
+        }
+        
+        // set parameters
+        ps.setString(1, item.getTitle());
+        ps.setString(2, item.getDescription());
+        ps.setString(3, item.getValue());
+        ps.setInt(4, item.getTableId());
+
+        int result = ps.executeUpdate();
+        // Do not close command here - for next reusing
+
+        return result;
+    }
+    
+    
+    
+    
 }
