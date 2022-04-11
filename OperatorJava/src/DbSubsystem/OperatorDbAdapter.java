@@ -1,20 +1,15 @@
 /**
  * @author Селяков Павел
  *         Created: Mar 5, 2022 5:55:16 PM
- *         State: Mar 21, 2022 12:37:20 AM - Ported, Готов к отладке.
+ *         State: 11 Апреля 2022 13:24:20 - Ported, Добавлены функции для TableSetting, Готов к отладке.
  */
 package DbSubsystem;
 
-import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
 
-import javax.xml.stream.XMLStreamException;
-
-import LogSubsystem.EnumLogMsgClass;
-import LogSubsystem.EnumLogMsgState;
 import OperatorEngine.Engine;
 import OperatorEngine.Item;
 import OperatorEngine.Place;
@@ -63,11 +58,18 @@ public class OperatorDbAdapter extends SqliteDbAdapter
      * SQL Command for AddPlace function
      */
     protected PreparedStatement m_cmdAddPlace;
-
+    /**
+     * SQL Command for UpdatePlace function
+     */
+    protected PreparedStatement m_cmdUpdatePlace;
     /**
      * SQL Command for AddProcedure function
      */
     protected PreparedStatement m_cmdAddProcedure;
+    /**
+     * SQL Command for UpdateProcedure function
+     */
+    protected PreparedStatement m_cmdUpdateProcedure;
     /**
      * SQL Command for AddSetting function
      */
@@ -92,7 +94,9 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         // reset command object
         // TODO: Add code for new command here!
         this.m_cmdAddPlace = null;
+        this.m_cmdUpdatePlace = null;
         this.m_cmdAddProcedure = null;
+        this.m_cmdUpdateProcedure = null;
         this.m_cmdAddSetting = null;
         this.m_cmdUpdateSetting = null;
 
@@ -115,34 +119,6 @@ public class OperatorDbAdapter extends SqliteDbAdapter
     }
 
     /**
-     * NT-append new message object to log
-     * 
-     * @param c
-     *            Event class code
-     * @param s
-     *            Event state code
-     * @param text
-     *            Event text description
-     * @throws IOException
-     *             Error on writing to log file.
-     * @throws XMLStreamException
-     *             Error on writing to log file.
-     */
-    protected void safeAddLogMsg(
-            EnumLogMsgClass c,
-            EnumLogMsgState s,
-            String text)
-            throws IOException, XMLStreamException
-    {
-        // проверить существование движка и лога, и затем добавить сообщение в
-        // лог.
-        if (Engine.isLogReady(this.m_Engine))
-            this.m_Engine.getLogManager().AddMessage(c, s, text);
-
-        return;
-    }
-
-    /**
      * RT-Clear all member commands
      * 
      * @throws SQLException
@@ -153,7 +129,9 @@ public class OperatorDbAdapter extends SqliteDbAdapter
     {
         // TODO: add code for new command here!
         CloseAndClearCmd(this.m_cmdAddPlace);
+        CloseAndClearCmd(this.m_cmdUpdatePlace);
         CloseAndClearCmd(this.m_cmdAddProcedure);
+        CloseAndClearCmd(this.m_cmdUpdateProcedure);
         CloseAndClearCmd(this.m_cmdAddSetting);
         CloseAndClearCmd(this.m_cmdUpdateSetting);
         
@@ -234,7 +212,8 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         return result;
     }
 
-    // ==============================================================================
+    // === Places table function =============================
+    
     /**
      * RT-Получить все записи таблицы Places
      * 
@@ -326,7 +305,7 @@ public class OperatorDbAdapter extends SqliteDbAdapter
     }
 
     /**
-     * NR-Update Place
+     * NT-Update Place
      * 
      * @param p
      *            Place object
@@ -336,10 +315,35 @@ public class OperatorDbAdapter extends SqliteDbAdapter
      */
     public int UpdatePlace(Place p) throws Exception
     {
-        throw new Exception("Function not implemented"); // TODO: add code here
+        PreparedStatement ps = this.m_cmdUpdatePlace;
+
+        // create if not exists
+        if (ps == null)
+        {
+            String query = String.format("UPDATE \"%s\" SET \"title\" = ?, \"type\" = ?, \"path\" = ?, \"descr\" = ?, \"syno\" = ?) WHERE(\"id\" = ?);", OperatorDbAdapter.TablePlaces);
+            ps = this.m_connection.prepareStatement(query);
+            // set timeout here
+            ps.setQueryTimeout(this.m_Timeout);
+            // write back
+            this.m_cmdUpdatePlace = ps;
+        }
+
+        // set parameters
+        ps.setString(1, p.get_Title());
+        ps.setString(2, p.get_PlaceTypeExpression());
+        ps.setString(3, p.get_Path());
+        ps.setString(4, p.get_Description());
+        ps.setString(5, p.get_Synonim());
+        ps.setInt(6, p.get_TableId());
+
+        int result = ps.executeUpdate();
+        // Do not close command here - for next reusing
+
+        return result;
     }
 
-    // =======================================================================
+    // === Procedures table function ===================
+    
     /**
      * NT-Получить все записи таблицы Процедур
      * 
@@ -425,7 +429,7 @@ public class OperatorDbAdapter extends SqliteDbAdapter
     }
 
     /**
-     * NR-Update Procedure
+     * NT-Update Procedure
      * 
      * @param p
      *            Procedure object
@@ -435,10 +439,33 @@ public class OperatorDbAdapter extends SqliteDbAdapter
      */
     public int UpdateProcedure(Procedure p) throws Exception
     {
-        throw new Exception("Function not implemented"); // TODO: add code here
+        PreparedStatement ps = this.m_cmdUpdateProcedure;
+
+        if (ps == null)
+        {
+            String query = String.format("UPDATE \"%s\" SET \"title\" = ?, \"ves\" = ?, \"path\" = ?, \"regex\" = ?, \"descr\" = ? WHERE (\"id\" = ?);", OperatorDbAdapter.TableProcs);
+            ps = this.m_connection.prepareStatement(query);
+            // set timeout here
+            ps.setQueryTimeout(this.m_Timeout);
+            // write back
+            this.m_cmdUpdateProcedure = ps;
+        }
+
+        // set parameters
+        ps.setString(1, p.get_Title());
+        ps.setDouble(2, p.get_Ves());
+        ps.setString(3, p.get_Path());
+        ps.setString(4, p.get_Regex());
+        ps.setString(5, p.get_Description());
+        ps.setInt(6, p.get_TableId());
+
+        int result = ps.executeUpdate();
+        // Do not close command here - for next reusing
+
+        return result;
     }
 
-    // ============================================================
+    // === Setting table function ====================================
     /**
      * NT- Получить все записи таблицы настроек Оператора
      * @return Функция возвращает все записи из ТаблицыНастроекОператора.
@@ -547,7 +574,7 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         return result;
     }
     
-    
+    // ===  ============================================================
     
     
 }
