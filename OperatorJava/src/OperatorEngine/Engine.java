@@ -16,7 +16,7 @@ import java.util.LinkedList;
 
 import javax.xml.stream.XMLStreamException;
 
-import DbSubsystem.CachedDbAdapter;
+
 import DbSubsystem.OperatorDbAdapter;
 import Lexicon.BCSA;
 import Lexicon.DialogConsole;
@@ -28,6 +28,7 @@ import LogSubsystem.LogManager2;
 import LogSubsystem.LogMessage;
 import ProcedureSubsystem.ProcedureExecutionManager;
 import Settings.ApplicationSettingsBase;
+import Settings.ApplicationSettingsKeyed;
 import Settings.ApplicationSettingsKeyed;
 import Settings.EnumSettingKey;
 

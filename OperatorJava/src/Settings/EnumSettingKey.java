@@ -13,9 +13,9 @@ package Settings;
  */
 public enum EnumSettingKey
 {
-    
+
     // *** Settings version ***
-    
+
     /**
      * Default (0) or Unknown
      */
@@ -28,9 +28,9 @@ public enum EnumSettingKey
      * This settings file version string
      */
     SettingsFileVersion("SettingsFileVersion", "This settings file version string"),
-    
+
     // *** Terminal command line templates ***
-    
+
     /**
      * Командная строка для запуска пустого Терминала
      */
@@ -43,9 +43,9 @@ public enum EnumSettingKey
      * Командная строка для запуска Процедуры в Терминале.
      */
     ForProcedureTerminal("ForProcedureTerminal", "Командная строка для запуска Процедуры в Терминале."),
-    
+
     // *** Startup and finish settings ***
-    
+
     /**
      * Текст команды или путь Процедуры, исполняемой при запуске Оператора.
      */
@@ -58,16 +58,16 @@ public enum EnumSettingKey
      * Логическое значение true или false, игнорировать ли настройки файла настроек и БД при загрузке и завершении Оператора.
      */
     IgnoreStartup("IgnoreStartup", "Логическое значение, игнорировать ли настройки файла настроек и БД при загрузке и завершении Оператора."),
-    
+
     // *** Internal command text's ***
-    
+
     /**
      * Перечиcление через запятую кодовых слов для встроенной команды Выход из Оператора.
      */
     ExitAppCommands("ExitAppCommands", "Перечисление через запятую кодовых слов для встроенной команды Выход из Оператора"),
-    
+
     // *** Procedure result code processing settings ***
-    
+
     /**
      * Текст команды или путь Процедуры, исполняемой при EnumProcedureResult.ExitAndSleep..
      */
@@ -93,10 +93,8 @@ public enum EnumSettingKey
      */
     CmdHybernate("CmdHybernate", "Текст команды или путь Процедуры, исполняемой при EnumProcedureResult.ExitAndHybernate");
 
-
-    
     // *** Enum members ***
-    
+
     /**
      * Key title string
      */
@@ -126,39 +124,42 @@ public enum EnumSettingKey
     {
         return this.m_Description;
     }
-    
+
     // *** Массив ключей настроек ***
     /**
      * Статический массив имен ключей элементов енума - для оптимизации доступа к ним.
      * Если = null, то надо вызвать getKeyArray() для создания и заполнения массива.
      */
     protected static String[] KeysArray = null;
-    
-/**
- * NT-Get array of used keynames.
- * @return Function returns array of used keyname strings.
- */
+
+    /**
+     * NT-Get array of used keynames.
+     * 
+     * @return Function returns array of used keyname strings.
+     */
     public static String[] getKeyArray()
     {
-        //Если массив не сгенерирован ранее, создать и заполнить его.
-        if(KeysArray == null)
+        // Если массив не сгенерирован ранее, создать и заполнить его.
+        if (KeysArray == null)
         {
             EnumSettingKey[] members = EnumSettingKey.class.getEnumConstants();
             int len = members.length;
             String[] result = new String[len];
-            
-            for(int i = 0; i < len; i++)
+
+            for (int i = 0; i < len; i++)
                 result[i] = members[i].getTitle();
-            //и вписать созданный массив в статическую переменную класса.
+            // и вписать созданный массив в статическую переменную класса.
             KeysArray = result;
         }
-        //вернуть массив строк ключей енума.
+        // вернуть массив строк ключей енума.
         return KeysArray;
     }
 
     /**
-     * NT-Check keyname is in enum keynames collection. Ignore letter case. 
-     * @param keyname Keyname string.
+     * NT-Check keyname is in enum keynames collection. Ignore letter case.
+     * 
+     * @param keyname
+     *            Keyname string.
      * @return Returns true if specified string already used as some keyname here.
      */
     public static boolean IsKeynameExists(String keyname)
@@ -166,7 +167,7 @@ public enum EnumSettingKey
         String[] keys = EnumSettingKey.getKeyArray();
         return OperatorEngine.Utility.arrayContainsStringOrdinal(keys, keyname, true);
     }
-    
+
     // *** Конструктор членов енума ***
     /**
      * Constructor

@@ -74,7 +74,27 @@ public class SettingItem
     }
 
     /**
-     * NT-Parameter constructor
+     * NT-Parameter constructor - not for Database Item.
+     * 
+     * @param title
+     *            item title
+     * @param value
+     *            item value
+     * @param descr
+     *            item description text
+     */
+    public SettingItem(String title, String value, String descr)
+    {
+        this.m_Id = SettingItem.Invalid_TableID;
+        this.m_Value = value;
+        this.m_Description = descr;
+        this.m_Title = title;
+
+        return;
+    }
+
+    /**
+     * NT-Parameter constructor - for Database Item.
      * 
      * @param id
      *            item table id or 0 if not.

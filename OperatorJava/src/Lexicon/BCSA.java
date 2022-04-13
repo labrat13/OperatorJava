@@ -10,8 +10,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-import LogSubsystem.EnumLogMsgClass;
-import LogSubsystem.EnumLogMsgState;
 import OperatorEngine.Engine;
 import OperatorEngine.EnumProcedureResult;
 import OperatorEngine.Utility;
@@ -27,13 +25,13 @@ public class BCSA // BigCommandSemanticAnalyser - такое длинное на
     /**
      * Backreference to Engine object
      */
-    protected Engine              m_Engine;
+    protected Engine  m_Engine;
 
     /**
      * This subsystem is ready to serve
      */
-    protected boolean             m_Ready;
-    
+    protected boolean m_Ready;
+
     /**
      * Default constructor
      * 
@@ -45,10 +43,10 @@ public class BCSA // BigCommandSemanticAnalyser - такое длинное на
         this.m_Engine = en;
         // this subsystem not ready
         this.m_Ready = false;
-        
+
         return;
     }
-    
+
     /**
      * Log subsystem is ready to serve
      * 
@@ -58,49 +56,51 @@ public class BCSA // BigCommandSemanticAnalyser - такое длинное на
     {
         return this.m_Ready;
     }
+
     /**
      * NT-Init subsystem
-     * @throws Exception Any errors here 
+     * 
+     * @throws Exception
+     *             Any errors here
      */
     public void Open() throws Exception
     {
-        //init array Dialogs.ExitAppCommands from settings file string
-        //это не потребуется очищать при завершении данной подсистемы.
-        String words = this.m_Engine.get_EngineSettings().getValue(EnumSettingKey.ExitAppCommands);//тут добавить функцию в класс настроек.
-        if(Utility.StringIsNullOrEmpty(words))
+        // init array Dialogs.ExitAppCommands from settings file string
+        // это не потребуется очищать при завершении данной подсистемы.
+        String words = this.m_Engine.get_EngineSettings().getValue(EnumSettingKey.ExitAppCommands);
+        if (Utility.StringIsNullOrEmpty(words))
         {
             String msg = String.format("Ошибка! В файле настроек отсутствует необходимое поле \"%s\" или значение для него", EnumSettingKey.ExitAppCommands.getTitle());
             throw new Exception(msg);
         }
         String[] sar = Utility.SplitCommaDelimitedString(words);
         Dialogs.ExitAppCommands = sar;
-        
+
         // set ready flag
         this.m_Ready = true;
 
         return;
     }
+
     /**
      * NR- Close subsystem
-     * @throws Exception Any errors here
+     * 
+     * @throws Exception
+     *             Any errors here
      */
     public void Close() throws Exception
     {
         // Cleanup log subsystem here
         if (this.m_Ready == true)
         {
-            //TODO: add cleanup code here
+            // TODO: add cleanup code here
         }
         // clear ready flag
         this.m_Ready = false;
 
         return;
     }
-    
-    
-    
-    
-    
+
     /**
      * NT-Разобрать входной запрос команды, построить граф исполнения и
      * исполнить команду
