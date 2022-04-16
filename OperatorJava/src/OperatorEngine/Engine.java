@@ -681,6 +681,7 @@ public class Engine
                 // Иначе - считать строку командой и передать в МеханизмИсполненияКоманд Оператор.
 
                 // читаем настройку из ТаблицаНастроекОператора
+                //Она теперь в ECM выведена!
 
                 String[] dbCmdArray = this.m_db.getSettingsCollection().getValue(EnumSettingKey.CmdStartup);
                 // а тут как выявить не-пустые значения массива?

@@ -190,7 +190,7 @@ public class SettingItemCollection
      */
     public void addItem(SettingItem item)
     {
-        this.addItem(item.getTitle(), item);
+        this.addItem(item.get_Title(), item);
 
         return;
     }
@@ -253,7 +253,7 @@ public class SettingItemCollection
      */
     public boolean removeItem(SettingItem item) throws Exception
     {
-        String key = item.getTitle();
+        String key = item.get_Title();
         LinkedList<SettingItem> list = this.m_items.get(key);
         if (list == null)
             throw new Exception(String.format("Ключ \"s\" отсутствует в словаре", key));

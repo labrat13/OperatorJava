@@ -483,11 +483,12 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         while (reader.next())
         {
             SettingItem si = new SettingItem();
-            si.setTableId(reader.getInt(1));
-            si.setTitle(reader.getString(2));
-            si.setDescription(reader.getString(3));
-            si.setValue(reader.getString(4));
-            
+            si.set_TableId(reader.getInt(1));
+            si.set_Title(reader.getString(2));
+            si.set_Description(reader.getString(3));
+            si.set_Path(reader.getString(4));//set value as Item.Path
+            //set storage field as db
+            si.set_Storage(Item.StorageKeyForDatabaseItem);
             //add to result list
             list.add(si);
         }
@@ -520,9 +521,9 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         }
 
         // set parameters
-        ps.setString(1, item.getTitle());
-        ps.setString(2, item.getDescription());
-        ps.setString(3, item.getValue());
+        ps.setString(1, item.get_Title());
+        ps.setString(2, item.get_Description());
+        ps.setString(3, item.get_Path());//get value as Item.Path
 
         ps.executeUpdate();
         // Do not close command here - for next reusing
@@ -563,10 +564,10 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         }
         
         // set parameters
-        ps.setString(1, item.getTitle());
-        ps.setString(2, item.getDescription());
-        ps.setString(3, item.getValue());
-        ps.setInt(4, item.getTableId());
+        ps.setString(1, item.get_Title());
+        ps.setString(2, item.get_Description());
+        ps.setString(3, item.get_Path());//get value as Item.Path
+        ps.setInt(4, item.get_TableId());
 
         int result = ps.executeUpdate();
         // Do not close command here - for next reusing

@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
 import OperatorEngine.Engine;
+import OperatorEngine.Item;
 import OperatorEngine.Utility;
 
 /**
@@ -324,10 +325,10 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
             // write empty line
             this.WriteLine(writer);
             // write description
-            String d = item.getDescription();
+            String d = item.get_Description();
             this.WriteCommentLines(writer, d);
             // write key-value pair
-            this.WriteKeyValuePair(writer, item.getTitle(), item.getValue());
+            this.WriteKeyValuePair(writer, item.get_Title(), item.get_Path());//get value as Item.Path
             // write empty line
             this.WriteLine(writer);
         }
@@ -441,18 +442,7 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
         return super.getItems(key.getTitle());
     }
 
-    /**
-     * NT-Добавить элемент, используя поле Title в качестве ключа для словаря.
-     * 
-     * @param item
-     *            Добавляемый элемент.
-     */
-    public void addItem(SettingItem item)
-    {
-        this.m_Items.addItem(item);
 
-        return;
-    }
 
     /**
      * NT-Add new or replace existing settings item in collection.
@@ -509,7 +499,7 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
         if (sar.length == 0)
             return null;
 
-        return sar[0].getValue();
+        return sar[0].getValueAsString();//get value as Item.Path
     }
 
     /**

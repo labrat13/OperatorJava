@@ -14,12 +14,6 @@ package OperatorEngine;
 public class Item implements Comparable<Item>
 {
     // #region Fields
-
-//    /**
-//     * Константа для поля TableId, обозначает, что данный элемент (Procedure или Place) не хранится в БД.
-//     * Например, импортируется из какой-либо Библиотеки Процедур.
-//     */
-//    public static final int Id_ItemNotFromDatabase = -1;
     
     /**
      * Константа для поля m_storage, обозначает, что данный элемент хранится в Бд Оператор.
@@ -27,7 +21,21 @@ public class Item implements Comparable<Item>
      *  из которых извлечен данный элемент (Место или Процедура).
      */
     public static final String StorageKeyForDatabaseItem = "Database";
+    
+    //TODO: придумать, как это преобразовать в подобие енума, но оставить String, чтобы не пополнять енум именами новых Библиотек Процедур.
+    //TODO:  описать эту фичу с источниками итемов в документации, иначе я про нее забуду совсем. Проект становится сложным и запутанным.
+    /**
+     * Константа для поля m_storage, обозначает, что данный элемент хранится в ФайлНастроек Оператор.
+     * Все остальные значения этого поля должны соответствовать названиям Библиотек Процедур,
+     *  из которых извлечен данный элемент (Место или Процедура).
+     */
+    public static final String StorageKeyForSettingFileItem = "SettingFile";
 
+    /**
+     * Значение неправильного TableID, если итем не из ТаблицаНастроекОператора.
+     */
+    public static final int Invalid_TableID = -1;//TODO: удалить позднее или переместить в БД адаптер.
+    
     /**
      * первичный ключ таблицы
      */
@@ -44,7 +52,7 @@ public class Item implements Comparable<Item>
     protected String        m_descr;
 
     /**
-     * Путь к Сущности
+     * Путь к Сущности или Значение.
      */
     protected String        m_path;
 
@@ -158,7 +166,7 @@ public class Item implements Comparable<Item>
     }
 
     /**
-     * Путь к сущности, до 255 символов
+     * Путь к сущности, или Значение, до 255 символов
      * 
      * @return the path
      */
@@ -168,7 +176,7 @@ public class Item implements Comparable<Item>
     }
 
     /**
-     * Путь к сущности, до 255 символов
+     * Путь к сущности, или Значение, до 255 символов
      * 
      * @param path
      *            the path to set
@@ -189,16 +197,30 @@ public class Item implements Comparable<Item>
         return this.getSingleLineProperties();
     }
 
+
+    /**
+     * NT-Проверить что элемент должен храниться в указанном Хранилище.
+     * @param storageTitle Название Хранилища.
+     * 
+     * @return Функция возвращает True, если элемент хранится в указанном Хранилище, False в противном случае.
+     */
+    public boolean isItemFromStorage(String storageTitle)
+    {
+        return Utility.StringEqualsOrdinalIgnoreCase(this.m_storage, storageTitle);
+    }
+    
+
     /**
      * NT-Проверить что элемент должен храниться в БД.
      * 
      * @return Функция возвращает True, если элемент хранится в БД, False в противном случае.
      */
-    public boolean isItemFromDatabase()
+    public boolean isItemFromDatabase()//TODO: заменить функцию и все ее использования на  isItemFromStorage(String storageTitle)
     {
+        
         return Utility.StringEqualsOrdinalIgnoreCase(this.m_storage, Item.StorageKeyForDatabaseItem);
     }
-
+    
     /**
      * NT-Получить одну строку описания свойств итема
      * 

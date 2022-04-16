@@ -11,6 +11,8 @@ import DbSubsystem.OperatorDbAdapter;
 import DbSubsystem.PlacesCollection;
 import DbSubsystem.ProcedureCollection;
 import ProcedureSubsystem.ProcedureExecutionManager;
+import Settings.SettingItem;
+import Settings.SettingItemCollection;
 
 /**
  * NT-Менеджер кэша Процедур и Мест, загружает их из БД и Библиотек Процедур.
@@ -57,7 +59,11 @@ public class ElementCacheManager
      * занимать, наверно..
      */
     private PlacesCollection            m_places;
-
+/**
+ * Коллекция настроек, все настройки держим в памяти.
+ */
+    private SettingItemCollection m_settings;
+    
     // Constructors =============================
 
     /**
@@ -80,6 +86,7 @@ public class ElementCacheManager
         // create collection objects
         this.m_places = new PlacesCollection();
         this.m_procedures = new ProcedureCollection();
+        this.m_settings = new SettingItemCollection();
 
         return;
     }
@@ -94,16 +101,6 @@ public class ElementCacheManager
         return m_procedures;
     }
 
-    // /**
-    // * NT-Список процедур, все процедуры держим здесь в памяти.
-    // *
-    // * @param procedures
-    // * the procedures to set
-    // */
-    // public void set_Procedures(ProcedureCollection procedures)
-    // {
-    // this.m_procedures = procedures;
-    // }
 
     /**
      * NT-Список мест, все места держим здесь в памяти.
@@ -115,17 +112,15 @@ public class ElementCacheManager
         return m_places;
     }
 
-    // /**
-    // * NT-Список мест, все места держим здесь в памяти.
-    // *
-    // * @param places
-    // * the places to set
-    // */
-    // public void set_Places(PlacesCollection places)
-    // {
-    // this.m_places = places;
-    // }
 
+/**
+ * NT-Получить коллекцию настроек.
+ * @return Функция возвращает объект коллекции настроек.
+ */
+    public SettingItemCollection get_SettingCollection()
+    {
+        return this.m_settings;
+    }
     /**
      * NT-Get string representation of object.
      * 
@@ -142,7 +137,11 @@ public class ElementCacheManager
         if (this.m_places != null)
             placeCount = this.m_places.getCount();
         
-        String result = String.format("ElementCacheManager; procedures=%d; places=%d;", procCount, placeCount);
+        int settingCount = 0;
+        if(this.m_settings != null)
+            settingCount = this.m_settings.getKeyCount();
+        
+        String result = String.format("ElementCacheManager; procedures=%d; places=%d; setting keys=%d", procCount, placeCount, settingCount);
 
         return result;
     }
@@ -155,8 +154,8 @@ public class ElementCacheManager
      */
     public void Open() throws Exception
     {
-        this.ReloadProceduresAndPlaces();
-
+        this.ReloadProceduresPlacesSettings();
+        
         return;
     }
 
@@ -170,6 +169,7 @@ public class ElementCacheManager
     {
         this.m_places.Clear();
         this.m_procedures.Clear();
+        this.m_settings.Clear();
 
         return;
     }
@@ -519,6 +519,8 @@ public class ElementCacheManager
      */
     public void UpdatePlace(Place p) throws Exception
     {
+        
+        
         if (!p.isItemFromDatabase())
             throw new Exception(String.format("Error: cannot update Place \"%s\" from read-only Procedure library", p.get_Title()));
         // else
@@ -551,6 +553,193 @@ public class ElementCacheManager
 
     }
 
+ // ==== Setting function ==============================
+    /**
+     * NT-Добавить новую настройку и обновить кеш настроек.
+     * БД открывается, если еще не открыта, затем закрывается.
+     * Если выброшено исключение, транзакция откатывается и исключение перевыбрасывается.
+     * 
+     * @param p
+     *            Добавляемая настройка
+     * @throws Exception
+     *             Ошибка при использовании БД.
+     */
+    public void AddSetting(SettingItem p) throws Exception
+    {
+
+        try
+        {
+            // sure database is opened
+            this.m_db.Open();
+            // add place
+            this.m_db.AddSetting(p);
+            // reload cache
+            this.reloadSettings();
+            // TODO: если тут возникнет исключение, то в кеше будут неправильные данные - в нем же нельзя откатить транзакцию.
+            // А хорошо бы иметь возможность полностью откатить изменения и в кеше тоже.
+            // commit changes
+            this.m_db.TransactionCommit();
+        }
+        catch (Exception e)
+        {
+            // cancel adding and rethrow exception
+            this.m_db.TransactionRollback();
+            throw new Exception(String.format("Error with adding Setting \"%s\" : %s", p.toString(), e.toString()));
+        }
+        finally
+        {
+            // close db connection
+            this.m_db.Close();
+        }
+
+        return;
+    }
+
+    /**
+     * NT-Добавить несколько Настроек в БД и обновить кеш настроек.
+     * БД открывается, если еще не открыта, затем закрывается.
+     * Если выброшено исключение, транзакция откатывается и исключение перевыбрасывается.
+     * 
+     * @param settings
+     *            Список заполненных Настроек
+     * @throws Exception
+     *             Ошибка при использовании БД.
+     */
+    public void AddSetting(LinkedList<SettingItem> settings) throws Exception
+    {
+        // TODO: тут надо весь список Настроек добавить в БД атомарно: либо весь, либо ничего.
+        // значит, это надо делать в пределах одной транзакции.
+
+        // если список пустой, сразу выйти
+        if (settings.size() <= 0)
+            return;
+        // 1. Проверить, что все объекты списка предназначены для записи в бд, иначе выбросить исключение.
+        for (SettingItem p : settings)
+            if (p.isItemFromDatabase() == false)
+                throw new Exception(String.format("Error: cannot add Setting \"%s\" to Database.", p.get_Title()));
+        // 2. Добавить объект в БД
+        SettingItem p_ref = settings.get(0);
+        try
+        {
+            // sure database is opened
+            this.m_db.Open();
+            // add places
+            for (SettingItem p : settings)
+            {
+                this.m_db.AddSetting(p);
+                p_ref = p; // for exception string formatting
+            }
+            // reload cache
+            this.reloadSettings();
+            // TODO: если тут возникнет исключение, то в кеше будут неправильные данные - в нем же нельзя откатить транзакцию.
+            // А хорошо бы иметь возможность полностью откатить изменения и в кеше тоже.
+
+            // commit transaction
+            this.m_db.TransactionCommit();
+        }
+        catch (Exception e)
+        {
+            // cancel adding and rethrow exception
+            this.m_db.TransactionRollback();
+            throw new Exception(String.format("Error with adding Setting \"%s\" : %s", p_ref.toString(), e.toString()));
+        }
+        finally
+        {
+            // close db connection
+            this.m_db.Close();
+        }
+        return;
+    }
+
+    /**
+     * NT-Удалить Настройку из БД и обновить кеш Настроек.
+     * БД открывается, если еще не открыта, затем закрывается.
+     * Если выброшено исключение, транзакция откатывается и исключение перевыбрасывается.
+     * 
+     * @param p
+     *            Удаляемая настройка.
+     * @throws Exception
+     *             Ошибка при исполнении.
+     */
+    public void RemoveSetting(SettingItem p) throws Exception
+    {
+        if (!p.isItemFromDatabase())
+            throw new Exception(String.format("Error: cannot delete Setting \"%s\" - is not from Database", p.toString()));
+        // else
+        try
+        {
+            // sure database is opened
+            this.m_db.Open();
+            // remove place
+            this.m_db.RemoveSetting(p.get_TableId());
+            // reload cache
+            this.reloadSettings();
+            // TODO: если тут возникнет исключение, то в кеше будут неправильные данные - в нем же нельзя откатить транзакцию.
+            // А хорошо бы иметь возможность полностью откатить изменения и в кеше тоже.
+            // commit changes
+            this.m_db.TransactionCommit();
+        }
+        catch (Exception e)
+        {
+            // cancel adding and rethrow exception
+            this.m_db.TransactionRollback();
+            throw new Exception(String.format("Error with deleting Setting \"%s\" : %s", p.toString(), e.toString()));
+        }
+        finally
+        {
+            // close db connection
+            this.m_db.Close();
+        }
+
+        return;
+
+    }
+
+    /**
+     * NT-Изменить Настройку в БД и обновить кеш Настроек.
+     * БД открывается, если еще не открыта, затем закрывается.
+     * Если выброшено исключение, транзакция откатывается и исключение перевыбрасывается.
+     * 
+     * @param p
+     *            Изменяемая Настройка.
+     * @throws Exception
+     *             Ошибка при исполнении.
+     */
+    public void UpdateSetting(SettingItem p) throws Exception
+    {
+        if (!p.isItemFromDatabase())
+            throw new Exception(String.format("Error: cannot update Setting \"%s\" with invalid ID to Database.", p.toString()));
+        // else
+        try
+        {
+            // sure database is opened
+            this.m_db.Open();
+            // update place
+            this.m_db.UpdateSetting(p);
+            // reload cache
+            this.reloadSettings();
+            // TODO: если тут возникнет исключение, то в кеше будут неправильные данные - в нем же нельзя откатить транзакцию.
+            // А хорошо бы иметь возможность полностью откатить изменения и в кеше тоже.
+            // commit changes
+            this.m_db.TransactionCommit();
+        }
+        catch (Exception e)
+        {
+            // cancel adding and rethrow exception
+            this.m_db.TransactionRollback();
+            throw new Exception(String.format("Error with update Setting \"%s\" : %s", p.toString(), e.toString()));
+        }
+        finally
+        {
+            // close db connection
+            this.m_db.Close();
+        }
+
+        return;
+
+    }
+
+    
     // ========= Reloading functions =========================
     /**
      * NT-Перезагрузить кеш-коллекции мест данными из источника.
@@ -619,13 +808,37 @@ public class ElementCacheManager
     }
 
     /**
+     * NT-Перезагрузить кеш-коллекции настроек данными из источника.
+     * Чтобы они соответствовали содержимому источника, если он был изменен.
+     * БД должна быть уже открыта и не будет закрыта в коде функции.
+     * Таблица не будет изменена, коммит транзакции не нужен.
+     * 
+     * @throws Exception
+     *             Ошибка при использовании БД.
+     */
+    protected void reloadSettings() throws Exception
+    {
+        // тут заполнить коллекцию настроек данными настроек
+        this.m_settings.Clear();
+        // 1. добавить из БД
+        LinkedList<SettingItem> llp = this.m_db.GetAllSettings();
+        this.m_settings.addItems(llp);
+
+        // clean up
+        llp.clear();
+        llp = null;
+        
+        return;
+    }
+    
+    /**
      * NT- Перезагрузить кеш-коллекции Процедур и Мест из БД и Библиотек Процедур.
      * БД открывается, если еще не открыта, затем закрывается.
      * 
      * @throws Exception
      *             Ошибка при использовании БД.
      */
-    protected void ReloadProceduresAndPlaces() throws Exception
+    protected void ReloadProceduresPlacesSettings() throws Exception
     {
         try
         {
@@ -635,6 +848,7 @@ public class ElementCacheManager
             // reload cache
             this.reloadPlaces();
             this.reloadProcedures();
+            this.reloadSettings();
             // TODO: если тут возникнет исключение, то в кеше будут неправильные данные - в нем же нельзя откатить транзакцию.
             // А хорошо бы иметь возможность полностью откатить изменения и в кеше тоже.
         }

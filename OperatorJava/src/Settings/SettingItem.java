@@ -5,7 +5,6 @@
  */
 package Settings;
 
-import OperatorEngine.Utility;
 
 /**
  * NT-Класс представляет элемент данных в файле настроек приложения.
@@ -16,43 +15,18 @@ import OperatorEngine.Utility;
  * @author Селяков Павел
  *
  */
-public class SettingItem
+public class SettingItem extends OperatorEngine.Item
 {
 
-    /**
-     * Значение неправильного TableID, если итем не из ТаблицаНастроекОператора.
-     */
-    public static final int Invalid_TableID = -1;
-
-    /**
-     * Table ID for item from database.
-     */
-    protected int           m_Id;
-
-    /**
-     * Setting title as dictionary key.
-     */
-    protected String        m_Title;
-
-    /**
-     * Settings description multiline text.
-     */
-    protected String        m_Description;
-
-    /**
-     * Settings value as String.
-     */
-    protected String        m_Value;
+    //TODO: убедиться, что при извлечении из файла настроек итемы получают источник = ФайлНастроек
+  //TODO: убедиться, что при извлечении из БД итемы получают источник = Database
 
     /**
      * NT-Default constructor
      */
     public SettingItem()
     {
-        this.m_Id = SettingItem.Invalid_TableID;
-        this.m_Description = null;
-        this.m_Title = null;
-        this.m_Value = null;
+        super();
     }
 
     /**
@@ -65,10 +39,10 @@ public class SettingItem
      */
     public SettingItem(EnumSettingKey key, String value)
     {
-        this.m_Id = SettingItem.Invalid_TableID;
-        this.m_Title = key.getTitle();
-        this.m_Description = key.getDescription();
-        this.m_Value = value;
+        this.m_tableid = 0;
+        this.m_title = key.getTitle();
+        this.m_descr = key.getDescription();
+        this.m_path = value;
 
         return;
     }
@@ -85,10 +59,10 @@ public class SettingItem
      */
     public SettingItem(String title, String value, String descr)
     {
-        this.m_Id = SettingItem.Invalid_TableID;
-        this.m_Value = value;
-        this.m_Description = descr;
-        this.m_Title = title;
+        this.m_tableid = 0;
+        this.m_path = value;
+        this.m_descr = descr;
+        this.m_title = title;
 
         return;
     }
@@ -104,110 +78,19 @@ public class SettingItem
      *            item value
      * @param descr
      *            item description text
+     * @param storage item storage keyword
      */
-    public SettingItem(int id, String title, String value, String descr)
+    public SettingItem(int id, String title, String value, String descr, String storage)
     {
-        this.m_Id = id;
-        this.m_Value = value;
-        this.m_Description = descr;
-        this.m_Title = title;
+        this.m_tableid = id;
+        this.m_path = value;
+        this.m_descr = descr;
+        this.m_title = title;
+        this.m_storage = storage;
 
         return;
     }
 
-    /**
-     * NT- Table ID for item from database.
-     * 
-     * @return the id
-     */
-    public int getTableId()
-    {
-        return this.m_Id;
-    }
-
-    /**
-     * NT-Table ID for item from database.
-     * 
-     * @param id
-     *            the id to set
-     */
-    public void setTableId(int id)
-    {
-        this.m_Id = id;
-    }
-
-    /**
-     * NT- check current Item has InvalidTableID value.
-     * 
-     * @return Returns true if Item has not tableID value.
-     */
-    public boolean isInvalidID()
-    {
-        return (this.m_Id == SettingItem.Invalid_TableID);
-    }
-
-    /**
-     * NT-Setting title as dictionary key
-     * 
-     * @return the title
-     */
-    public String getTitle()
-    {
-        return this.m_Title;
-    }
-
-    /**
-     * NT-Setting title as dictionary key
-     * 
-     * @param title
-     *            the title to set
-     */
-    public void setTitle(String title)
-    {
-        this.m_Title = title;
-    }
-
-    /**
-     * NT-Settings description multiline text
-     * 
-     * @return the description
-     */
-    public String getDescription()
-    {
-        return this.m_Description;
-    }
-
-    /**
-     * NT-Settings description multiline text
-     * 
-     * @param description
-     *            the description to set
-     */
-    public void setDescription(String description)
-    {
-        this.m_Description = description;
-    }
-
-    /**
-     * NT-Settings value as String
-     * 
-     * @return the value
-     */
-    public String getValue()
-    {
-        return this.m_Value;
-    }
-
-    /**
-     * NT-Settings value as String
-     * 
-     * @param value
-     *            the value to set
-     */
-    public void setValue(String value)
-    {
-        this.m_Value = value;
-    }
 
     /**
      * NT-Return string for debug
@@ -217,12 +100,25 @@ public class SettingItem
     @Override
     public String toString()
     {
-        String t = Utility.GetStringTextNull(this.m_Title);
-        String v = Utility.GetStringTextNull(this.m_Value);
-        String d = Utility.GetStringTextNull(this.m_Description);
-        return String.format("%i: \"%s\" = \"%s\" : \"%s\"", this.m_Id, t, v, d);
+return super.getSingleLineProperties();
     }
-
+/**
+ * NT- Get value.
+ * @return Returns Value as String.
+ */
+    public String getValueAsString()
+    {
+        return this.m_path;
+    }
+    /**
+     * NT- Set value.
+     * @param value Value as String.
+     */
+    public void setValue(String value)
+    {
+     this.m_path = value;   
+    }
+    
     /**
      * NT- Get value
      * 
@@ -234,7 +130,7 @@ public class SettingItem
 
         try
         {
-            result = Integer.valueOf(this.m_Value);
+            result = Integer.valueOf(this.m_path);
         }
         catch (Exception e)
         {
@@ -245,7 +141,7 @@ public class SettingItem
     }
 
     /**
-     * NT- Get value by key
+     * NT- Get value
      * 
      * @return Returns Value as Boolean; returns null if Value has invalid format.
      */
@@ -255,7 +151,7 @@ public class SettingItem
 
         try
         {
-            result = Boolean.valueOf(this.m_Value);
+            result = Boolean.valueOf(this.m_path);
         }
         catch (Exception e)
         {
@@ -273,7 +169,7 @@ public class SettingItem
      */
     public void setValue(Boolean value)
     {
-        this.m_Value = value.toString();
+        this.m_path = value.toString();
     }
 
     /**
@@ -284,7 +180,7 @@ public class SettingItem
      */
     public void setValue(Integer value)
     {
-        this.m_Value = value.toString();
+        this.m_path = value.toString();
     }
 
 }
