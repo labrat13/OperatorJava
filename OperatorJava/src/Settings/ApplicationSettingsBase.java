@@ -77,7 +77,7 @@ public class ApplicationSettingsBase
     @Override
     public String toString()
     {
-        return String.format("%i ключей из файла %s", this.m_Items.getKeyCount(), OperatorEngine.Utility.GetStringTextNull(this.m_filepath));
+        return String.format("%i ключей из файла %s", this.m_Items.getTitleCount(), OperatorEngine.Utility.GetStringTextNull(this.m_filepath));
     }
 
     // *** Work functions ***
@@ -101,7 +101,7 @@ public class ApplicationSettingsBase
      */
     public String[] getKeyArray()
     {
-        return this.m_Items.getKeyArray();
+        return this.m_Items.getTitles();
     }
 
     /**

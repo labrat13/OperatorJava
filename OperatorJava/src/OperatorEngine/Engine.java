@@ -31,6 +31,7 @@ import Settings.ApplicationSettingsBase;
 import Settings.ApplicationSettingsKeyed;
 import Settings.ApplicationSettingsKeyed;
 import Settings.EnumSettingKey;
+import Settings.SettingItem;
 
 // Консоль Оператора:
 // Функции доступа к консоли из сборок процедур сейчас перенесены в класс
@@ -287,7 +288,7 @@ public class Engine
     /**
      * NT-Close engine
      * 
-     * @throws Exception
+     * @throws Exception Ошибка при освобождении ресурсов.
      */
     public void Exit() throws Exception
     {
@@ -397,6 +398,8 @@ public class Engine
      */
     private void PrintExceptionToConsole(Exception e)
     {
+        //TODO: заменить эту функцию на PrintExceptionMessageToConsoleAndLog(String msg, Exception ex)
+        
         // TODO: вложенное исключение выводить, если есть, вместо первого.
         // так как в процедурах сборок процедур они упаковываются в исключение
         // механизма отражения
@@ -422,6 +425,30 @@ public class Engine
         this.m_logman.AddExceptionMessage(msg, ex);
 
         return;
+    }
+
+    /**
+     * NT-Вывести сообщение на консоль и в лог.
+     * 
+     * @param text
+     *            Текст сообщения.
+     * @param color
+     *            Класс сообщения Консоли.
+     * @param cls
+     *            Класс сообщения Лога.
+     * @param state
+     *            Состояние сообщения Лога.
+     * @throws Exception
+     *             Ошибка при работе Лога.
+     */
+    public void AddMessageToConsoleAndLog(
+            String text,
+            EnumDialogConsoleColor color,
+            EnumLogMsgClass cls,
+            EnumLogMsgState state) throws Exception
+    {
+        this.m_OperatorConsole.PrintTextLine(text, color);
+        this.m_logman.AddMessage(cls, state, text);
     }
 
     // **********************************************************
@@ -538,6 +565,9 @@ public class Engine
     public void CommandLoop()
     {
 
+        // TODO: работать здесь!!! Такая свалка недоделок получилась, бардак в проекте нарастает.
+        // Надо расчищать эти завалы скорее, пока я помню, что тут как и зачем.
+        
         // выводим приветствие и описание программы
         this.m_OperatorConsole.PrintTextLine("Консоль речевого интерфейса. Версия " + Utility.getOperatorVersionString(), EnumDialogConsoleColor.Сообщение);
         this.m_OperatorConsole.PrintTextLine("Для завершения работы приложения введите слово выход или quit", EnumDialogConsoleColor.Сообщение);
@@ -579,7 +609,7 @@ public class Engine
             // что она нужна еще и в CommandStartupProcedure(), где она должна
             // исполнить либо Процедуру, если указан путь к ней, либо
             // прокрутить выборку и исполнение Процедуры для запроса, если это запрос.
-            DoCommandExecution(query);
+            result = DoCommandExecution(query);
 
             // -3.5 исполнение запроса
             // - 3.5.1 Выполнить ПредОбработкаЗапроса.
@@ -592,11 +622,34 @@ public class Engine
 
             // -3.10 конец цикла обработки запроса
         }// end while
+        
 
         // -3.11 выполнить ФинишнаяПроцедура.
-
+//        switch(result)
+//        {
+//            case ExitAndHybernate:
+//            case ExitAndLogoff:
+//            case ExitAndReload:
+//            case ExitAndShutdown:
+//            case ExitAndSleep:
+//                //тут не запускаем финишную процедуру, так как можем не успеть до завершения приложения.
+//                break;
+//            case CancelledByUser:
+//            case Error:
+//            case Exit:
+//            case Success:
+//            case Unknown:
+//            case WrongArguments:
+//            default:
+//                //тут надо запустить финишную процедуру
+//                break;
+//        }
+        int FinishResult = CommandFinishProcedure(result);
+        
         return;
     }
+
+
 
     /**
      * NR- Запустить исполнение запроса и вернуть результат
@@ -604,7 +657,7 @@ public class Engine
      * @param query
      *            Строка запроса или путь к Процедуре.
      */
-    private void DoCommandExecution(String query)
+    private EnumProcedureResult DoCommandExecution(String query)
     {
         // TODO: Отложить это все до готовности остальных частей проекта: БД, настроек, остального.
 
@@ -623,6 +676,8 @@ public class Engine
         // -3.7 если С12, то переход на следующую итерацию цикла.
         // -3.8 если С13, то завершение работы Оператор.
         // -3.9 если С14, то переход на следующую итерацию цикла.
+        
+        return EnumProcedureResult.Success;
     }
 
     /**
@@ -632,20 +687,6 @@ public class Engine
      */
     private int CommandStartupProcedure()
     {
-        // TODO: работать здесь!!! Такая свалка недоделок получилась, бардак в проекте нарастает.
-        // Надо расчищать эти завалы скорее, пока я помню, что тут как и зачем.
-
-        // Прежде чем тут писать, надо сделать ФайлНастроекОператора и ТаблицаНастроекОператора в БД.
-        // - ФайлНастроекОператора сделан
-        // - ТаблицаНастроекОператора в БД - TODO: сделать и тестировать ее.
-        // TODO: add SettingsCollection to database object and code around it.
-        // - И там еще потребуется функция получения массива существующих имен настроек, чтобы пользователь
-        // ведь он же будет назначать настройки наобум через команды,
-        // вот чтобы он не назначил уже существующее имя на свою настройку, надо проверять это
-        // и писать, что идентификатор уже занят.
-        // - и следует унифицировать эту коллекцию настроек с ApplicationSettingsKeyed или ApplicationSettingsBase.
-        // - то есть, перепроектировать всю подсистему настроек Оператора.
-
         // - TODO: С30 Событие начала стартапа.
         // Если не удалось найти пути для процедуры стартапа ни в файле настроек, ни в БД, то ничего не писать про процедуру стартапа.
         // - вывести сообщение о начале процедуры startUp.
@@ -656,6 +697,8 @@ public class Engine
 
         // читаем флаг из ФайлНастроекОператора
         Boolean ignoreStartup = this.m_Settings.getValueAsBoolean(EnumSettingKey.IgnoreStartup);
+      //Вместо путей получаем объекты настроек, чтобы выводить на консоль информацию о запускаемых командах.
+        SettingItem[] settings = null;
         // если флага нет, или он сброшен, то стартап запускать
         if ((ignoreStartup == null) || (ignoreStartup.booleanValue() == false))
         {
@@ -664,53 +707,152 @@ public class Engine
             // - строка содержимого поля запускается на исполнение как команда либо как путь Процедуры.
             // - Если строка - путь процедуры, то запускается Процедура.
             // Иначе - считать строку командой и передать в МеханизмИсполненияКоманд Оператор.
-            String fsCmd = this.m_Settings.getValue(EnumSettingKey.CmdStartup);
-            if (Utility.StringIsNullOrEmpty(fsCmd) == false)
-            {
-                // execute query
-                DoCommandExecute(fsCmd);
-            }
-            else
+            settings = this.m_Settings.getItems(EnumSettingKey.CmdStartup);
+            if((settings == null) || (settings.length == 0))
             {
                 // - иначе:
-                // - выбрать из таблицы БД ТаблицаЗначенийОператор (todo: придумать более лучшее название для таблицы)
+                // - выбрать из таблицы БД ТаблицаНастроекОператор 
                 // записи по ключу cmd_startup - может быть несколько значений с одинаковым ключом.
                 // - строка содержимого поля value запускается на исполнение как команда либо как путь Процедуры.
                 // - Если строка - путь процедуры, то запускается Процедура.
                 // - todo: нужна функция для запуска Процедуры без аргументов по ее пути.
                 // Иначе - считать строку командой и передать в МеханизмИсполненияКоманд Оператор.
 
-                // читаем настройку из ТаблицаНастроекОператора
-                //Она теперь в ECM выведена!
-
-                String[] dbCmdArray = this.m_db.getSettingsCollection().getValue(EnumSettingKey.CmdStartup);
-                // а тут как выявить не-пустые значения массива?
-                for (String ca : dbCmdArray)
+                // читаем настройку из ТаблицаНастроекОператора. Она теперь в ECM выведена.
+                //Вместо путей получаем объекты настроек, чтобы выводить на консоль информацию о запускаемых командах.
+                settings = this.m_ECM.get_SettingCollection().getItems(EnumSettingKey.CmdStartup.getTitle());
+            }
+            //если массив не null, то исполняем команды из массива
+            // а тут как выявить не-пустые значения массива?
+            if(settings == null)
+            {
+                //Вывести на консоль и в лог сообщение об отсутствии команд для стартапа.
+                this.AddMessageToConsoleAndLog("Исполнение процедуры старта Оператор невозможно: задания не определены.", EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.StartupExecution, EnumLogMsgState.OK);
+            }
+            else
+            {
+                //Вывести на консоль и в лог сообщение о начале исполнения команд для стартапа.
+                this.AddMessageToConsoleAndLog("Исполнение процедуры старта Оператор начато:", EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.StartupExecution, EnumLogMsgState.OK);
+                    
+                for (SettingItem ca : settings)
                 {
                     // check null or empty
                     if (ca == null)
                         continue;
-                    String caQuery = ca.trim();
+                    //get query text
+                    String caQuery = ca.get_Path().trim();
                     if (caQuery.isEmpty())
                         continue;
+                    //Вывести на консоль и в лог название и описание команды финиша. Предварительно вывести в консоль пустую строку как разделитель.
+                    String msgcmd = ca.toSingleDescriptionString();
+                    this.AddMessageToConsoleAndLog(msgcmd, EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.StartupExecution, EnumLogMsgState.OK);
+    
                     // TODO: тут запустить Процедуру или Запрос на исполнение в обычном порядке.
-                    DoCommandExecute(caQuery);
+                    //TODO: результат Процедуры нужно обработать, вдруг он вызовет перезагрузку компьютера посреди исполнения следующего запроса в списке? 
+                    EnumProcedureResult result = DoCommandExecute(caQuery);
                 }
-
-                // - todo: пост-обработка для КодЗавершенияПроцедуры здесь не выполняется?
             }
+            // - todo: пост-обработка для КодЗавершенияПроцедуры здесь не выполняется?
             // - TODO: С31 Событие завершения стартапа.
             // - вывести сообщение о завершении процедуры startUp.
+            this.AddMessageToConsoleAndLog("Исполнение процедуры старта Оператор завершено.", EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.StartupExecution, EnumLogMsgState.OK);
 
         }
         else
         {
             // вывести на консоль сообщение о игнорировании стартапа.
             // и вывести в лог сообщение об игнорировании стартапа.
+            this.AddMessageToConsoleAndLog("Исполнение процедуры старта Оператор запрещено конфигурацией.", EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.StartupExecution, EnumLogMsgState.OK);
         }
         return 0;
     }
 
+    /** NT-Выполнить процедуру завершения Оператор.
+     * @param pr Код результата после завершения цикла исполнения команд.
+     * @return
+     */
+    private int CommandFinishProcedure(EnumProcedureResult pr)
+    {
+        // - TODO: С35 Событие начала финиша.
+        // Если не удалось найти пути для процедуры финиша ни в файле настроек, ни в БД, то ничего не писать про процедуру финиша.
+        // - вывести сообщение о начале процедуры финиша.
+        // если в ФайлНастроекОператора флаг ignore_startup = true, то вывести надпись о игнорировании финиша.
+        // и вывести в лог сообщение об игнорировании финиша.
+        // Иначе вывести надпись о начале процедуры финиша.
+        // и вывести в лог сообщение о начале процедуры финиша.
+
+        // читаем флаг из ФайлНастроекОператора
+        Boolean ignoreStartup = this.m_Settings.getValueAsBoolean(EnumSettingKey.IgnoreStartup);
+      //Вместо путей получаем объекты настроек, чтобы выводить на консоль информацию о запускаемых командах.
+        SettingItem[] settings = null;
+        // если флага нет, или он сброшен, то стартап запускать
+        if ((ignoreStartup == null) || (ignoreStartup.booleanValue() == false))
+        {
+            // читаем настройку из ФайлНастроекОператора
+            // - если в ФайлНастроекОператор поле cmd_finish существует и не пустое, то:
+            // - строка содержимого поля запускается на исполнение как команда либо как путь Процедуры.
+            // - Если строка - путь процедуры, то запускается Процедура.
+            // Иначе - считать строку командой и передать в МеханизмИсполненияКоманд Оператор.
+            settings = this.m_Settings.getItems(EnumSettingKey.CmdFinish);
+            if((settings == null) || (settings.length == 0))
+            {
+                // - иначе:
+                // - выбрать из таблицы БД ТаблицаНастроекОператор 
+                // записи по ключу cmd_finish - может быть несколько значений с одинаковым ключом.
+                // - строка содержимого поля value запускается на исполнение как команда либо как путь Процедуры.
+                // - Если строка - путь процедуры, то запускается Процедура.
+                // - todo: нужна функция для запуска Процедуры без аргументов по ее пути.
+                // Иначе - считать строку командой и передать в МеханизмИсполненияКоманд Оператор.
+
+                // читаем настройку из ТаблицаНастроекОператора. Она выведена в ECM.
+                //Вместо путей получаем объекты настроек, чтобы выводить на консоль информацию о запускаемых командах.
+                settings = this.m_ECM.get_SettingCollection().getItems(EnumSettingKey.CmdFinish.getTitle());
+            }
+            //если массив не null, то исполняем команды из массива
+            // а тут как выявить не-пустые значения массива?
+            if(settings == null)
+            {
+                //Вывести на консоль и в лог сообщение об отсутствии команд для финиша.
+                this.AddMessageToConsoleAndLog("Исполнение процедуры завершения Оператор невозможно: задания не определены.", EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.FinishExecution, EnumLogMsgState.OK);
+            }
+            else
+            {
+                //Вывести на консоль и в лог сообщение о начале исполнения команд для финиша.
+                this.AddMessageToConsoleAndLog("Исполнение процедуры завершения Оператор начато:", EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.FinishExecution, EnumLogMsgState.OK);
+                
+                for (SettingItem ca : settings)
+                {
+                    // check null or empty
+                    if (ca == null)
+                        continue;
+                    //get query text
+                    String caQuery = ca.get_Path().trim();
+                    if (caQuery.isEmpty())
+                        continue;
+                    //Вывести на консоль и в лог название и описание команды финиша. Предварительно вывести в консоль пустую строку как разделитель.
+                    String msgcmd = ca.toSingleDescriptionString();
+                    this.AddMessageToConsoleAndLog(msgcmd, EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.FinishExecution, EnumLogMsgState.OK);
+    
+                    // TODO: тут запустить Процедуру или Запрос на исполнение в обычном порядке.
+                    //TODO: результат Процедуры нужно обработать, вдруг он вызовет перезагрузку компьютера посреди исполнения следующего запроса в списке? 
+                    EnumProcedureResult result = DoCommandExecute(caQuery);
+                }
+            }
+            // - todo: пост-обработка для КодЗавершенияПроцедуры здесь не выполняется?
+            // - TODO: С36 Событие завершения финиша.
+            // - вывести сообщение о завершении процедуры finish.
+            this.AddMessageToConsoleAndLog("Исполнение процедуры завершение Оператор завершено.", EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.FinishExecution, EnumLogMsgState.OK);
+
+        }
+        else
+        {
+            // вывести на консоль и в лог сообщение о игнорировании финиша.
+            this.AddMessageToConsoleAndLog("Исполнение процедуры старта Оператор запрещено конфигурацией.", EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.FinishExecution, EnumLogMsgState.OK);
+        }
+        //return result code
+        return 0;
+    }
+    
     /// <summary>
     /// NR-Обработчик события "Поступила новая команда"
     /// </summary>

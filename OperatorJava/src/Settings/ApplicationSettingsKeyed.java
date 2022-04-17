@@ -328,7 +328,7 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
             String d = item.get_Description();
             this.WriteCommentLines(writer, d);
             // write key-value pair
-            this.WriteKeyValuePair(writer, item.get_Title(), item.get_Path());//get value as Item.Path
+            this.WriteKeyValuePair(writer, item.get_Title(), item.get_Path());// get value as Item.Path
             // write empty line
             this.WriteLine(writer);
         }
@@ -442,8 +442,6 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
         return super.getItems(key.getTitle());
     }
 
-
-
     /**
      * NT-Add new or replace existing settings item in collection.
      * 
@@ -499,7 +497,7 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
         if (sar.length == 0)
             return null;
 
-        return sar[0].getValueAsString();//get value as Item.Path
+        return sar[0].getValueAsString();// get value as Item.Path
     }
 
     /**

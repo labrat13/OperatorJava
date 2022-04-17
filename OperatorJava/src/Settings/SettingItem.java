@@ -5,7 +5,6 @@
  */
 package Settings;
 
-
 /**
  * NT-Класс представляет элемент данных в файле настроек приложения.
  * Элемент данных содержит название-ключ, текстовое значение и текстовое описание.
@@ -18,8 +17,8 @@ package Settings;
 public class SettingItem extends OperatorEngine.Item
 {
 
-    //TODO: убедиться, что при извлечении из файла настроек итемы получают источник = ФайлНастроек
-  //TODO: убедиться, что при извлечении из БД итемы получают источник = Database
+    // TODO: убедиться, что при извлечении из файла настроек итемы получают источник = ФайлНастроек
+    // TODO: убедиться, что при извлечении из БД итемы получают источник = Database
 
     /**
      * NT-Default constructor
@@ -78,9 +77,14 @@ public class SettingItem extends OperatorEngine.Item
      *            item value
      * @param descr
      *            item description text
-     * @param storage item storage keyword
+     * @param storage
+     *            item storage keyword
      */
-    public SettingItem(int id, String title, String value, String descr, String storage)
+    public SettingItem(int id,
+            String title,
+            String value,
+            String descr,
+            String storage)
     {
         this.m_tableid = id;
         this.m_path = value;
@@ -91,7 +95,6 @@ public class SettingItem extends OperatorEngine.Item
         return;
     }
 
-
     /**
      * NT-Return string for debug
      * 
@@ -100,25 +103,40 @@ public class SettingItem extends OperatorEngine.Item
     @Override
     public String toString()
     {
-return super.getSingleLineProperties();
+        return super.getSingleLineProperties();
     }
-/**
- * NT- Get value.
- * @return Returns Value as String.
- */
+
+    /**
+     * NT-получить однострочное описание Настройки.
+     * 
+     * @return Функция возвращает однострочное описание Настройки в формате "Команда "Значение" из "Хранилище"."Название": Описание."
+     */
+    public String toSingleDescriptionString()
+    {
+        return String.format("Команда \"%s\" из \"%s\".\"%s\": %s.", this.m_path.trim(), this.m_storage.trim(), this.m_title.trim(), this.m_descr.trim());
+    }
+
+    /**
+     * NT- Get value.
+     * 
+     * @return Returns Value as String.
+     */
     public String getValueAsString()
     {
         return this.m_path;
     }
+
     /**
      * NT- Set value.
-     * @param value Value as String.
+     * 
+     * @param value
+     *            Value as String.
      */
     public void setValue(String value)
     {
-     this.m_path = value;   
+        this.m_path = value;
     }
-    
+
     /**
      * NT- Get value
      * 

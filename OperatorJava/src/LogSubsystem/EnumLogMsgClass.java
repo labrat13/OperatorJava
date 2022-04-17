@@ -45,7 +45,25 @@ public enum EnumLogMsgClass
     /**
      * Exception suppressed or processed by engine
      */
-    ExceptionSuppressed(7);
+    ExceptionSuppressed(7),
+    /**
+     * Startup Operator procedure events
+     */
+    StartupExecution(8),
+    /**
+     * Finish Operator procedure execution
+     */
+    FinishExecution(9),
+
+    
+    
+    
+    // TODO: add new enum member here
+
+    /**
+     * Максимальное значение енума для упрощения добавления новых членов.
+     */
+    MaxValue(16384);
 
     /**
      * Object value

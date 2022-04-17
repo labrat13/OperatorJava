@@ -126,7 +126,7 @@ public class SettingItemCollection
      * 
      * @return Function returns array of used keyname strings.
      */
-    public String[] getKeyArray()
+    public String[] getTitles()
     {
         Set<String> result = this.m_items.keySet();
         int len = result.size();
@@ -139,7 +139,7 @@ public class SettingItemCollection
      * 
      * @return Function returns count of used titles.
      */
-    public int getKeyCount()
+    public int getTitleCount()
     {
         // TODO Auto-generated method stub
         return this.m_items.size();

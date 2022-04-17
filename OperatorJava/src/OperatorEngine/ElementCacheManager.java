@@ -139,7 +139,7 @@ public class ElementCacheManager
         
         int settingCount = 0;
         if(this.m_settings != null)
-            settingCount = this.m_settings.getKeyCount();
+            settingCount = this.m_settings.getTitleCount();
         
         String result = String.format("ElementCacheManager; procedures=%d; places=%d; setting keys=%d", procCount, placeCount, settingCount);
 
