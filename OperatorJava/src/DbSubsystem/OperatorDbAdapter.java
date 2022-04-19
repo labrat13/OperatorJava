@@ -42,10 +42,11 @@ public class OperatorDbAdapter extends SqliteDbAdapter
      * Routines table title
      */
     public final static String  TableProcs    = "routines";
+
     /**
      * Settings table title
      */
-    public final static String TableSetting  = "setting";
+    public final static String  TableSetting  = "setting";
 
     /**
      * Backreference to Engine object - for logging
@@ -58,22 +59,27 @@ public class OperatorDbAdapter extends SqliteDbAdapter
      * SQL Command for AddPlace function
      */
     protected PreparedStatement m_cmdAddPlace;
+
     /**
      * SQL Command for UpdatePlace function
      */
     protected PreparedStatement m_cmdUpdatePlace;
+
     /**
      * SQL Command for AddProcedure function
      */
     protected PreparedStatement m_cmdAddProcedure;
+
     /**
      * SQL Command for UpdateProcedure function
      */
     protected PreparedStatement m_cmdUpdateProcedure;
+
     /**
      * SQL Command for AddSetting function
      */
     protected PreparedStatement m_cmdAddSetting;
+
     /**
      * SQL Command for UpdateSetting function
      */
@@ -134,7 +140,7 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         CloseAndClearCmd(this.m_cmdUpdateProcedure);
         CloseAndClearCmd(this.m_cmdAddSetting);
         CloseAndClearCmd(this.m_cmdUpdateSetting);
-        
+
         return;
     }
 
@@ -186,19 +192,19 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         boolean result = true;
         try
         {
-            //create Places table
+            // create Places table
             TableDrop(OperatorDbAdapter.TablePlaces, 60);
             String query = String.format("CREATE TABLE \"%s\" (\"id\" INTEGER PRIMARY KEY AUTOINCREMENT,\"title\" TEXT,\"type\" TEXT,\"path\" TEXT\"descr\" TEXT,\"syno\" TEXT);", OperatorDbAdapter.TablePlaces);
             this.ExecuteNonQuery(query, 60);
-            //create Procedures table
+            // create Procedures table
             TableDrop(OperatorDbAdapter.TableProcs, 60);
             query = String.format("CREATE TABLE \"%s\"(\"id\" INTEGER PRIMARY KEY AUTOINCREMENT,\"title\" TEXT,\"ves\" Real,\"path\" TEXT,\"regex\" TEXT,\"descr\" TEXT);", OperatorDbAdapter.TableProcs);
             this.ExecuteNonQuery(query, 60);
-            //create Setting table
+            // create Setting table
             TableDrop(OperatorDbAdapter.TableSetting, 60);
             query = String.format("CREATE TABLE \"%s\" ( \"id\" INTEGER PRIMARY KEY AUTOINCREMENT, \"title\" TEXT NOT NULL DEFAULT '', \"descr\" TEXT NOT NULL DEFAULT '', \"val\" TEXT NOT NULL DEFAULT '' )", OperatorDbAdapter.TableSetting);
             this.ExecuteNonQuery(query, 60);
-            //create index
+            // create index
             query = String.format("CREATE INDEX \"%s_ix_title\" ON \"%s\" (\"title\" ASC);", OperatorDbAdapter.TableSetting, OperatorDbAdapter.TableSetting);
             this.ExecuteNonQuery(query, 60);
             this.m_connection.commit();
@@ -213,7 +219,7 @@ public class OperatorDbAdapter extends SqliteDbAdapter
     }
 
     // === Places table function =============================
-    
+
     /**
      * RT-Получить все записи таблицы Places
      * 
@@ -242,9 +248,9 @@ public class OperatorDbAdapter extends SqliteDbAdapter
             place.ParseEntityTypeString();// TODO: перенести этот вызов на более
                                           // поздний этап и обложить катчем на
                                           // всякий случай.
-            //set storage title as database
+            // set storage title as database
             place.set_Storage(Item.StorageKeyForDatabaseItem);
-            //add to result list
+            // add to result list
             list.add(place);
         }
 
@@ -343,7 +349,7 @@ public class OperatorDbAdapter extends SqliteDbAdapter
     }
 
     // === Procedures table function ===================
-    
+
     /**
      * NT-Получить все записи таблицы Процедур
      * 
@@ -367,9 +373,9 @@ public class OperatorDbAdapter extends SqliteDbAdapter
             proc.set_Path(reader.getString(4));
             proc.set_Regex(reader.getString(5));
             proc.set_Description(reader.getString(6));
-            //set storage title as database
+            // set storage title as database
             proc.set_Storage(Item.StorageKeyForDatabaseItem);
-            //add to result list
+            // add to result list
             list.add(proc);
         }
         // close command and result set objects
@@ -468,13 +474,15 @@ public class OperatorDbAdapter extends SqliteDbAdapter
     // === Setting table function ====================================
     /**
      * NT- Получить все записи таблицы настроек Оператора
+     * 
      * @return Функция возвращает все записи из ТаблицыНастроекОператора.
-     * @throws SQLException Ошибка при использовании БД.
+     * @throws SQLException
+     *             Ошибка при использовании БД.
      */
     public LinkedList<SettingItem> GetAllSettings() throws SQLException
     {
-        //SELECT * FROM `setting` WHERE (`id` = 1);
-        
+        // SELECT * FROM `setting` WHERE (`id` = 1);
+
         LinkedList<SettingItem> list = new LinkedList<SettingItem>();
 
         String query = String.format("SELECT * FROM \"%s\";", OperatorDbAdapter.TableSetting);
@@ -486,10 +494,10 @@ public class OperatorDbAdapter extends SqliteDbAdapter
             si.set_TableId(reader.getInt(1));
             si.set_Title(reader.getString(2));
             si.set_Description(reader.getString(3));
-            si.set_Path(reader.getString(4));//set value as Item.Path
-            //set storage field as db
+            si.set_Path(reader.getString(4));// set value as Item.Path
+            // set storage field as db
             si.set_Storage(Item.StorageKeyForDatabaseItem);
-            //add to result list
+            // add to result list
             list.add(si);
         }
 
@@ -497,17 +505,21 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         reader.getStatement().close();
 
         return list;
-        
+
     }
+
     /**
      * NT-Добавить Настройку.
-     * @param item Добавляемая Настройка.
-     * @throws SQLException Ошибка при использовании БД.
+     * 
+     * @param item
+     *            Добавляемая Настройка.
+     * @throws SQLException
+     *             Ошибка при использовании БД.
      */
     public void AddSetting(SettingItem item) throws SQLException
     {
-        //INSERT INTO `setting` (`title`, `descr`, `val`) VALUES('t1', 'd1', 'v1');
-        
+        // INSERT INTO `setting` (`title`, `descr`, `val`) VALUES('t1', 'd1', 'v1');
+
         PreparedStatement ps = this.m_cmdAddSetting;
 
         if (ps == null)
@@ -523,36 +535,44 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         // set parameters
         ps.setString(1, item.get_Title());
         ps.setString(2, item.get_Description());
-        ps.setString(3, item.get_Path());//get value as Item.Path
+        ps.setString(3, item.get_Path());// get value as Item.Path
 
         ps.executeUpdate();
         // Do not close command here - for next reusing
 
         return;
     }
+
     /**
      * NT-Удалить Настройку.
-     * @param id ИД Настройки.
+     * 
+     * @param id
+     *            ИД Настройки.
      * @return Функция возвращает число измененных строк таблицы.
-     * @throws SQLException Ошибка при использовании БД.
+     * @throws SQLException
+     *             Ошибка при использовании БД.
      */
-    public int RemoveSetting( int id) throws SQLException
+    public int RemoveSetting(int id) throws SQLException
     {
-        //DELETE FROM `setting` WHERE (`id` = 1);
+        // DELETE FROM `setting` WHERE (`id` = 1);
         return this.DeleteRow(OperatorDbAdapter.TableSetting, "id", id, this.m_Timeout);
     }
+
     /**
      * NT- Изменить Настройку (title, descr, value)
-     * @param item Изменяемая Настройка
+     * 
+     * @param item
+     *            Изменяемая Настройка
      * @return Функция возвращает число измененных строк таблицы.
-     * @throws SQLException Ошибка при использовании БД.
+     * @throws SQLException
+     *             Ошибка при использовании БД.
      */
     public int UpdateSetting(SettingItem item) throws SQLException
     {
-        //UPDATE `setting` SET `val` = 'new value', `descr` = 'new description'  WHERE (`id` = 1);
-        
+        // UPDATE `setting` SET `val` = 'new value', `descr` = 'new description' WHERE (`id` = 1);
+
         PreparedStatement ps = this.m_cmdUpdateSetting;
-        
+
         if (ps == null)
         {
             String query = String.format("UPDATE \"%s\" SET \"title\" = ?, \"descr\" = ?, \"val\" = ? WHERE (\"id\" = ?);", OperatorDbAdapter.TableSetting);
@@ -562,11 +582,11 @@ public class OperatorDbAdapter extends SqliteDbAdapter
             // write back
             this.m_cmdUpdateSetting = ps;
         }
-        
+
         // set parameters
         ps.setString(1, item.get_Title());
         ps.setString(2, item.get_Description());
-        ps.setString(3, item.get_Path());//get value as Item.Path
+        ps.setString(3, item.get_Path());// get value as Item.Path
         ps.setInt(4, item.get_TableId());
 
         int result = ps.executeUpdate();
@@ -574,8 +594,7 @@ public class OperatorDbAdapter extends SqliteDbAdapter
 
         return result;
     }
-    
-    // ===  ============================================================
-    
-    
+
+    // === ============================================================
+
 }

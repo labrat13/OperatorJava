@@ -129,7 +129,6 @@ public class Procedure extends Item
         return sb.toString();
     }
 
-
     /**
      * NT-Проверить на допустимость значение Вес Процедуры, введенное
      * пользователем.

@@ -13,10 +13,10 @@ package ProcedureSubsystem;
  */
 public enum ImplementationState
 {
-//    /**
-//     * Неизвестное или неопределенное состояние
-//     */
-//    Default,
+    // /**
+    // * Неизвестное или неопределенное состояние
+    // */
+    // Default,
     /**
      * Метод не реализован (NR).
      */

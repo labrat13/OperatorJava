@@ -6,6 +6,12 @@
  */
 package OperatorEngine;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Менеджер информации о операционной системе
  * 
@@ -124,5 +130,48 @@ public class SystemInfoManager
     // {
     // return (IntPtr.Size == 8);
     // }
+
+    /**
+     * NR-Запустить приложение и немедленно выйти из функции.
+     * 
+     * @param app
+     *            Application path
+     * @param args
+     *            Argument string
+     * @param workDirectory
+     *            Application working directory
+     * @return Возвращает значение 0.
+     * @throws Exception
+     *             Исключение при запуске процесса.
+     */
+    public static int ExecuteApplication(
+            String app,
+            String args,
+            String workDirectory) throws Exception
+    {
+        List<String> command = new ArrayList<String>();
+        command.add(app);
+        command.add(args);
+
+        ProcessBuilder builder = new ProcessBuilder(command);
+        // get environment variables
+        Map<String, String> environ = builder.environment();
+        // set directory
+        builder.directory(new File(workDirectory));
+        // startup
+        final Process process = builder.start();
+
+        // InputStream is = process.getInputStream();
+        // InputStreamReader isr = new InputStreamReader(is);
+        // BufferedReader br = new BufferedReader(isr);
+        // String line;
+        // while ((line = br.readLine()) != null)
+        // {
+        // System.out.println(line);
+        // }
+        // System.out.println("Program terminated!");
+
+        return 0;
+    }
 
 }

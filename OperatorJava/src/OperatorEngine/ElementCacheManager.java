@@ -59,11 +59,12 @@ public class ElementCacheManager
      * занимать, наверно..
      */
     private PlacesCollection            m_places;
-/**
- * Коллекция настроек, все настройки держим в памяти.
- */
-    private SettingItemCollection m_settings;
-    
+
+    /**
+     * Коллекция настроек, все настройки держим в памяти.
+     */
+    private SettingItemCollection       m_settings;
+
     // Constructors =============================
 
     /**
@@ -101,7 +102,6 @@ public class ElementCacheManager
         return m_procedures;
     }
 
-
     /**
      * NT-Список мест, все места держим здесь в памяти.
      * 
@@ -112,15 +112,16 @@ public class ElementCacheManager
         return m_places;
     }
 
-
-/**
- * NT-Получить коллекцию настроек.
- * @return Функция возвращает объект коллекции настроек.
- */
+    /**
+     * NT-Получить коллекцию настроек.
+     * 
+     * @return Функция возвращает объект коллекции настроек.
+     */
     public SettingItemCollection get_SettingCollection()
     {
         return this.m_settings;
     }
+
     /**
      * NT-Get string representation of object.
      * 
@@ -132,15 +133,15 @@ public class ElementCacheManager
         int procCount = 0;
         if (this.m_procedures != null)
             procCount = this.m_procedures.getCount();
-        
+
         int placeCount = 0;
         if (this.m_places != null)
             placeCount = this.m_places.getCount();
-        
+
         int settingCount = 0;
-        if(this.m_settings != null)
+        if (this.m_settings != null)
             settingCount = this.m_settings.getTitleCount();
-        
+
         String result = String.format("ElementCacheManager; procedures=%d; places=%d; setting keys=%d", procCount, placeCount, settingCount);
 
         return result;
@@ -155,7 +156,7 @@ public class ElementCacheManager
     public void Open() throws Exception
     {
         this.ReloadProceduresPlacesSettings();
-        
+
         return;
     }
 
@@ -174,8 +175,8 @@ public class ElementCacheManager
         return;
     }
 
-    //*** Procedure function ***
-    
+    // *** Procedure function ***
+
     /**
      * NT-Добавить Процедуру в БД и обновить кеш процедур.
      * БД открывается, если еще не открыта, затем закрывается.
@@ -519,8 +520,7 @@ public class ElementCacheManager
      */
     public void UpdatePlace(Place p) throws Exception
     {
-        
-        
+
         if (!p.isItemFromDatabase())
             throw new Exception(String.format("Error: cannot update Place \"%s\" from read-only Procedure library", p.get_Title()));
         // else
@@ -553,7 +553,7 @@ public class ElementCacheManager
 
     }
 
- // ==== Setting function ==============================
+    // ==== Setting function ==============================
     /**
      * NT-Добавить новую настройку и обновить кеш настроек.
      * БД открывается, если еще не открыта, затем закрывается.
@@ -739,7 +739,6 @@ public class ElementCacheManager
 
     }
 
-    
     // ========= Reloading functions =========================
     /**
      * NT-Перезагрузить кеш-коллекции мест данными из источника.
@@ -827,10 +826,10 @@ public class ElementCacheManager
         // clean up
         llp.clear();
         llp = null;
-        
+
         return;
     }
-    
+
     /**
      * NT- Перезагрузить кеш-коллекции Процедур и Мест из БД и Библиотек Процедур.
      * БД открывается, если еще не открыта, затем закрывается.
@@ -860,7 +859,8 @@ public class ElementCacheManager
 
         return;
     }
-//*** Получить Процедуры и Места как списки ***
+
+    // *** Получить Процедуры и Места как списки ***
     /**
      * NT-Получить список всех Процедур для перечисления.
      * 

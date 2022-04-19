@@ -54,10 +54,39 @@ public enum EnumLogMsgClass
      * Finish Operator procedure execution
      */
     FinishExecution(9),
+    /**
+     * Общесистемное событие для лога.
+     */
+    SubsystemEvent_General(10),
+    /**
+     * Событие подсистемы БД для лога.
+     */
+    SubsystemEvent_Database(11),
+    /**
+     * Событие подсистемы терминала для лога.
+     */
+    SubsystemEvent_Terminal(12),
+    /**
+     * Событие подсистемы Семантической обработки для лога.
+     */
+    SubsystemEvent_Lexicon(13),
+    /**
+     * Событие подсистемы Движка для лога.
+     */
+    SubsystemEvent_Engine(14),
+    /**
+     * Событие подсистемы Процедур для лога.
+     */
+    SubsystemEvent_Procedure(15),
+    /**
+     * Событие подсистемы Настроек для лога.
+     */
+    SubsystemEvent_Settings(16),
+    /**
+     * Событие подсистемы утилит для лога.
+     */
+    SubsystemEvent_Utility(17),
 
-    
-    
-    
     // TODO: add new enum member here
 
     /**

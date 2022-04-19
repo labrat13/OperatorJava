@@ -5,10 +5,6 @@
  */
 package OperatorEngine;
 
-import java.io.IOException;
-
-import javax.xml.stream.XMLStreamException;
-
 import LogSubsystem.EnumLogMsgClass;
 import LogSubsystem.EnumLogMsgState;
 

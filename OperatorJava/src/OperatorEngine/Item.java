@@ -14,53 +14,53 @@ package OperatorEngine;
 public class Item implements Comparable<Item>
 {
     // #region Fields
-    
+
     /**
      * Константа для поля m_storage, обозначает, что данный элемент хранится в Бд Оператор.
      * Все остальные значения этого поля должны соответствовать названиям Библиотек Процедур,
-     *  из которых извлечен данный элемент (Место или Процедура).
+     * из которых извлечен данный элемент (Место или Процедура).
      */
-    public static final String StorageKeyForDatabaseItem = "Database";
-    
-    //TODO: придумать, как это преобразовать в подобие енума, но оставить String, чтобы не пополнять енум именами новых Библиотек Процедур.
-    //TODO:  описать эту фичу с источниками итемов в документации, иначе я про нее забуду совсем. Проект становится сложным и запутанным.
+    public static final String StorageKeyForDatabaseItem    = "Database";
+
+    // TODO: придумать, как это преобразовать в подобие енума, но оставить String, чтобы не пополнять енум именами новых Библиотек Процедур.
+    // TODO: описать эту фичу с источниками итемов в документации, иначе я про нее забуду совсем. Проект становится сложным и запутанным.
     /**
      * Константа для поля m_storage, обозначает, что данный элемент хранится в ФайлНастроек Оператор.
      * Все остальные значения этого поля должны соответствовать названиям Библиотек Процедур,
-     *  из которых извлечен данный элемент (Место или Процедура).
+     * из которых извлечен данный элемент (Место или Процедура).
      */
     public static final String StorageKeyForSettingFileItem = "SettingFile";
 
     /**
      * Значение неправильного TableID, если итем не из ТаблицаНастроекОператора.
      */
-    public static final int Invalid_TableID = -1;//TODO: удалить позднее или переместить в БД адаптер.
-    
+    public static final int    Invalid_TableID              = -1;           // TODO: удалить позднее или переместить в БД адаптер.
+
     /**
      * первичный ключ таблицы
      */
-    protected int           m_tableid;
+    protected int              m_tableid;
 
     /**
      * Название Сущности
      */
-    protected String        m_title;
+    protected String           m_title;
 
     /**
      * Описание Сущности
      */
-    protected String        m_descr;
+    protected String           m_descr;
 
     /**
      * Путь к Сущности или Значение.
      */
-    protected String        m_path;
+    protected String           m_path;
 
     /**
      * Название Хранилища ( Библиотеки Процедур или БД).
      * Не сохранять в таблицу БД!
      */
-    protected String        m_storage;
+    protected String           m_storage;
 
     // #endregion
 
@@ -197,10 +197,11 @@ public class Item implements Comparable<Item>
         return this.getSingleLineProperties();
     }
 
-
     /**
      * NT-Проверить что элемент должен храниться в указанном Хранилище.
-     * @param storageTitle Название Хранилища.
+     * 
+     * @param storageTitle
+     *            Название Хранилища.
      * 
      * @return Функция возвращает True, если элемент хранится в указанном Хранилище, False в противном случае.
      */
@@ -208,19 +209,18 @@ public class Item implements Comparable<Item>
     {
         return Utility.StringEqualsOrdinalIgnoreCase(this.m_storage, storageTitle);
     }
-    
 
     /**
      * NT-Проверить что элемент должен храниться в БД.
      * 
      * @return Функция возвращает True, если элемент хранится в БД, False в противном случае.
      */
-    public boolean isItemFromDatabase()//TODO: заменить функцию и все ее использования на  isItemFromStorage(String storageTitle)
+    public boolean isItemFromDatabase()// TODO: заменить функцию и все ее использования на isItemFromStorage(String storageTitle)
     {
-        
+
         return Utility.StringEqualsOrdinalIgnoreCase(this.m_storage, Item.StorageKeyForDatabaseItem);
     }
-    
+
     /**
      * NT-Получить одну строку описания свойств итема
      * 

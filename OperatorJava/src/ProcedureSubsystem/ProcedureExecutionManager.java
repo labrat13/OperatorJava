@@ -293,16 +293,16 @@ public class ProcedureExecutionManager
     {
         // get manager reference
         LibraryManagerBase manager = this.getManager(names[0]);
-        //get library file path
+        // get library file path
         String jarFilePath = manager.get_LibraryPath();
-        //invoke procedure and return result
+        // invoke procedure and return result
         if (manager.get_Initialized() == false)
             throw new Exception("Library manager not initialized for " + jarFilePath);
         else return LibraryManagerBase.invokeProcedure(p, names, jarFilePath, engine, manager, command, args);
     }
 
-    //*** Java Reflection debug functions *** TODO: перенести эти функции в Utility или другое подходящее место
-    
+    // *** Java Reflection debug functions *** TODO: перенести эти функции в Utility или другое подходящее место
+
     /**
      * RT-Вывести на экран информацию о классе.
      * 

@@ -253,8 +253,7 @@ public class Dialogs
      * Команды завершить Оператор.
      */
     static String[] ExitAppCommands;
-    //инициализируется в BCSA.Init(), поскольку надо загружать слова из файла настроек Оператора.
-
+    // инициализируется в BCSA.Init(), поскольку надо загружать слова из файла настроек Оператора.
 
     /**
      * NT-Обработать команду завершения работы приложения.
@@ -268,8 +267,6 @@ public class Dialogs
         return arrayContainsStringOrdinalIgnoreCase(Dialogs.ExitAppCommands, query.trim());
     }
 
- 
-    
     // #endregion
 
 }

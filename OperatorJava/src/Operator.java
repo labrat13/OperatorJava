@@ -7,7 +7,6 @@
  */
 
 import JTerminal.Terminal;
-import Lexicon.BCSA;
 import OperatorEngine.Engine;
 
 /**
@@ -52,7 +51,6 @@ public class Operator
             // m_exitcode = m_engine.ProcessLoop();
             // processExitCode(m_exitcode);
             engine.CommandLoop();
-            
 
             // TODO: разобраться с исключениями в engine.Exit()
             engine.Exit();

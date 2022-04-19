@@ -26,8 +26,6 @@ public class ApplicationSettingsBase
      */
     public final static String      AppSettingsFileName = "settings.txt";
 
-
-    
     /**
      * Line separator
      */
@@ -226,9 +224,9 @@ public class ApplicationSettingsBase
      */
     public void addItem(SettingItem item)
     {
-        //set item storage title
+        // set item storage title
         item.set_Storage(Item.StorageKeyForSettingFileItem);
-        //add
+        // add
         this.m_Items.addItem(item);
 
         return;
@@ -247,9 +245,9 @@ public class ApplicationSettingsBase
     public void addItem(String title, String value, String descr)
     {
         SettingItem item = new SettingItem(title, value, descr);
-        //set item storage title
+        // set item storage title
         item.set_Storage(Item.StorageKeyForSettingFileItem);
-        //add
+        // add
         this.m_Items.addItem(title, item);
 
         return;

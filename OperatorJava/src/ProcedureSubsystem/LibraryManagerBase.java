@@ -215,14 +215,14 @@ public class LibraryManagerBase
      */
     public Place[] getLibraryPlaces() throws Exception
     {
-//        if (this.m_Initialized == false)
-//        {
-//
-//        }
-//        else
-//        {
-//
-//        }
+        // if (this.m_Initialized == false)
+        // {
+        //
+        // }
+        // else
+        // {
+        //
+        // }
         throw new Exception("Function must be overridden");
     }
 
@@ -236,14 +236,14 @@ public class LibraryManagerBase
      */
     public Procedure[] getLibraryProcedures() throws Exception
     {
-//        if (this.m_Initialized == false)
-//        {
-//
-//        }
-//        else
-//        {
-//
-//        }
+        // if (this.m_Initialized == false)
+        // {
+        //
+        // }
+        // else
+        // {
+        //
+        // }
         throw new Exception("Function must be overridden");
     }
 
