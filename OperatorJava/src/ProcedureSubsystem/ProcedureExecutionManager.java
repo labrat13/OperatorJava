@@ -6,13 +6,20 @@
 package ProcedureSubsystem;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import Lexicon.EnumDialogConsoleColor;
+import LogSubsystem.EnumLogMsgClass;
+import LogSubsystem.EnumLogMsgState;
 import OperatorEngine.ArgumentCollection;
 import OperatorEngine.Engine;
 import OperatorEngine.EnumProcedureResult;
@@ -301,6 +308,89 @@ public class ProcedureExecutionManager
         else return LibraryManagerBase.invokeProcedure(p, names, jarFilePath, engine, manager, command, args);
     }
 
+    /**
+     * NT-Запустить приложение и немедленно выйти из функции.
+     * @param cmdline Командная строка для исполнения
+     * @param workDirectory Путь к рабочему каталогу, должен существовать.
+     * @return Возвращает значение 0.
+     * @throws Exception Исключение при запуске процесса.
+     */
+    public int ExecuteApplicationSimple(String cmdline, String workDirectory) throws Exception
+    {
+        File wd = new File(workDirectory);
+        @SuppressWarnings("unused")
+        Process p = Runtime.getRuntime().exec(cmdline,  null, wd );
+        
+        return 0;
+    }
+    
+    /**
+     * NT-Запустить приложение и немедленно выйти из функции.
+     * 
+     * @param app
+     *            Application path
+     * @param args
+     *            Argument string
+     * @param workDirectory
+     *            Application working directory, must exists.
+     * @param logging Print environment variables to Operator console and log.
+     * @return Возвращает значение 0.
+     * @throws Exception
+     *             Исключение при запуске процесса.
+     */
+    public int ExecuteApplication(
+            String app,
+            String args,
+            String workDirectory,
+            boolean logging
+            ) throws Exception
+    {
+        //ProcessBuilder принимает именно так: список из пути приложения и аргументов.
+        //Есть способ: Runtime.getRuntime().exec(cmd, null, File(workDirectory))
+        //Он тоже работает, но переопределить свойства Process не дает. 
+        //Сейчас используем ProcessBuilder, чтобы потом проще было переделывать.
+        
+        List<String> command = new ArrayList<String>();
+        command.add(app);
+        command.add(args);
+        //create process builder
+        ProcessBuilder builder = new ProcessBuilder(command);
+        
+        //get environment variables
+        if(logging == true)
+        {
+            //get map of variables key-value
+            Map<String, String> environ = builder.environment();
+            this.m_Engine.AddMessageToConsoleAndLog("------------", EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.DebugLoggingMessage, EnumLogMsgState.OK);
+            this.m_Engine.AddMessageToConsoleAndLog("Дамп ProcessBuilder Environment variables: title -> value", EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.DebugLoggingMessage, EnumLogMsgState.OK);
+            this.m_Engine.AddMessageToConsoleAndLog("------------", EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.DebugLoggingMessage, EnumLogMsgState.OK);
+            for(Map.Entry<String, String> ent : environ.entrySet())
+            {
+                String s = String.format("\"%s\" -> \"%s\"", ent.getKey(), ent.getValue());
+                this.m_Engine.AddMessageToConsoleAndLog(s, EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.DebugLoggingMessage, EnumLogMsgState.OK);
+            }
+            this.m_Engine.AddMessageToConsoleAndLog("------------", EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.DebugLoggingMessage, EnumLogMsgState.OK);
+        }
+        // set directory
+        builder.directory(new File(workDirectory));
+        // startup
+        @SuppressWarnings("unused")
+        final Process process = builder.start();
+
+        // InputStream is = process.getInputStream();
+        // InputStreamReader isr = new InputStreamReader(is);
+        // BufferedReader br = new BufferedReader(isr);
+        // String line;
+        // while ((line = br.readLine()) != null)
+        // {
+        // System.out.println(line);
+        // }
+        // System.out.println("Program terminated!");
+
+        return 0;
+    }
+    
+    
     // *** Java Reflection debug functions *** TODO: перенести эти функции в Utility или другое подходящее место
 
     /**

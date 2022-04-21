@@ -90,8 +90,10 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
         // TODO: Добавить сюда все настройки из енума
         // TODO: установить правильные значения настроек по умолчанию
         this.addItem(EnumSettingKey.LoneTerminal, "exo-open --launch TerminalEmulator");
-        this.addItem(EnumSettingKey.ForCommandTerminal, "exo-open --launch TerminalEmulator");
-        this.addItem(EnumSettingKey.ForProcedureTerminal, "exo-open --launch TerminalEmulator");
+        this.addItem(EnumSettingKey.ForCommandTerminal, "xfce4-terminal -x ");
+        this.addItem(EnumSettingKey.ForProcedureTerminal, "xfce4-terminal -x ");
+        this.addItem(EnumSettingKey.DefaultWorkingDirectory, "/home/jsmith/Документы/");
+        this.addItem(EnumSettingKey.ShellExecuteCommand, "exo-open ");
         // тексты встроенных команд Оператор
         this.addItem(EnumSettingKey.ExitAppCommands, "выход, выйти, закрыть, quit, close, exit");
         // Команды или Процедуры стартапа и финиша Оператор.

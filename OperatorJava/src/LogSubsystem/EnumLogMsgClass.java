@@ -86,7 +86,11 @@ public enum EnumLogMsgClass
      * Событие подсистемы утилит для лога.
      */
     SubsystemEvent_Utility(17),
-
+    /**
+     * Сообщение дампа данных для отладки
+     */
+    DebugLoggingMessage(18),
+    
     // TODO: add new enum member here
 
     /**

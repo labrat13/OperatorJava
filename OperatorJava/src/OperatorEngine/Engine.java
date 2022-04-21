@@ -451,6 +451,52 @@ public class Engine
         this.m_logman.AddMessage(cls, state, text);
     }
 
+    /**
+     * NT-Извлечь значение Настройки из ФайлНастроекОператора или ТаблицаНастроекОператора, иначе вывести сообщение о ее отсутствии.
+     * 
+     * @return Функция возвращает значение настройки или null.
+     * @throws Exception
+     *             Ошибка при работе с файлом настроек.
+     */
+    private String getSettingOrMessage(EnumSettingKey setting, String operation)
+            throws Exception
+    {
+        // TODO: хорошо бы и из БД извлекать такую настройку, если она там есть. Но пока - только ФайлНастроекОператора проверяется.
+        String newQuery = this.m_Settings.getValue(setting);
+        if (Utility.StringIsNullOrEmpty(newQuery))
+        {
+            String msg = String.format("Невозможно выполнить %s, поскольку настройка %s не найдена в ФайлНастроекОператора.", operation, setting.getTitle());
+            this.AddMessageToConsoleAndLog(msg, EnumDialogConsoleColor.Предупреждение, EnumLogMsgClass.SubsystemEvent_Settings, EnumLogMsgState.Fail);
+            //from database
+            newQuery = this.m_ECM.getSettingFirstValue(setting.getTitle());
+            if(Utility.StringIsNullOrEmpty(newQuery))
+            {
+                String msg2 = String.format("Невозможно выполнить %s, поскольку настройка %s не найдена в ТаблицаНастроекОператора.", operation, setting.getTitle());
+                this.AddMessageToConsoleAndLog(msg, EnumDialogConsoleColor.Предупреждение, EnumLogMsgClass.SubsystemEvent_Settings, EnumLogMsgState.Fail);   
+            }
+        }
+        return newQuery;
+    }
+
+    /** NT - Получить значение настройки из ФайлНастроекОператора или ТаблицаНастроекОператора.
+     * @param setting Ключ - название настройки.
+     * @return Функция возвращает значение настройки из ФайлНастроекОператора или ТаблицаНастроекОператора. 
+     * Функция возвращает null, если поля настройки не найдено.
+     * Функция возвращает пустую строку, если значение настройки не указано.
+     */
+    private String getSettingFromFileOrTable(EnumSettingKey setting)
+    {
+        //Файл настроек всегда должен проверяться раньше, чем таблица настроек.
+        String result = this.m_Settings.getValue(setting);
+        if(Utility.StringIsNullOrEmpty(result) == true)
+        {
+         result = this.m_ECM.getSettingFirstValue(setting.getTitle());
+        }
+        
+        return result;
+    }
+    
+    
     // **********************************************************
 
     // #endregion
@@ -656,11 +702,14 @@ public class Engine
      * 
      * @param query
      *            Строка запроса или путь к Процедуре.
+     * @throws Exception 
      */
-    private EnumProcedureResult DoCommandExecution(String query)
+    private EnumProcedureResult DoCommandExecution(String query) throws Exception
     {
         // TODO: Отложить это все до готовности остальных частей проекта: БД, настроек, остального.
 
+        //TODO: этот код должен перехватывать все исключения и возвращать только EnumProcedureResult.Error при любой ошибке.
+        
         // Создать объект запроса пользователя для использования в алгоритме и Процедурах.
         UserQuery userQuery = new UserQuery(query);
         // если это строка запроса, то запустить цикл выбора и исполнения Процедур.
@@ -775,26 +824,8 @@ public class Engine
         else return code;
     }
 
-    /**
-     * NT-Извлечь значение Настройки из ФайлНастроекОператора или вывести сообщение о ее отсутствии.
-     * 
-     * @return Функция возвращает значение настройки или null.
-     * @throws Exception
-     *             Ошибка при работе с файлом настроек.
-     */
-    private String getSettingOrMessage(EnumSettingKey setting, String operation)
-            throws Exception
-    {
-        // TODO: хорошо бы и из БД извлекать такую настройку, если она там есть. Но пока - только ФайлНастроекОператора проверяется.
-        String newQuery = this.m_Settings.getValue(setting);
-        if (Utility.StringIsNullOrEmpty(newQuery))
-        {
-            String msg = String.format("Невозможно выполнить %s, поскольку настройка %s не найдена в ФайлНастроекОператора.", operation, setting.getTitle());
-            this.AddMessageToConsoleAndLog(msg, EnumDialogConsoleColor.Предупреждение, EnumLogMsgClass.SubsystemEvent_Settings, EnumLogMsgState.Fail);
-        }
-        return newQuery;
-    }
 
+    
     /**
      * NR-Исполнить запрос через ЦиклПеребораПроцедур.
      * 
@@ -809,7 +840,7 @@ public class Engine
     }
 
     /**
-     * NR-Открыть Терминал и перенаправить в него текущий текст запроса.
+     * NT-Открыть Терминал и перенаправить в него текущий текст запроса.
      * 
      * @param userQuery
      *            Текущий текст запроса
@@ -818,7 +849,7 @@ public class Engine
      */
     private EnumProcedureResult DoCommandEnglishTerminal(UserQuery userQuery)
     {
-        // TODO: образец: private EnumProcedureResult ExecuteWithTerminal(String query)
+        // образец: private EnumProcedureResult ExecuteWithTerminal(String query)
         //Состояние: код есть, тестовый прототип написан, но терминал не запускается - чего-то не хватает.
         //Еще, для программ нужен рабочий каталог. Для wget подойдет каталог Downloads, для других программ - другие варианты желательны.
         //Но возможно указать только один, и в нем все последствия запускаемых программ будут оставаться.
@@ -828,8 +859,34 @@ public class Engine
         // - а как сейчас - все приложения будут в одном этом каталоге исполняться? Там будет свалка.
         // - в итоге, надо пока что избегать этой проблемы с текущим каталогом, и собирать материал по ней.
         
-        return null;
+        //вызвать PEM.ExecuteApplicationSimple() or PEM.ExecuteApplication()
+        
+        EnumProcedureResult result = EnumProcedureResult.Success;
+        try
+        {
+            //1. извлечь из ФайлНастроекОператора или ТаблицаНастроекОператора значение командной строки терминала
+            String cmdterm = this.getSettingFromFileOrTable(EnumSettingKey.ForCommandTerminal);
+            if(Utility.StringIsNullOrEmpty(cmdterm))
+                    throw new Exception("Не найдена команда запуска Терминала из настройки " + EnumSettingKey.ForCommandTerminal.getTitle());
+            //2. извлечь из ФайлНастроекОператора или ТаблицаНастроекОператора значение рабочего каталога терминала
+            String workDirectory = this.getSettingFromFileOrTable(EnumSettingKey.DefaultWorkingDirectory);
+            if(Utility.StringIsNullOrEmpty(workDirectory))
+                throw new Exception("Не найден путь к рабочему каталогу Терминала из настройки " + EnumSettingKey.DefaultWorkingDirectory.getTitle());
+            //3. TODO: разделить командную строку терминала на приложение и аргументы в классе RegexManager.
+            
+            //4. пока разделить нечем - вызвать PEM.ExecuteApplicationSimple()
+            String cmdline = cmdterm + " " + userQuery.getQuery();
+            this.m_PEM.ExecuteApplicationSimple(cmdline, workDirectory);
+        }
+        catch (Exception e)
+        {
+            this.PrintExceptionMessageToConsoleAndLog("Ошибка", e);
+            result = EnumProcedureResult.Error;
+        }
+        return result;
     }
+
+
 
     /**
      * NR-Исполнить Процедуру без аргументов.
@@ -845,6 +902,8 @@ public class Engine
         //2. найти Процедуру с таким путем в ECM.
         //3. Запустить Процедуру на исполнение - лучше из самого объекта Процедуры?
         // - без аргументов.
+        // PEM.invokeProcedure(Procedure, names[], query, engine, args);
+        //вот ее придется обернуть в более короткий вызов и подготовку всех ресурсов.
         //4. Вернуть код результата Процедуры.
         return null;
     }
@@ -1165,50 +1224,50 @@ public class Engine
         return;
     }
 
-    /**
-     * NR-Открыть англоязычный запрос в Терминале Линукс
-     * 
-     * @param query
-     *            Текст запроса.
-     * @return Функция возвращает Код результата исполнения запроса.
-     */
-    private EnumProcedureResult ExecuteWithTerminal(String query)
-    {
-        // TODO: переделать на условия Линукс.
-        EnumProcedureResult result = EnumProcedureResult.Success;
-        try
-        {
-            // путь к терминалу и аргументы получить из настроек Оператора специально для терминала.
-            String app = this.m_Settings.getValue(EnumSettingKey.ForCommandTerminal);
-            // если поле отсутствует или не содержит значения, сообщить об этом и закончить выполнение.
-            if (Utility.StringIsNullOrEmpty(app))
-            {
-                String msg = "Невозможно выполнить запрос \"" + query + "\", поскольку не найден путь к Терминалу в поле ForCommandTerminal в ФайлНастроекОператора ";
-                this.AddMessageToConsoleAndLog(msg, EnumDialogConsoleColor.Предупреждение, EnumLogMsgClass.SubsystemEvent_Settings, EnumLogMsgState.Fail);
-            }
-            else
-            {
-                // сформировать строку аргументов
-                String args = app + " " + query;
-                // исполнить запрос
-                // TODO: тут надо назначить рабочий каталог
-                // - его надо взять из настроек, которые у каждого случая Терминала должны быть свои.
-                // - а пока назначим как каталог пользователя.
-                String workDirectory = FileSystemManager.UserFolderPath;
-                // TODO: надо проработать код вызова Терминала на прототипе!
-                Runtime.getRuntime().exec(args);// простой способ, без указания рабочего каталога. Для уточнения нужны эксперименты на прототипе!
-                // SystemInfoManager.ExecuteApplication(app, query, workDirectory);
-                // PowerManager.ExecuteApplication(app, args); - старый способ для винды
-            }
-        }
-        catch (Exception e)
-        {
-            this.PrintExceptionMessageToConsoleAndLog("Ошибка при исполнении в Терминале", e);
-            result = EnumProcedureResult.Error;// флаг что процедура не годится
-        }
-
-        return result;
-    }
+//    /**
+//     * NR-Открыть англоязычный запрос в Терминале Линукс
+//     * 
+//     * @param query
+//     *            Текст запроса.
+//     * @return Функция возвращает Код результата исполнения запроса.
+//     */
+//    private EnumProcedureResult ExecuteWithTerminal(String query)
+//    {
+//        // TODO: переделать на условия Линукс.
+//        EnumProcedureResult result = EnumProcedureResult.Success;
+//        try
+//        {
+//            // путь к терминалу и аргументы получить из настроек Оператора специально для терминала.
+//            String app = this.m_Settings.getValue(EnumSettingKey.ForCommandTerminal);
+//            // если поле отсутствует или не содержит значения, сообщить об этом и закончить выполнение.
+//            if (Utility.StringIsNullOrEmpty(app))
+//            {
+//                String msg = "Невозможно выполнить запрос \"" + query + "\", поскольку не найден путь к Терминалу в поле ForCommandTerminal в ФайлНастроекОператора ";
+//                this.AddMessageToConsoleAndLog(msg, EnumDialogConsoleColor.Предупреждение, EnumLogMsgClass.SubsystemEvent_Settings, EnumLogMsgState.Fail);
+//            }
+//            else
+//            {
+//                // сформировать строку аргументов
+//                String args = app + " " + query;
+//                // исполнить запрос
+//                // TODO: тут надо назначить рабочий каталог
+//                // - его надо взять из настроек, которые у каждого случая Терминала должны быть свои.
+//                // - а пока назначим как каталог пользователя.
+//                String workDirectory = FileSystemManager.UserFolderPath;
+//                // TODO: надо проработать код вызова Терминала на прототипе!
+//                Runtime.getRuntime().exec(args);// простой способ, без указания рабочего каталога. Для уточнения нужны эксперименты на прототипе!
+//                // SystemInfoManager.ExecuteApplication(app, query, workDirectory);
+//                // PowerManager.ExecuteApplication(app, args); - старый способ для винды
+//            }
+//        }
+//        catch (Exception e)
+//        {
+//            this.PrintExceptionMessageToConsoleAndLog("Ошибка при исполнении в Терминале", e);
+//            result = EnumProcedureResult.Error;// флаг что процедура не годится
+//        }
+//
+//        return result;
+//    }
 
     /**
      * NT-Собрать нормальный регекс для процедуры
@@ -1403,120 +1462,6 @@ public class Engine
         return;
     }
 
-    // TODO: создать такую же функцию для вывода обычных сообщений не получается пока
-    // - необходимо указать класс сообщения консоли как цвет текста.
-    // - необходимо указать класс сообщения лога
-
-    // #endregion
-
-    // // #region Функции доступа к БД из сборок процедур
-    // // вынесены сюда, так как нельзя давать сторонним сборкам доступ к БД (не
-    // // знаю пока, как получится)
-    // // Названия функций должны начинаться с Db...
-    //
-    // /// <summary>
-    // /// NR-Добавить Место в БД
-    // /// </summary>
-    // /// <param name="p">Заполненный объект</param>
-    // public void DbInsertPlace(Place p)
-    // {
-    // // Добавить объект в БД
-    // this.m_db.AddPlace(p);
-    //
-    // return;
-    // }
-    //
-    // /// <summary>
-    // /// NR-Добавить несколько Мест в БД
-    // /// </summary>
-    // /// <param name="places">Список заполненных Мест</param>
-    // public void DbInsertPlace(List<Place> places)
-    // {
-    // // Добавить объекты в БД
-    // this.m_db.AddPlace(places);
-    //
-    // return;
-    // }
-    //
-    // public void DbRemovePlace(Place p)
-    // {
-    // this.m_db.RemovePlace(p);
-    // }
-    //
-    // /// <summary>
-    // /// NR-Добавить Процедуру в БД
-    // /// </summary>
-    // /// <param name="p">Заполненный объект</param>
-    // public void DbInsertProcedure(Procedure p)
-    // {
-    // // Добавить объект в БД
-    // this.m_db.AddProcedure(p);
-    //
-    // return;
-    // }
-    //
-    // /// <summary>
-    // /// NR-Добавить несколько Процедур в БД
-    // /// </summary>
-    // /// <param name="procedures">Список заполненных Процедур</param>
-    // public void DbInsertProcedure(List<Procedure> procedures)
-    // {
-    // // Добавить объект в БД
-    // this.m_db.AddProcedure(procedures);
-    //
-    // return;
-    // }
-    //
-    // public void DbRemoveProcedure(Procedure p) throws SQLException
-    // {
-    // this.m_db.RemoveProcedure(p.m_tableid);
-    // }
-    //
-    // /// <summary>
-    // /// NR-Выбрать из БД Места по названию, без учета регистра символов
-    // /// </summary>
-    // /// <param name="placeTitle">Название места</param>
-    // /// <returns>Возвращает список мест с указанным названием</returns>
-    // public LinkedList<Place> DbGetPlacesByTitle(String placeTitle)
-    // {
-    // // проще всего перебрать названия мест в кеше в памяти, а не выбирать их
-    // // из БД.
-    // // поэтому надо сделать выборку Мест из коллекции мест в БД, без учета
-    // // регистра символов
-    // return this.m_db.Places.getByTitle(placeTitle);
-    // }
-    //
-    // /// <summary>
-    // /// NR-Выбрать из БД Процедуры по названию, без учета регистра символов
-    // /// </summary>
-    // /// <param name="title">Название Процедуры</param>
-    // /// <returns>Возвращает список Процедур с указанным названием</returns>
-    // public LinkedList<Procedure> DbGetProceduresByTitle(String title)
-    // {
-    // // проще всего перебрать названия процедур в кеше в памяти, а не
-    // // выбирать их из БД.
-    // // поэтому надо сделать выборку Процедур из коллекции процедур в БД, без
-    // // учета регистра символов
-    // return this.m_db.Procedures.getByTitle(title);
-    // }
-
-    // #endregion
-
-    //
-
-    ///// <summary>
-    ///// Пример функции процедуры обработчика команды
-    ///// </summary>
-    ///// <param name="engine"></param>
-    ///// <param name="cmdline"></param>
-    ///// <param name="args"></param>
-    ///// <returns></returns>
-    // public static ProcedureResult CommandHandlerExample(Engine engine, string
-    ///// cmdline, FuncArgument[] args)
-    // {
-
-    // //вернуть флаг продолжения работы
-    // return ProcedureResult.Success;
-    // }
 
 }
+

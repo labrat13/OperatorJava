@@ -43,7 +43,15 @@ public enum EnumSettingKey
      * Командная строка для запуска Процедуры в Терминале.
      */
     ForProcedureTerminal("ForProcedureTerminal", "Командная строка для запуска Процедуры в Терминале."),
-
+    /**
+     * Путь к рабочему каталогу для любых команд Терминала.
+     */
+    DefaultWorkingDirectory("DefaultWorkingDirectory", "Путь к рабочему каталогу для любых команд Терминала."),
+    /**
+     * Команда для запуска подобно клику на ярлыке программы или документа.
+     */
+    ShellExecuteCommand("ShellExecuteCommand", "Команда для запуска подобно клику на ярлыке программы или документа."),
+    
     // *** Startup and finish settings ***
 
     /**

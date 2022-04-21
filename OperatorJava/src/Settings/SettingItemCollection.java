@@ -180,6 +180,23 @@ public class SettingItemCollection
         else return result.toArray(new SettingItem[result.size()]);
     }
 
+    /**
+     * NT-Get only first setting item by title
+     * @param title Setting item title as key
+     * @return Returns SettingsItem object, or returns null if title not exists in
+     *         collection.
+     */
+    public SettingItem getFirstItem(String title)
+    {
+        LinkedList<SettingItem> result = this.m_items.get(title);
+
+        if (result == null)
+            return null;
+        if(result.size() < 1)
+            return null;
+        else return result.get(0);
+    }
+    
     // *****************************************************
 
     /**

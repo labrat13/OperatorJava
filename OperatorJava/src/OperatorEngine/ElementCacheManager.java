@@ -881,4 +881,18 @@ public class ElementCacheManager
         return this.m_places.getPlacesAsList();
     }
 
+    /** NT-Получить первое же значение настройки.
+     * @param title Название настройки.
+     * @return Функция возвращает значение настройки либо null, если настройка не найдена.
+     */
+    public String getSettingFirstValue(String title)
+    {
+        String result = null;
+        SettingItem si = this.m_settings.getFirstItem(title);
+        if(si != null)
+            result = si.get_Path().trim();
+        
+        return result;
+    }
+
 }
