@@ -607,8 +607,9 @@ public class Engine
 
     /**
      * NR-Основной цикл исполнения механизма
+     * @throws Exception Ошибка при работе ЦиклИсполненияЗапросов.
      */
-    public void CommandLoop()
+    public void CommandLoop() throws Exception
     {
 
         // TODO: работать здесь!!! Такая свалка недоделок получилась, бардак в проекте нарастает.
@@ -660,6 +661,10 @@ public class Engine
             // EnumProcedureResult result = Lexicon.BCSA.ProcessQuery(this, query);
 
             result = DoCommandExecution(query);
+            
+            //Описать результат исполнения Процедуры.
+            this.describeProcedureResult(result);
+            
             // завершение работы Оператор
             if (result == EnumProcedureResult.Exit)
                 break;
@@ -719,7 +724,7 @@ public class Engine
         EnumProcedureResult exitCode = EnumProcedureResult.Success;
         // -3.5 исполнение запроса
         // - 3.5.1 Выполнить ПредОбработкаЗапроса.
-        exitCode = DoPreProcessing(userQuery);
+        exitCode = DoPreProcessing(userQuery);//готово
         if (exitCode != EnumProcedureResult.Exit)
         {
             // - 3.5.2 Выполнить ИсполнениеЗапроса.
@@ -728,24 +733,24 @@ public class Engine
             {
                 // выполнить Процедуру без аргументов, по ее пути.
                 // потом выполнить пост-обработку, если она нужна.
-                exitCode = DoSimpleProcedureExecution(userQuery);
+                exitCode = DoSimpleProcedureExecution(userQuery);//готово
             }
             else
             {
                 // если запрос - англоязычный, то перенаправить его в Терминал
                 if (BCSA.IsNotRussianFirst(userQuery.getQuery()) == true)
                 {
-                    exitCode = DoCommandEnglishTerminal(userQuery);
+                    exitCode = DoCommandEnglishTerminal(userQuery);//готово
                     // TODO: всегда возвращает EnumProcedureResult.Success ?
                 }
                 else
                 {
                     // иначе - запустить цикл выборки Процедур для Запроса и исполнить Процедуру.
-                    exitCode = DoProcedureLoopExecution(userQuery);
+                    exitCode = DoProcedureLoopExecution(userQuery);//TODO: работать здесь!!!
                 }
             }
             // - 3.5.3 Выполнить ПостОбработкаЗапроса.
-            exitCode = DoPostProcessing(exitCode);
+            exitCode = DoPostProcessing(exitCode);//готово
             // -3.6 если С11 Исполнение запроса успешно завершено.
             // -3.7 если С12, то переход на следующую итерацию цикла.
             // -3.8 если С13, то завершение работы Оператор.
@@ -827,7 +832,7 @@ public class Engine
 
     
     /**
-     * NR-Исполнить запрос через ЦиклПеребораПроцедур.
+     * NT-Исполнить запрос через ЦиклПеребораПроцедур.
      * 
      * @param userQuery
      *            Текущий текст запроса.
@@ -835,8 +840,136 @@ public class Engine
      */
     private EnumProcedureResult DoProcedureLoopExecution(UserQuery userQuery)
     {
+        //запустить цикл выборки Процедур для Запроса и исполнить Процедуру.
         // TODO: образец: public EnumProcedureResult DoQuery(String query)
-        return null;
+        
+        EnumProcedureResult result = EnumProcedureResult.Success;
+        String regex = null;
+        
+        try
+        {
+            // для каждой процедуры из списка процедур из кеша элементов:
+            for (Procedure p : this.m_ECM.get_ProcedureCollection().get_Procedures()) 
+            {
+                // собрать нормальный регекс для процедуры
+                // TODO: optimization - можно же это сделать после загрузки регекса
+                // из БД как часть процесса распаковки данных, записав в объект
+                // Процедуры как служебное поле.
+                // а не при каждом исполнении команды от пользователя.
+                regex = MakeNormalRegex(p);
+                // выполнить регекс и, заодно, определить, является ли процедура пригодной для исполнения
+                ArgumentCollection args = RegexManager.ExtractArgumentsFromCommand(userQuery.getQuery(), regex);
+                if (args != null)
+                {
+                    // Тут запускаем процедуру. Она должна теперь проверить свои аргументы и все условия,
+                    // и если они не подходят, то завершиться с флагом ProcedureResult.WrongArguments.
+                    result = DoProcedureExecute(userQuery, regex, p, args);
+                    if (result != EnumProcedureResult.WrongArguments)
+                        return result;
+                }
+            }
+            // Тут состояние "Не удалось подобрать процедуру для исполнения запроса"
+            // Вынесем его в функцию-обработчик, чтобы модифицировать обработку
+            // этого события.
+            EventCommandNotExecuted();
+            result = EnumProcedureResult.Success;        
+        }
+        catch (Exception e)
+        {
+            this.PrintExceptionMessageToConsoleAndLog("Ошибка", e);
+            result = EnumProcedureResult.Error;
+        }
+        
+        return result;
+    }
+
+    /** 
+     * NT- Execute Procedure
+     * @param userQuery User query object
+     * @param regex Procedure regex string
+     * @param p Procedure object
+     * @param args Procedure argument collection
+     * @return Функция возвращает код результата исполнения Процедуры.
+     */
+    private EnumProcedureResult DoProcedureExecute(
+            UserQuery userQuery,
+            String regex,
+            Procedure p,
+            ArgumentCollection args) throws Exception
+    {
+        // и еще нужно этим аргументам сопоставить типы мест хотя бы
+        TryAssignPlaces(args);
+        
+        // надо определить, путь исполнения это путь к процедуре или к
+        // приложению.
+        // TODO:оптимизация: сделать это при загрузке Процедуры из БД и
+        // сохранить в служебном поле Процедуры
+        boolean isAssemblyCodePath = RegexManager.IsAssemblyCodePath(p.get_Path());
+        if (isAssemblyCodePath == false)
+        {
+            // если к приложению, его надо запустить и вернуть стандартное
+            // значение для продолжения работы.
+            return DoShellExecute(p, args); //return RunShellExecute(p, args);
+            
+        }
+        else
+        {
+            // если к процедуре, надо приготовить аргументы, найти сборку,
+            // вызвать функцию, передать ей аргументы и вернуть результат.
+            return DoLocalAssembly(userQuery, p, args);//return RunLocalAssembly(command, p, args);
+        }
+        
+        
+    }
+
+    /** 
+     * NT- Запустить Процедуру из локальной БиблиотекаПроцедурОператора.
+     * @param userQuery Команда пользователя.
+     * @param p Объект процедуры.
+     * @param args Коллекция аргументов.
+     * @return Функция возвращает результат выполнения процедуры.
+     */
+    private EnumProcedureResult DoLocalAssembly(
+            UserQuery userQuery,
+            Procedure p,
+            ArgumentCollection args)
+    {
+        //источник: private EnumProcedureResult RunLocalAssembly(..)
+        
+        EnumProcedureResult result = EnumProcedureResult.Success;
+        try
+        {
+            // получить имена частей пути. в порядке: сборка, класс, функция,
+            // аргументы по порядку следования если они есть
+            String[] names = RegexManager.ParseAssemblyCodePath(p.get_Path());
+            // тут аргументы уже должны быть заполнены значениями и типами
+            // и местами и готовы к выполнению.
+            result = this.m_PEM.invokeProcedure(p, names, userQuery, this, args);
+            // Это выбрасывает исключения процесса запуска и исполнения Процедуры.
+        }
+        catch (Exception e)
+        {
+            // вызов исполнения не удался.
+            // пока выведем сообщение об исключении в консоль.
+            // TODO: вот надо завести в механизме статическую переменную
+            // отладки, включаемую через отдельную процедуру, и по ней выводить
+            // на экран эти отладочные данные.
+            // TODO: надо вывести тут сообщение об исключении в общий лог.
+            // если не выводить сообщение об ошибке, то непонятно, почему
+            // команда не исполняется.
+            // например, когда выключился спящий режим, команда спать просто
+            // выводила сообщение я не умею.
+
+            this.PrintExceptionMessageToConsoleAndLog("Ошибка: ", e);
+
+            // вернуть флаг ошибки
+            // TODO: Определить, что тут должна возвращать текущая функция, если во время исполнения Процедуры произошла ошибка.
+            // Ошибка - это ошибка, а не несоответствие Запроса и Процедуры. А тут - наобум назначено возвращаемое значение.
+            result = EnumProcedureResult.WrongArguments;
+        }
+        
+        // возвращаем то что вернет процедура
+        return result;
     }
 
     /**
@@ -865,7 +998,9 @@ public class Engine
         try
         {
             //1. извлечь из ФайлНастроекОператора или ТаблицаНастроекОператора значение командной строки терминала
-            String cmdterm = this.getSettingFromFileOrTable(EnumSettingKey.ForCommandTerminal);
+            //TODO: EnumSettingKey.ForProcedureTerminal не используется сейчас, вместо него EnumSettingKey.ShellExecuteCommand.
+            // - Надо проверить этот факт и решить, что делать с неиспользуемой настройкой.
+            String cmdterm = this.getSettingFromFileOrTable(EnumSettingKey.ForCommandTerminal); 
             if(Utility.StringIsNullOrEmpty(cmdterm))
                     throw new Exception("Не найдена команда запуска Терминала из настройки " + EnumSettingKey.ForCommandTerminal.getTitle());
             //2. извлечь из ФайлНастроекОператора или ТаблицаНастроекОператора значение рабочего каталога терминала
@@ -875,7 +1010,7 @@ public class Engine
             //3. TODO: разделить командную строку терминала на приложение и аргументы в классе RegexManager.
             
             //4. пока разделить нечем - вызвать PEM.ExecuteApplicationSimple()
-            String cmdline = cmdterm + " " + userQuery.getQuery();
+            String cmdline = cmdterm.trim() + " " + userQuery.getQuery();
             this.m_PEM.ExecuteApplicationSimple(cmdline, workDirectory);
         }
         catch (Exception e)
@@ -886,10 +1021,66 @@ public class Engine
         return result;
     }
 
-
+    /**
+     * NT-Запустить команду через механизм ShellExecute.
+     * 
+     * @param p Объект Процедуры
+     * 
+     * @param args Коллекция аргументов.
+     * @return Функция возвращает результат выполнения процедуры.      
+     */
+    private EnumProcedureResult DoShellExecute(Procedure p, ArgumentCollection args)
+    {       
+        //вызвать PEM.ExecuteApplicationSimple() or PEM.ExecuteApplication()
+        
+        EnumProcedureResult result = EnumProcedureResult.Success;
+        try
+        {
+            //1. извлечь из ФайлНастроекОператора или ТаблицаНастроекОператора значение командной строки ShellExecute
+            String cmdterm = this.getSettingFromFileOrTable(EnumSettingKey.ShellExecuteCommand);
+            if(Utility.StringIsNullOrEmpty(cmdterm))
+                    throw new Exception("Не найдена команда запуска из настройки " + EnumSettingKey.ShellExecuteCommand.getTitle());
+            //2. извлечь из ФайлНастроекОператора или ТаблицаНастроекОператора значение рабочего каталога терминала
+            String workDirectory = this.getSettingFromFileOrTable(EnumSettingKey.DefaultWorkingDirectory);
+            if(Utility.StringIsNullOrEmpty(workDirectory))
+                throw new Exception("Не найден путь к рабочему каталогу Терминала из настройки " + EnumSettingKey.DefaultWorkingDirectory.getTitle());
+            //3. вставить аргументы в командную строку приложения
+            //TODO: непонятно тут - нужен ли путь Терминала для Процедуры тут, или вообщен не нужно ничего добавлять?
+            //пока что ничего не будем добавлять. 
+            String cmdline = RegexManager.ConvertApplicationCommandString(p.get_Path(), args);
+            
+            //4. пока разделить нечем - вызвать PEM.ExecuteApplicationSimple()
+            //String cmdline = cmdterm.trim() + " " + cmdQuery; - ничего не будем добавлять в командную строку от Команды.
+            this.m_PEM.ExecuteApplicationSimple(cmdline, workDirectory);
+        }
+        catch (Exception e)
+        {
+            // вызов исполнения не удался.
+            // пока выведем сообщение об исключении в консоль.
+            // TODO: вот надо завести в механизме статическую переменную
+            // отладки, включаемую через отдельную процедуру/команду, и по ней
+            // выводить на экран эти отладочные данные.
+            // TODO: надо вывести тут сообщение об исключении в общий лог.
+            // если не выводить сообщение об ошибке, то непонятно, почему
+            // команда не исполняется.
+            // например, когда выключился спящий режим, команда спать просто
+            // выводила сообщение я не умею.
+            // this.m_OperatorConsole.PrintExceptionMessage(e);
+            
+            this.PrintExceptionMessageToConsoleAndLog("Ошибка", e);
+            
+            //TODO: Флаг, что процедура не годится, выдается для исключения из функции 
+            //RegexManager.ConvertApplicationCommandString(..), она могла бы возвращать null как значение ошибки. 
+            //а то сейчас при любой ошибке Процедура считается непригодной и тихо пропускается. 
+            //А функция играет роль фильтра для отсева неподходящих пар регекс-командная строка из Команды.
+            result = EnumProcedureResult.WrongArguments;// флаг что процедура не годится
+        }
+        
+        return result;
+    }
 
     /**
-     * NR-Исполнить Процедуру без аргументов.
+     * NT-Исполнить Процедуру без аргументов.
      * 
      * @param userQuery
      *            Путь к Процедуре.
@@ -897,15 +1088,53 @@ public class Engine
      */
     private EnumProcedureResult DoSimpleProcedureExecution(UserQuery userQuery)
     {
-        // TODO: нет образца!
-        //1. извлечь из userQuery путь к Процедуре.
-        //2. найти Процедуру с таким путем в ECM.
-        //3. Запустить Процедуру на исполнение - лучше из самого объекта Процедуры?
-        // - без аргументов.
-        // PEM.invokeProcedure(Procedure, names[], query, engine, args);
-        //вот ее придется обернуть в более короткий вызов и подготовку всех ресурсов.
+        EnumProcedureResult result = EnumProcedureResult.Success;
+        
+        try
+        {
+            //1. извлечь из userQuery путь к Процедуре.
+            String procedurePath = userQuery.getQuery();
+            //2. найти Процедуру с таким путем в ECM.
+            Procedure p = this.m_ECM.get_ProcedureCollection().getByPath(procedurePath);
+            if(p == null)
+                throw new Exception(String.format("Процедура \"%s\" не найдена в Коллекции Процедур Оператора.", procedurePath));
+            //3. Запустить Процедуру на исполнение - лучше из самого объекта Процедуры?
+            // - без аргументов.
+            // PEM.invokeProcedure(Procedure, names[], query, engine, args);
+            //вот ее придется обернуть в более короткий вызов и подготовку всех ресурсов.
+            // 1. Procedure - объект процедуры, не используется пока.
+            // 2. String[] names - массив частей пути Процедуры:
+            // [0] - library dll title
+            // [1] - class title within library
+            // [2] - function title within class
+            // [3..n] - argument names, not used here 
+            // - этот массив формируется в функции RegexManager.ParseAssemblyCodePath(...);
+            String[] names = RegexManager.ParseAssemblyCodePath(procedurePath);
+            // 3. String query text - чего туда подавать?
+            // - тут проблема, если Процедура проверяет текст запроса - запроса же нет.
+            // - А) передавать что есть - путь к Процедуре.
+            // - Б) передавать текст описания из объекта Процедуры.
+            // 4. Engine object ref
+            // 5. ArgumentCollection args - формируется в функции RegexManager.ExtractArgumentsFromCommand(query, regex);
+            // - если регекс подходит, а аргументов нет, возвращается пустая коллекция аргументов.
+            ArgumentCollection args = new ArgumentCollection();
+            
+            //TODO: вот тут можно предложить запрашивать необходимые Процедуре аргументы - у пользователя, через диалог.
+            // Раз он сам такой путь Процедуры ввел в качестве команды, так пусть и аргументы укажет, если они есть.
+            // - для этого надо где-то взять список аргументов с именами и описаниями. Где?
+            //   - в регексе Команды; либо в Пути Процедуры должны быть указаны имена аргументов. Но толку от их названий мало будет.
+            // Но это - потом опробовать фичу, а сейчас - тупо запустить Процедуру без аргументов и не учитывая регекс.
+            
+            result = this.m_PEM.invokeProcedure(p, names, userQuery, this, args);       
+        }
+        catch (Exception e)
+        {
+            this.PrintExceptionMessageToConsoleAndLog("Ошибка", e);
+            result = EnumProcedureResult.Error;
+        }
+        
         //4. Вернуть код результата Процедуры.
-        return null;
+        return result;
     }
 
     /**
@@ -1086,20 +1315,20 @@ public class Engine
         return 0;
     }
 
-    /// <summary>
-    /// NR-Обработчик события "Поступила новая команда"
-    /// </summary>
-    /// <param name="query">Текст запроса команды</param>
-    /// <returns></returns>
-    private EnumProcedureResult EventCommandArrived(String query)
-    {
-        // сейчас тупо исполним весь запрос целиком
-        // result = DoQuery(query);
-
-        EnumProcedureResult result = Lexicon.BCSA.ProcessQuery(this, query);
-
-        return result;
-    }
+//    /// <summary>
+//    /// NR-Обработчик события "Поступила новая команда"
+//    /// </summary>
+//    /// <param name="query">Текст запроса команды</param>
+//    /// <returns></returns>
+//    private EnumProcedureResult EventCommandArrived(String query) throws Exception
+//    {
+//        // сейчас тупо исполним весь запрос целиком
+//        // result = DoQuery(query);
+//
+//        EnumProcedureResult result = Lexicon.BCSA.ProcessQuery(this, query);
+//
+//        return result;
+//    }
 
     /// <summary>
     /// NR-вывести сообщение-подтверждение результата процедуры
@@ -1161,54 +1390,54 @@ public class Engine
         return;
     }
 
-    /// <summary>
-    /// NR-обрабатываем запрос пользователя.
-    /// Возвращаем false для завершения работы приложения
-    /// </summary>
-    /// <param name="cmdline">Текст запроса</param>
-    public EnumProcedureResult DoQuery(String query) throws Exception
-    {
-        // найти подходящую процедуру для запроса
-        // перебором всех процедур.
-        EnumProcedureResult result;
-        String regex = null;
-
-        // 22052020 - фича: если запрос не русскоязычный, то передать его в
-        // терминал. Иначе - исполнять.
-        if (BCSA.IsNotRussianFirst(query))
-            return ExecuteWithTerminal(query);
-        // для каждой процедуры из списка процедур из кеша элементов:
-        for (Procedure p : this.m_ECM.get_ProcedureCollection().get_Procedures()) // this.m_db.Procedures.Procedures)
-        {
-            // собрать нормальный регекс для процедуры
-            // TODO: optimization - можно же это сделать после загрузки регекса
-            // из БД как часть процесса распаковки данных, записав в объект
-            // Процедуры как служебное поле.
-            // а не при каждом исполнении команды от пользователя.
-            regex = MakeNormalRegex(p);
-            // выполнить регекс и определить, является ли процедура пригодной
-            // для исполнения
-            // bool res = RegexManager.IsMatchQuery(rx, cmdline);
-            // if (res == true)
-            ArgumentCollection args = RegexManager.ExtractArgumentsFromCommand(query, regex);
-            if (args != null)
-            {
-                // Тут запускаем процедуру. Она должна теперь проверить свои
-                // аргументы и все условия,
-                // и если они не подходят, то завершиться с флагом
-                // ProcedureResult.WrongArguments.
-                result = Execute(query, regex, p, args);
-                if (result != EnumProcedureResult.WrongArguments)
-                    return result;
-            }
-        }
-        // Тут состояние "Не удалось подобрать процедуру для исполнения запроса"
-        // Вынесем его в функцию-обработчик, чтобы модифицировать обработку
-        // этого события.
-        EventCommandNotExecuted();
-
-        return EnumProcedureResult.Success;
-    }
+//    /// <summary>
+//    /// NR-обрабатываем запрос пользователя.
+//    /// Возвращаем false для завершения работы приложения
+//    /// </summary>
+//    /// <param name="cmdline">Текст запроса</param>
+//    public EnumProcedureResult DoQuery(String query) throws Exception
+//    {
+//        // найти подходящую процедуру для запроса
+//        // перебором всех процедур.
+//        EnumProcedureResult result;
+//        String regex = null;
+//
+//        // 22052020 - фича: если запрос не русскоязычный, то передать его в
+//        // терминал. Иначе - исполнять.
+//        if (BCSA.IsNotRussianFirst(query))
+//            return ExecuteWithTerminal(query);
+//        // для каждой процедуры из списка процедур из кеша элементов:
+//        for (Procedure p : this.m_ECM.get_ProcedureCollection().get_Procedures()) // this.m_db.Procedures.Procedures)
+//        {
+//            // собрать нормальный регекс для процедуры
+//            // TODO: optimization - можно же это сделать после загрузки регекса
+//            // из БД как часть процесса распаковки данных, записав в объект
+//            // Процедуры как служебное поле.
+//            // а не при каждом исполнении команды от пользователя.
+//            regex = MakeNormalRegex(p);
+//            // выполнить регекс и определить, является ли процедура пригодной
+//            // для исполнения
+//            // bool res = RegexManager.IsMatchQuery(rx, cmdline);
+//            // if (res == true)
+//            ArgumentCollection args = RegexManager.ExtractArgumentsFromCommand(query, regex);
+//            if (args != null)
+//            {
+//                // Тут запускаем процедуру. Она должна теперь проверить свои
+//                // аргументы и все условия,
+//                // и если они не подходят, то завершиться с флагом
+//                // ProcedureResult.WrongArguments.
+//                result = Execute(query, regex, p, args);
+//                if (result != EnumProcedureResult.WrongArguments)
+//                    return result;
+//            }
+//        }
+//        // Тут состояние "Не удалось подобрать процедуру для исполнения запроса"
+//        // Вынесем его в функцию-обработчик, чтобы модифицировать обработку
+//        // этого события.
+//        EventCommandNotExecuted();
+//
+//        return EnumProcedureResult.Success;
+//    }
 
     /**
      * NT-Обработать событие "Не удалось подобрать процедуру для исполнения запроса"
@@ -1300,141 +1529,141 @@ public class Engine
         return result;
     }
 
-    /// <summary>
-    /// NR-Должна вернуть облом при неподходящих параметрах, успех при
-    /// исполнении, выход если требуется завершение работы приложения или
-    /// компьютера
-    /// </summary>
-    /// <param name="command">Текст команды пользователя</param>
-    /// <param name="regex">Регулярное выражение, готовое для работы</param>
-    /// <param name="p">Объект процедуры</param>
-    /// <param name="args">Коллекция аргументов</param>
-    /// <returns></returns>
-    private EnumProcedureResult Execute(
-            String command,
-            String regex,
-            Procedure p,
-            ArgumentCollection args) throws Exception
-    {
-        // и еще нужно этим аргументам сопоставить типы мест хотя бы
-        TryAssignPlaces(args);
+//    /// <summary>
+//    /// NR-Должна вернуть облом при неподходящих параметрах, успех при
+//    /// исполнении, выход если требуется завершение работы приложения или
+//    /// компьютера
+//    /// </summary>
+//    /// <param name="command">Текст команды пользователя</param>
+//    /// <param name="regex">Регулярное выражение, готовое для работы</param>
+//    /// <param name="p">Объект процедуры</param>
+//    /// <param name="args">Коллекция аргументов</param>
+//    /// <returns></returns>
+//    private EnumProcedureResult Execute(
+//            String command,
+//            String regex,
+//            Procedure p,
+//            ArgumentCollection args) throws Exception
+//    {
+//        // и еще нужно этим аргументам сопоставить типы мест хотя бы
+//        TryAssignPlaces(args);
+//
+//        // надо определить, путь исполнения это путь к процедуре или к
+//        // приложению.
+//        // TODO:оптимизация: сделать это при загрузке Процедуры из БД и
+//        // сохранить в служебном поле Процедуры
+//        boolean isAssemblyCodePath = RegexManager.IsAssemblyCodePath(p.get_Path());
+//        if (isAssemblyCodePath == false)
+//        {
+//            // если к приложению, его надо запустить и вернуть стандартное
+//            // значение для продолжения работы.
+//            return RunShellExecute(p, args);
+//        }
+//        else
+//        {
+//            // если к процедуре, надо приготовить аргументы, найти сборку,
+//            // вызвать функцию, передать ей аргументы и вернуть результат.
+//            return RunLocalAssembly(command, p, args);
+//        }
+//
+//    }
 
-        // надо определить, путь исполнения это путь к процедуре или к
-        // приложению.
-        // TODO:оптимизация: сделать это при загрузке Процедуры из БД и
-        // сохранить в служебном поле Процедуры
-        boolean isAssemblyCodePath = RegexManager.IsAssemblyCodePath(p.get_Path());
-        if (isAssemblyCodePath == false)
-        {
-            // если к приложению, его надо запустить и вернуть стандартное
-            // значение для продолжения работы.
-            return RunShellExecute(p, args);
-        }
-        else
-        {
-            // если к процедуре, надо приготовить аргументы, найти сборку,
-            // вызвать функцию, передать ей аргументы и вернуть результат.
-            return RunLocalAssembly(command, p, args);
-        }
+//    /**
+//     * NT-Запустить функцию из локальной сборки
+//     * 
+//     * @param command
+//     *            Команда пользователя
+//     * @param p
+//     *            Объект процедуры
+//     * @param args
+//     *            Коллекция аргументов
+//     * @return Возвращается результат выполнения процедуры.
+//     */
+//    private EnumProcedureResult RunLocalAssembly(
+//            String command,
+//            Procedure p,
+//            ArgumentCollection args)
+//    {
+//        EnumProcedureResult result = EnumProcedureResult.Success;
+//        try
+//        {
+//            // получить имена частей пути. в порядке: сборка, класс, функция,
+//            // аргументы по порядку следования если они есть
+//            String[] names = RegexManager.ParseAssemblyCodePath(p.get_Path());
+//            // тут аргументы уже должны быть заполнены значениями и типами
+//            // и местами и готовы к выполнению.
+//            // result = p.invokeProcedure(command, names, this, args);
+//            result = this.m_PEM.invokeProcedure(p, names, command, this, args);
+//            // Это выбрасывает исключения процесса запуска и исполнения Процедуры.
+//        }
+//        catch (Exception e)
+//        {
+//            // вызов исполнения не удался.
+//            // пока выведем сообщение об исключении в консоль.
+//            // TODO: вот надо завести в механизме статическую переменную
+//            // отладки, включаемую через отдельную процедуру, и по ней выводить
+//            // на экран эти отладочные данные.
+//            // TODO: надо вывести тут сообщение об исключении в общий лог.
+//            // если не выводить сообщение об ошибке, то непонятно, почему
+//            // команда не исполняется.
+//            // например, когда выключился спящий режим, команда спать просто
+//            // выводила сообщение я не умею.
+//
+//            PrintExceptionToConsole(e);
+//            // add exception to log
+//            this.m_logman.AddExceptionMessage(e);
+//
+//            // вернуть флаг ошибки
+//            // TODO: Определить, что тут должна возвращать текущая функция, если во время исполнения Процедуры произошла ошибка.
+//            // Ошибка - это ошибка, а не несоответствие Запроса и Процедуры. А тут - наобум назначено возвращаемое значение.
+//            result = EnumProcedureResult.WrongArguments;
+//        }
+//        // возвращаем то что вернет процедура
+//        return result;
+//    }
 
-    }
-
-    /**
-     * NT-Запустить функцию из локальной сборки
-     * 
-     * @param command
-     *            Команда пользователя
-     * @param p
-     *            Объект процедуры
-     * @param args
-     *            Коллекция аргументов
-     * @return Возвращается результат выполнения процедуры.
-     */
-    private EnumProcedureResult RunLocalAssembly(
-            String command,
-            Procedure p,
-            ArgumentCollection args)
-    {
-        EnumProcedureResult result = EnumProcedureResult.Success;
-        try
-        {
-            // получить имена частей пути. в порядке: сборка, класс, функция,
-            // аргументы по порядку следования если они есть
-            String[] names = RegexManager.ParseAssemblyCodePath(p.get_Path());
-            // тут аргументы уже должны быть заполнены значениями и типами
-            // и местами и готовы к выполнению.
-            // result = p.invokeProcedure(command, names, this, args);
-            result = this.m_PEM.invokeProcedure(p, names, command, this, args);
-            // Это выбрасывает исключения процесса запуска и исполнения Процедуры.
-        }
-        catch (Exception e)
-        {
-            // вызов исполнения не удался.
-            // пока выведем сообщение об исключении в консоль.
-            // TODO: вот надо завести в механизме статическую переменную
-            // отладки, включаемую через отдельную процедуру, и по ней выводить
-            // на экран эти отладочные данные.
-            // TODO: надо вывести тут сообщение об исключении в общий лог.
-            // если не выводить сообщение об ошибке, то непонятно, почему
-            // команда не исполняется.
-            // например, когда выключился спящий режим, команда спать просто
-            // выводила сообщение я не умею.
-
-            PrintExceptionToConsole(e);
-            // add exception to log
-            this.m_logman.AddExceptionMessage(e);
-
-            // вернуть флаг ошибки
-            // TODO: Определить, что тут должна возвращать текущая функция, если во время исполнения Процедуры произошла ошибка.
-            // Ошибка - это ошибка, а не несоответствие Запроса и Процедуры. А тут - наобум назначено возвращаемое значение.
-            result = EnumProcedureResult.WrongArguments;
-        }
-        // возвращаем то что вернет процедура
-        return result;
-    }
-
-    /// <summary>
-    /// NR-Запустить команду через механизм ShellExecute
-    /// </summary>
-    /// <param name="p">Объект процедуры</param>
-    /// <param name="args">Коллекция аргументов</param>
-    /// <returns>Возвращается результат выполнения процедуры</returns>
-    private EnumProcedureResult RunShellExecute(
-            Procedure p,
-            ArgumentCollection args)
-    {
-        // типы мест определять здесь не имеет смысла - они все равно не
-        // учитываются в запускаемом приложении
-        EnumProcedureResult result = EnumProcedureResult.Success;
-        try
-        {
-            // вставить аргументы в командную строку приложения
-            String cmdline = RegexManager.ConvertApplicationCommandString(p.get_Path(), args);
-            // запустить приложение
-            PowerManager.ExecuteApplication(cmdline);
-        }
-        catch (Exception e)
-        {
-            // вызов исполнения не удался.
-            // пока выведем сообщение об исключении в консоль.
-            // TODO: вот надо завести в механизме статическую переменную
-            // отладки, включаемую через отдельную процедуру/команду, и по ней
-            // выводить на экран эти отладочные данные.
-            // TODO: надо вывести тут сообщение об исключении в общий лог.
-            // если не выводить сообщение об ошибке, то непонятно, почему
-            // команда не исполняется.
-            // например, когда выключился спящий режим, команда спать просто
-            // выводила сообщение я не умею.
-            // this.m_OperatorConsole.PrintExceptionMessage(e);
-            PrintExceptionToConsole(e);
-            // add exception to log
-            this.m_logman.AddExceptionMessage(e);
-
-            result = EnumProcedureResult.WrongArguments;// флаг что процедура не годится
-        }
-        // вернуть результат
-        return result;
-    }
+//    /// <summary>
+//    /// NR-Запустить команду через механизм ShellExecute
+//    /// </summary>
+//    /// <param name="p">Объект процедуры</param>
+//    /// <param name="args">Коллекция аргументов</param>
+//    /// <returns>Возвращается результат выполнения процедуры</returns>
+//    private EnumProcedureResult RunShellExecute(
+//            Procedure p,
+//            ArgumentCollection args)
+//    {
+//        // типы мест определять здесь не имеет смысла - они все равно не
+//        // учитываются в запускаемом приложении
+//        EnumProcedureResult result = EnumProcedureResult.Success;
+//        try
+//        {
+//            // вставить аргументы в командную строку приложения
+//            String cmdline = RegexManager.ConvertApplicationCommandString(p.get_Path(), args);
+//            // запустить приложение
+//            PowerManager.ExecuteApplication(cmdline);
+//        }
+//        catch (Exception e)
+//        {
+//            // вызов исполнения не удался.
+//            // пока выведем сообщение об исключении в консоль.
+//            // TODO: вот надо завести в механизме статическую переменную
+//            // отладки, включаемую через отдельную процедуру/команду, и по ней
+//            // выводить на экран эти отладочные данные.
+//            // TODO: надо вывести тут сообщение об исключении в общий лог.
+//            // если не выводить сообщение об ошибке, то непонятно, почему
+//            // команда не исполняется.
+//            // например, когда выключился спящий режим, команда спать просто
+//            // выводила сообщение я не умею.
+//            // this.m_OperatorConsole.PrintExceptionMessage(e);
+//            PrintExceptionToConsole(e);
+//            // add exception to log
+//            this.m_logman.AddExceptionMessage(e);
+//
+//            result = EnumProcedureResult.WrongArguments;// флаг что процедура не годится
+//        }
+//        // вернуть результат
+//        return result;
+//    }
 
     /**
      * NT-Сопоставить данные аргументов и места из коллекции мест, насколько это возможно.
@@ -1450,10 +1679,10 @@ public class Engine
         for (FuncArgument f : args.get_Arguments())
         {
             String name = f.get_ArgumentValue();
-            if (this.m_ECM.get_PlaceCollection().ContainsPlace(name))  // .m_db.Places.ContainsPlace(name))
+            if (this.m_ECM.get_PlaceCollection().ContainsPlace(name)) 
             {
                 // извлечем место
-                Place p = this.m_ECM.get_PlaceCollection().GetPlace(name); // this.m_db.Places.GetPlace(name);
+                Place p = this.m_ECM.get_PlaceCollection().GetPlace(name);
                 // копируем свойства места в аргумент
                 f.ПодставитьМесто(p);
             }

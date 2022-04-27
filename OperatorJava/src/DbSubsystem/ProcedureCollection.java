@@ -141,7 +141,7 @@ public class ProcedureCollection
     }
 
     /**
-     * NT-Выбрать из БД Процедуры по названию, без учета регистра символов
+     * NT-Выбрать из коллекции Процедуры по названию, без учета регистра символов
      * 
      * @param title
      *            Название Процедуры
@@ -157,6 +157,22 @@ public class ProcedureCollection
         }
 
         return result;
+    }
+
+    /** 
+     * NT - Получить из коллекции Процедуру по ее Пути, без учета регистра символов.
+     * @param procedurePath Путь Процедуры.
+     * @return Функция возвращает объект Процедуры, соответствующий указанному пути. Функция возвращает null, если Процедура не найдена. 
+     */
+    public Procedure getByPath(String procedurePath)
+    {        
+        for (Procedure p : this.m_proclist)
+        {
+            if (procedurePath.equalsIgnoreCase(p.get_Path()))
+                return p;
+        }
+        
+        return null;
     }
 
 }

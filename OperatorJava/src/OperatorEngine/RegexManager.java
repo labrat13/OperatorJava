@@ -333,7 +333,7 @@ public class RegexManager
 
         // тут надо распарсить строку запроса, выделив аргументы.
         LinkedList<String> groupNames = getGroupNames(regex);
-        // регекс не работает с группами, названия которых на русском языке - выдает исключение
+        // ВАЖНО: регекс не работает с группами, названия которых на русском языке - выдает исключение
         Pattern p = Pattern.compile(regex, Pattern.UNICODE_CHARACTER_CLASS | Pattern.CASE_INSENSITIVE);// Cannot move to static now! Но можно прицепить к
                                                                                                        // процедуре каждый Pattern как объект.
         Matcher m = p.matcher(query);// А этот нельзя прицепить к Процедуре.
