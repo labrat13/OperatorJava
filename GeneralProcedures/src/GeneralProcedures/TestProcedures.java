@@ -75,7 +75,7 @@ public class TestProcedures
             LibraryManagerBase manager,
             UserQuery query,
             ArgumentCollection args)
-    {
+    {        
         /*
          * 07042022 - Добавлена возможность внутри Процедуры изменять текст запроса,
          * чтобы применить новый текст запроса к дальнейшему поиску Процедур.
@@ -85,11 +85,32 @@ public class TestProcedures
          * Пример вызова функции переопределения запроса, с выводом в лог старого и нового значений.
          * Example: query.ChangeQuery(engine, "New query text");
          */
+        
+        /*
+         * содержимое списка аргументов
+         * args[0].name = "команда" - название аргумента в строке регекса команды
+         * args[0].value = "Скачать файл ХХХ" - значение аргумента - название создаваемого места
+         * args[0].type = "" - тип аргумента - TODO: сейчас не указывается, так как мне лень думать
+         */
+        
+        EnumProcedureResult result = EnumProcedureResult.Success;
+        // название текущей процедуры для лога итп.
+        String currentProcedureTitle = "GeneralProcedures.TestProcedures.testHelloWorld";
+        // выброшенное тут исключение будет заменено на Reflection исключение и его текст потеряется.
+        // Поэтому надо здесь его перехватить, вывести в лог и на консоль, и погасить, вернув EnumProcedureResult.Error.
+        try
+        {
+            // print helloworld message to console and exit
+            engine.get_OperatorConsole().PrintTextLine("helloworld", EnumDialogConsoleColor.Сообщение);
+            engine.get_OperatorConsole().Beep();
+        }
+        catch (Exception ex)
+        {
+            engine.PrintExceptionMessageToConsoleAndLog("Ошибка в процедуре " + currentProcedureTitle + "()", ex);
+            result = EnumProcedureResult.Error;
+        }
 
-        // print helloworld message to console and exit
-        engine.get_OperatorConsole().PrintTextLine("helloworld", EnumDialogConsoleColor.Сообщение);
-        engine.get_OperatorConsole().Beep();
-
-        return EnumProcedureResult.Success;
+        // вернуть флаг продолжения работы
+        return result;
     }
 }
