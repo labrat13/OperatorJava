@@ -29,9 +29,10 @@ import Settings.SettingItem;
 // Для вывода сообщений на консоль использовать только! объект engine.OperatorConsole.
 // так как я планирую вынести консоль совсем отдельно, то надо уже сейчас ее использование ограничить.
 
-/**
+/** 
+ * NT-Движок исполнения Процедур.
  * @author jsmith
- *         основной класс механизма исполнения процедур
+ *         
  */
 public class Engine
 {
@@ -379,26 +380,26 @@ public class Engine
         return l.isReady();
     }
 
-    /**
-     * NT-Вывести на консоль информацию об исключении
-     * 
-     * @param e
-     *            Объект исключения.
-     */
-    private void PrintExceptionToConsole(Exception e)
-    {
-        // TODO: заменить эту функцию на PrintExceptionMessageToConsoleAndLog(String msg, Exception ex)
-
-        // TODO: вложенное исключение выводить, если есть, вместо первого.
-        // так как в процедурах сборок процедур они упаковываются в исключение
-        // механизма отражения
-        // if (e. != null)
-        // this.OperatorConsole.PrintExceptionMessage(e.InnerException);
-        // else
-        this.m_OperatorConsole.PrintExceptionMessage(e);
-
-        return;
-    }
+//    /**
+//     * NT-Вывести на консоль информацию об исключении
+//     * 
+//     * @param e
+//     *            Объект исключения.
+//     */
+//    private void PrintExceptionToConsole(Exception e)
+//    {
+//        // TODO: заменить эту функцию на PrintExceptionMessageToConsoleAndLog(String msg, Exception ex)
+//
+//        // TODO: вложенное исключение выводить, если есть, вместо первого.
+//        // так как в процедурах сборок процедур они упаковываются в исключение
+//        // механизма отражения
+//        // if (e. != null)
+//        // this.OperatorConsole.PrintExceptionMessage(e.InnerException);
+//        // else
+//        this.m_OperatorConsole.PrintExceptionMessage(e);
+//
+//        return;
+//    }
 
     /**
      * NT-Add exception message to Log and Console.
@@ -461,7 +462,7 @@ public class Engine
             if(Utility.StringIsNullOrEmpty(newQuery))
             {
                 String msg2 = String.format("Невозможно выполнить %s, поскольку настройка %s не найдена в ТаблицаНастроекОператора.", operation, setting.getTitle());
-                this.AddMessageToConsoleAndLog(msg, EnumDialogConsoleColor.Предупреждение, EnumLogMsgClass.SubsystemEvent_Settings, EnumLogMsgState.Fail);   
+                this.AddMessageToConsoleAndLog(msg2, EnumDialogConsoleColor.Предупреждение, EnumLogMsgClass.SubsystemEvent_Settings, EnumLogMsgState.Fail);   
             }
         }
         return newQuery;

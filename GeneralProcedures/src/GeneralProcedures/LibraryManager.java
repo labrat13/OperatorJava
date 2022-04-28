@@ -41,6 +41,12 @@ public class LibraryManager extends LibraryManagerBase
     // Если @OperatorProcedure.State = ImplementationState.NotTested, Движок будет выдавать сообщение, что соответствующий элемент не тестирован, и будет
     // исполнять Процедуру.
     // Если @OperatorProcedure.State = ImplementationState.Ready, Движок будет исполнять Процедуру.
+    // Следовательно:
+    // - Если вы недописали Процедуру, пометьте ее ImplementationState.NotRealized, чтобы Оператор не пытался исполнять эту Процедуру.
+    // - Если вы дописали но не протестировали Процедуру, пометьте ее ImplementationState.NotTested, чтобы Оператор выводил предупреждение, что запускаемая
+    // Процедура не проверена.
+    // - Если вы протестировали Процедуру, и она правильно работает, пометьте ее ImplementationState.Ready, чтобы Оператор не выводил ненужные более
+    // предупреждения.
 
     /**
      * Static Version string for current library

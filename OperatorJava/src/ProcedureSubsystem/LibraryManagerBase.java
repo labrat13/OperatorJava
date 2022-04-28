@@ -25,7 +25,7 @@ import OperatorEngine.Utility;
 import OperatorEngine.Version;
 
 /**
- * NR- Базовый класс для менеджеров бибилиотек Процедур.
+ * NT- Базовый класс для менеджеров бибилиотек Процедур.
  * 
  * @author Селяков Павел
  *
@@ -303,19 +303,8 @@ public class LibraryManagerBase
             loader = new URLClassLoader(classUrls, engine.getClass().getClassLoader());
             // Если класслоадер потребуется более одного раза, следует как-то сделать его постоянным?
             Class<?> cls = null;
-            // try load class, return null if not exists
-            try
-            {
-                cls = loader.loadClass(classTitle);
-            }
-            catch (ClassNotFoundException ex)
-            {
-                // close loader before exit
-                if (loader != null)
-                    loader.close();
-
-                return null;
-            }
+            // load class, return null if not exists
+            cls = loader.loadClass(classTitle);
 
             // 3. Package annotation check
             Package pg = cls.getPackage();
@@ -398,9 +387,9 @@ public class LibraryManagerBase
         {
 
             String AssemblyTitle = names[0];
-            String ClassTitle = AssemblyTitle + "." + names[1]; // "AssemblyTitle.ClassTitle"
+            String ClassTitle = AssemblyTitle + "." + names[1]; // = "AssemblyTitle.ClassTitle"
             String MethodTitle = names[2];
-            String printMethodTitle = AssemblyTitle + "." + ClassTitle + "." + MethodTitle;
+            String printMethodTitle = ClassTitle + "." + MethodTitle; // = "AssemblyTitle.ClassTitle.MethodTitle"
 
             // 1. Получить абсолютный путь к JAR файлу сборки.
             if (Utility.StringIsNullOrEmpty(jarFilePath) || (FileSystemManager.isFileExists(jarFilePath) == false))
@@ -410,7 +399,7 @@ public class LibraryManagerBase
             // 2. load class from specified JarFile
             URL classUrl = new URL("file://" + jarFilePath);
             URL[] classUrls = new URL[] { classUrl };
-            loader = new URLClassLoader(classUrls);
+            loader = new URLClassLoader(classUrls, engine.getClass().getClassLoader());
             Class<?> cls = loader.loadClass(ClassTitle);
 
             // 3. Package annotation check

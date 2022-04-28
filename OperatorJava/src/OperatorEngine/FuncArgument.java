@@ -199,7 +199,7 @@ public class FuncArgument
      * 
      * @param p
      *            Найденное Место
-     * @throws Exception
+     * @throws Exception 
      */
     public void ПодставитьМесто(Place p) throws Exception
     {
