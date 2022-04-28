@@ -6,13 +6,8 @@
  */
 package OperatorEngine;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.LinkedList;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -24,21 +19,15 @@ import LogSubsystem.EnumLogMsgClass;
 import LogSubsystem.EnumLogMsgState;
 import LogSubsystem.LogManager;
 import LogSubsystem.LogManager2;
-import LogSubsystem.LogMessage;
 import ProcedureSubsystem.ProcedureExecutionManager;
-import Settings.ApplicationSettingsBase;
-import Settings.ApplicationSettingsKeyed;
 import Settings.ApplicationSettingsKeyed;
 import Settings.EnumSettingKey;
 import Settings.SettingItem;
 
 // Консоль Оператора:
-// Функции доступа к консоли из сборок процедур сейчас перенесены в класс
-// Operator.Lexicon.DialogConsole.
-// Для вывода сообщений на консоль использовать только! объект
-// engine.OperatorConsole.
-// так как я планирую вынести консоль совсем отдельно, то надо уже сейчас ее
-// использование ограничить.
+// Функции доступа к консоли из сборок процедур сейчас перенесены в класс Operator.Lexicon.DialogConsole.
+// Для вывода сообщений на консоль использовать только! объект engine.OperatorConsole.
+// так как я планирую вынести консоль совсем отдельно, то надо уже сейчас ее использование ограничить.
 
 /**
  * @author jsmith
@@ -103,9 +92,9 @@ public class Engine
     private BCSA                      m_BCSA;
 
     /**
-     * NR-Стандартный конструктор
+     * NT-Стандартный конструктор
      * 
-     * @throws Exception
+     * @throws Exception Ошибка при создании объекта Движка.
      */
     public Engine() throws Exception
     {
@@ -204,7 +193,7 @@ public class Engine
     /**
      * NT- Инициализация механизма
      * 
-     * @throws Exception
+     * @throws Exception Ошибка при инициализации Движка.
      */
     public void Init() throws Exception
     {

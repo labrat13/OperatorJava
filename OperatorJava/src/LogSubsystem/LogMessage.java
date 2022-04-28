@@ -200,6 +200,7 @@ public class LogMessage
         builder.append(", m_MsgText=");
         builder.append(this.m_MsgText);
         builder.append("]");
+        
         return builder.toString();
     }
 
@@ -221,8 +222,8 @@ public class LogMessage
         builder.append("\" text=\"");
         builder.append(this.m_MsgText);
         builder.append("\" />");
+        
         return builder.toString();
-
     }
 
     /**
