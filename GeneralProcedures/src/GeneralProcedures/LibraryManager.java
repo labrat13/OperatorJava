@@ -180,7 +180,7 @@ public class LibraryManager extends LibraryManagerBase
         p.set_Path("GeneralProcedures.TestProcedures.testHelloWorld()");// Скобки обязательны!
         // Регекс процедуры
         //имена аргументов в регексе и простом регексе - только латинские и цифры! Поскольку русские буквы не поддерживаются в именах групп регекса.
-        p.set_Regex("запустить тест хеловорд");
+        p.set_Regex("тест хеловорд");
         // вес процедуры надо подобрать более точно, он зависит от общего набора Процедур.
         // TODO: придумать, как динамически изменять и определять вес Процедуры.
         // - но в данном случае его все равно нельзя изменить, он зафиксирован в коде тут.
@@ -192,7 +192,7 @@ public class LibraryManager extends LibraryManagerBase
 
         //*** Add Procedures from ProcedureProcedures class ***
         p = new Procedure();
-        p.set_Title("Создать команду");
+        p.set_Title("Создать команду НазваниеКоманды");
         p.set_Description("Создать команду в БазаДанныхОператор");
         p.set_Path("GeneralProcedures.ProcedureProcedures.CommandCreateProcedure(procedureTitle)");//имена аргументов только латинские и цифры.
         p.set_Regex("создать команду %cmd");//простой регекс, имена аргументов только латинские и цифры.
