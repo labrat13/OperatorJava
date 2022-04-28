@@ -6,7 +6,6 @@
 package GeneralProcedures;
 
 import OperatorEngine.Engine;
-import OperatorEngine.Item;
 import OperatorEngine.Place;
 import OperatorEngine.Procedure;
 import ProcedureSubsystem.ImplementationState;
