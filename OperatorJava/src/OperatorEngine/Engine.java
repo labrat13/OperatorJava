@@ -605,10 +605,12 @@ public class Engine
         // Надо расчищать эти завалы скорее, пока я помню, что тут как и зачем.
 
         // выводим приветствие и описание программы
+        this.m_OperatorConsole.PrintEmptyLine();
         this.m_OperatorConsole.PrintTextLine("Консоль речевого интерфейса. Версия " + Utility.getOperatorVersionString(), EnumDialogConsoleColor.Сообщение);
         this.m_OperatorConsole.PrintTextLine("Для завершения работы приложения введите слово выход или quit", EnumDialogConsoleColor.Сообщение);
         this.m_OperatorConsole.PrintTextLine("Сегодня " + BCSA.CreateLongDatetimeString(LocalDateTime.now()), EnumDialogConsoleColor.Сообщение);
-
+        this.m_OperatorConsole.PrintEmptyLine();
+        
         // -3.1 выполнить СтартоваяПроцедура.
         int StartResult = CommandStartupProcedure();
         // -3.2 вывести приглашение пользователю.
@@ -1332,11 +1334,11 @@ public class Engine
         switch (result)
         {
             case CancelledByUser:
-                msg = "Процедура прервана пользователем";
+                msg = "Процедура прервана пользователем.";
                 break;
             case Error:
             case Unknown:
-                msg = "Ошибка при исполнении процедуры";
+                msg = "Ошибка при исполнении процедуры.";
                 ErrorAndBeep = true;
                 break;
             case Exit:
@@ -1356,9 +1358,11 @@ public class Engine
                 msg = "Выключение компьютера...";
                 break;
             case WrongArguments:
-                msg = "Ошибка: неправильные аргументы";
+                msg = "Ошибка: неправильные аргументы.";
                 ErrorAndBeep = true;
                 break;
+            case Success:
+                msg = "Процедура выполнена успешно.";
             default:
                 break;
         }

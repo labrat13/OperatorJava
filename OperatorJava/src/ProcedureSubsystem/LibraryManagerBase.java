@@ -321,27 +321,27 @@ public class LibraryManagerBase
             Package pg = cls.getPackage();
             // не может не быть корневого пакета
             if (pg == null)
-                throw new Exception("Root package not found in Procedure Library " + path);
+                throw new Exception("Корневой пакет не найден в библиотеке Процедур " + path);
             OperatorProcedure packageAnnot = pg.getAnnotation(OperatorProcedure.class);
             if (packageAnnot == null)
-                throw new Exception(String.format("Root package in Procedure Library %s not marked with OperatorProcedure annotation.", path));
+                throw new Exception(String.format("Корневой пакет в библиотеке Процедур \"%s\" не помечен аннотацией OperatorProcedure.", path));
             if (packageAnnot.State() == ImplementationState.NotRealized)
-                throw new Exception(String.format("Root package in Procedure Library %s marked as ImplementationState.NotRealized.", path));
+                throw new Exception(String.format("Корневой пакет в библиотеке Процедур \"%s\" помечен как NotRealized.", path));
 
             // 4. if class not annotated, stop work
             OperatorProcedure annot = cls.getAnnotation(OperatorProcedure.class);
             if (annot == null)
-                throw new Exception(String.format("LibraryManager class in %s not marked with OperatorProcedure annotation.", path));
+                throw new Exception(String.format("Класс LibraryManager в библиотеке Процедур \"%s\" не помечен аннотацией OperatorProcedure.", path));
             // 5. find method
             ImplementationState state = annot.State();
             // String class_title = annot.Title();
             // String class_description = annot.Description();
             if (state == ImplementationState.NotRealized)
-                throw new Exception(String.format("LibraryManager class in %s marked as ImplementationState.NotRealized.", path));
+                throw new Exception(String.format("Класс LibraryManager в библиотеке Процедур \"%s\" помечен как NotRealized.", path));
             if (state == ImplementationState.NotTested)
             {
                 // print warning "This Procedure method class %s marked as not tested"
-                String msg1 = String.format("LibraryManager класс в библиотеке Процедур \"%s\" помечен как NotTested", path);
+                String msg1 = String.format("Класс LibraryManager в библиотеке Процедур \"%s\" помечен как NotTested", path);
                 engine.get_OperatorConsole().PrintTextLine(msg1, EnumDialogConsoleColor.Предупреждение);
                 // add msg to log
                 engine.getLogManager().AddMessage(EnumLogMsgClass.Default, EnumLogMsgState.Default, msg1);
@@ -400,6 +400,7 @@ public class LibraryManagerBase
             String AssemblyTitle = names[0];
             String ClassTitle = AssemblyTitle + "." + names[1]; // "AssemblyTitle.ClassTitle"
             String MethodTitle = names[2];
+            String printMethodTitle = AssemblyTitle + "." + ClassTitle + "." + MethodTitle;
 
             // 1. Получить абсолютный путь к JAR файлу сборки.
             if (Utility.StringIsNullOrEmpty(jarFilePath) || (FileSystemManager.isFileExists(jarFilePath) == false))
@@ -416,16 +417,16 @@ public class LibraryManagerBase
             Package pg = cls.getPackage();
             // не может не быть корневого пакета
             if (pg == null)
-                throw new Exception("Root package not found in Procedure Library " + jarFilePath);
+                throw new Exception("Корневой пакет не найден в библиотеке Процедур " + jarFilePath);
             OperatorProcedure packageAnnot = pg.getAnnotation(OperatorProcedure.class);
             if (packageAnnot == null)
-                throw new Exception(String.format("Root package in Procedure Library \"%s\" not marked with OperatorProcedure annotation.", jarFilePath));
+                throw new Exception(String.format("Корневой пакет в библиотеке Процедур \"%s\" не помечен аннотацией OperatorProcedure.", jarFilePath));
             if (packageAnnot.State() == ImplementationState.NotRealized)
-                throw new Exception(String.format("Root package in Procedure Library \"%s\" marked as ImplementationState.NotRealized.", jarFilePath));
+                throw new Exception(String.format("Корневой пакет в библиотеке Процедур \"%s\" помечен как NotRealized.", jarFilePath));
             if (packageAnnot.State() == ImplementationState.NotTested)
             {
                 // print warning "This Procedure method class %s marked as not tested"
-                String msg1 = "Пакет библиотеки \"" + AssemblyTitle + "\", содержащий данную Процедуру, помечен как NotTested";
+                String msg1 = "Корневой пакет библиотеки \"" + AssemblyTitle + "\", содержащий данную Процедуру, помечен как NotTested";
                 engine.get_OperatorConsole().PrintTextLine(msg1, EnumDialogConsoleColor.Предупреждение);
                 // add msg to log
                 engine.getLogManager().AddMessage(EnumLogMsgClass.Default, EnumLogMsgState.Default, msg1);
@@ -434,13 +435,13 @@ public class LibraryManagerBase
             // 4. if class not annotated, stop work
             OperatorProcedure annot = cls.getAnnotation(OperatorProcedure.class);
             if (annot == null)
-                throw new Exception("Specified class not marked with OperatorProcedure annotation.");
+                throw new Exception("Класс \"" + ClassTitle + "\", содержащий данную Процедуру, не помечен аннотацией OperatorProcedure.");
             // 5. find method
             ImplementationState state = annot.State();
             // String class_title = annot.Title();
             // String class_description = annot.Description();
             if (state == ImplementationState.NotRealized)
-                throw new Exception("Specified class marked as ImplementationState.NotRealized.");
+                throw new Exception("Класс \"" + ClassTitle + "\", содержащий данную Процедуру, помечен как NotRealized.");
             if (state == ImplementationState.NotTested)
             {
                 // print warning "This Procedure method class %s marked as not tested"
@@ -450,22 +451,23 @@ public class LibraryManagerBase
                 engine.getLogManager().AddMessage(EnumLogMsgClass.Default, EnumLogMsgState.Default, msg1);
             }
             // 6. get method
-            Method m = cls.getMethod(MethodTitle, Engine.class, LibraryManagerBase.class, String.class, ArgumentCollection.class);
+            Method m = cls.getMethod(MethodTitle, Engine.class, LibraryManagerBase.class, UserQuery.class, ArgumentCollection.class);
             // throw NoSuchMethodException if cannot find method
 
             // 7. check method annotation
             OperatorProcedure annot2 = m.getAnnotation(OperatorProcedure.class);
+
             if (annot2 == null)
-                throw new Exception("Specified method not marked with OperatorProcedure annotation.");
+                throw new Exception("Указанный метод \"" + printMethodTitle + "\" не помечен аннотацией OperatorProcedure.");
             ImplementationState state2 = annot2.State();
             // String method_title = annot2.Title();
             // String method_description = annot2.Description();
             if (state2 == ImplementationState.NotRealized)
-                throw new Exception("Specified method marked as ImplementationState.NotRealized.");
+                throw new Exception("Указанный метод \"" + printMethodTitle + "\" помечен как NotRealized.");
             // запросить у пользователя подтверждение на запуск процедуры, помеченной как требующая отладки.
             if (state2 == ImplementationState.NotTested)
             {
-                String question = String.format("Исполняемый метод \"%s.%s\" помечен как NotTested. Продолжить выполнение?", ClassTitle, MethodTitle);
+                String question = String.format("Исполняемый метод \"%s\" помечен как NotTested. Продолжить выполнение?", printMethodTitle);
                 EnumSpeakDialogResult esdr = engine.get_OperatorConsole().PrintДаНетОтмена(question);
                 // если пользователь ответил не "Да", то отменить исполнение Процедуры.
                 if (!esdr.isДа())
@@ -483,7 +485,7 @@ public class LibraryManagerBase
                 Object returned = m.invoke(null, engine, manager, command, args);
                 // 8. return result
                 if (returned == null)
-                    throw new Exception(String.format("Error: Method \"%s.%s\" returns null.", ClassTitle, MethodTitle));
+                    throw new Exception("Ошибка: Метод \"" + printMethodTitle + "\" вернул null.");
 
                 result = (EnumProcedureResult) returned;
             }
