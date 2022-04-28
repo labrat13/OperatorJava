@@ -68,7 +68,7 @@ public class ArgumentCollection
      *            Название аргумента
      * @return Функция возвращает объект аргумента
      */
-    public FuncArgument GetByName(String argname)
+    public FuncArgument getByName(String argname)
     {
         for (FuncArgument f : m_args)
         {
@@ -76,5 +76,15 @@ public class ArgumentCollection
                 return f;
         }
         return null;
+    }
+
+    /** 
+     * NT-Получить объект аргумента по его индексу в списке.
+     * @param i Индекс элемента в списке.
+     * @return Функция возвращает объект аргумента, находящийся по указанному индексу в списке.
+     */
+    public FuncArgument getByIndex(int i)
+    {
+        return this.m_args.get(i);
     }
 }

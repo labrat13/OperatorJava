@@ -108,6 +108,7 @@ public final class EnumSpeakDialogResult
     /**
      * Constructor
      */
+    @SuppressWarnings("unused")
     private EnumSpeakDialogResult()
     {
         this.m_Value = EnumSpeakDialogResult.Unknown;

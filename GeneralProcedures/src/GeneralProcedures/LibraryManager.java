@@ -5,6 +5,8 @@
  */
 package GeneralProcedures;
 
+import java.util.LinkedList;
+
 import OperatorEngine.Engine;
 import OperatorEngine.Place;
 import OperatorEngine.Procedure;
@@ -164,7 +166,8 @@ public class LibraryManager extends LibraryManagerBase
         // TODO: добавить ссылку на текущую библиотеку в каждый объект здесь.
 
         // создать выходной массив
-        Procedure[] result = new Procedure[1];
+        LinkedList<Procedure> result = new LinkedList<Procedure>();
+        
         // создать объект Процедуры и добавить в выходной массив
         Procedure p = new Procedure();
         // Уникальный идентификатор элемента или первичный ключ таблицы. 0 по умолчанию, здесь можно не указывать.
@@ -184,10 +187,31 @@ public class LibraryManager extends LibraryManagerBase
         // добавить название источника как название текущей библиотеки.
         p.set_Storage(this.m_LibraryTitle);
         // Добавить Процедуру в выходной массив
-        result[0] = p;
+        result.add(p);
 
+        //*** Add Procedures from ProcedureProcedures class ***
+        p = new Procedure();
+        p.set_Title("Создать команду");
+        p.set_Description("Создать команду в БазаДанныхОператор");
+        p.set_Path("GeneralProcedures.ProcedureProcedures.CommandCreateProcedure(procedureTitle)");
+        p.set_Regex("создать команду %команда");
+        p.set_Ves(0.5);
+        p.set_Storage(this.m_LibraryTitle);
+        result.add(p);
+        
+        p = new Procedure();
+        p.set_Title("Показать команды");
+        p.set_Description("Вывести на экран список доступных команд.");
+        p.set_Path("GeneralProcedures.ProcedureProcedures.CommandListProcedures()");
+        p.set_Regex("показать команды");
+        p.set_Ves(0.5);
+        p.set_Storage(this.m_LibraryTitle);
+        result.add(p);
+        
+        //***  ***
+        
         // вернуть выходной массив
-        return result;
+        return result.toArray(new Procedure[result.size()]);
     }
 
 }

@@ -1295,7 +1295,7 @@ public class Engine
             // - todo: пост-обработка для КодЗавершенияПроцедуры здесь не выполняется?
             // - TODO: С36 Событие завершения финиша.
             // - вывести сообщение о завершении процедуры finish.
-            this.AddMessageToConsoleAndLog("Исполнение процедуры завершение Оператор завершено.", EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.FinishExecution, EnumLogMsgState.OK);
+            this.AddMessageToConsoleAndLog("Исполнение процедуры завершения Оператор завершено.", EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.FinishExecution, EnumLogMsgState.OK);
 
         }
         else

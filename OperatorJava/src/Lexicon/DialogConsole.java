@@ -252,15 +252,30 @@ public class DialogConsole
         return result;
     }
 
-    /// <summary>
-    /// NT-Диалог Да-Нет-Отменить. Другие ответы не принимаются.
-    /// </summary>
-    /// <param name="текстЗапроса">Текст вопроса пользователю, без символа
-    /// перевода строки в конце!</param>
-    /// <returns>
-    /// Функция возвращает <c>SpeakDialogResult</c> код стандартного ответа Да,
-    /// Нет или Отмена.
-    /// </returns>
+    /**
+     * NT-вывести на консоль вопрос и принять ответ. 
+     * Оболочка для упрощения кода диалогов, принимает комбинацию флагов как int.
+     * 
+     * @param SpeakDialogResultKeys
+     *            Набор флагов ожидаемых субкоманд как int.
+     * @param question
+     *            Текст вопроса пользователю
+     * @param newLine
+     *            True - Начинать ответ с новой строки, False - в той же строке.
+     * @param noEmptyAnswer
+     *            True - требовать повторный ввод, если ответ пустая строка;
+     *            False - принимать пустые ответы
+     * @return Возвращает строку, введенную пользователем.
+     * @throws Exception
+     *             Функция выбрасывает исключение, если параметр keys имеет неправильные значения.
+     */
+    public String PrintQuestionAnswer(int SpeakDialogResultKeys, String question, boolean newLine, boolean noEmptyAnswer) throws Exception
+    {
+        EnumSpeakDialogResult esdr = new EnumSpeakDialogResult(SpeakDialogResultKeys);
+        
+        return this.PrintQuestionAnswer(esdr, question, newLine, noEmptyAnswer);
+    }
+    
     /**
      * NT-Диалог Да-Нет-Отменить. Другие ответы не принимаются.
      * 
@@ -400,11 +415,8 @@ public class DialogConsole
 
     /**
      * NT-Вывести на экран список существующих мест - только названия мест
-     * 
-     * @throws Exception
-     * @throws SQLException
      */
-    public void PrintListOfPlaces() throws SQLException, Exception
+    public void PrintListOfPlaces()
     {
         this.SureConsoleCursorStart();
         // получить список мест
@@ -423,12 +435,9 @@ public class DialogConsole
     }
 
     /**
-     * NT-Вывести на экран список существующих Процедур - только названия
-     * процедур
-     * 
-     * @throws SQLException
+     * NT-Вывести на экран список существующих Процедур - только названия процедур.
      */
-    public void PrintListOfProcedures() throws SQLException
+    public void PrintListOfProcedures() 
     {
         this.SureConsoleCursorStart();
         // получить список процедур
