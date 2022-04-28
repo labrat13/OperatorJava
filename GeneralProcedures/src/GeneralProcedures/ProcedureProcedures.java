@@ -30,7 +30,7 @@ import ProcedureSubsystem.LibraryManagerBase;
  *
  */
 
-@OperatorProcedure(State = ImplementationState.NotRealized, Title = "Класс операций Процедур.",
+@OperatorProcedure(State = ImplementationState.NotTested, Title = "Класс операций Процедур.",
 Description = "Класс операций с Процедурами в БазаДанныхОператора.")
 public class ProcedureProcedures
 {
@@ -180,7 +180,8 @@ public class ProcedureProcedures
      // простым и сложным форматом регекса. Целую краткую инструкцию  и примеры
      String[] regexDescr = new String[] {" - Команда будет выбрана для исполнения, если ее Регекс опознает текст, введенный Пользователем", 
          " - Простой Регекс содержит текст Команды и аргументы. Аргумент обозначается словом с знаком % перед ним.",
-         "   Например: Открыть сайт %Аргумент", 
+         " - Название аргумента должно содержать только латинские буквы, цифры, знак_подчеркивания.",
+         " - Например: Открыть сайт %arg_1", 
          " - Сложный Регекс это специально форматированный текст. ",
          " - Обратитесь к документации, чтобы узнать больше о Регексе Команды",
          "" };
@@ -199,7 +200,7 @@ public class ProcedureProcedures
      //TODO: для Пользователя нужно вывести краткую справку с примерами путей
      String[] adresDescr = new String[] {" - Описывает командную строку исполняемого файла или путь к Процедуре Команды в Сборке Процедур", 
          " - Для исполняемых файлов, используемых в качестве Процедур, путь может содержать аргументы.",
-         "   Например: C:\\Program Files\\Windows Media Player\\wmplayer.exe %место",
+         "   Например: \"/home/username/firefox/firefox.sh %www\"",
          "   Аргументы идентифицируются по своим именам, заданным в Регексе Команды.",
          " - Для Процедур из СборкиПроцедур прописывается путь в формате СборкаПроцедур.Класс.Функция().",
          "   Аргументы идентифицируются внутри кода функции Процедуры, по своим именам, заданным в Регексе Команды.",
@@ -222,8 +223,8 @@ public class ProcedureProcedures
      // для Пользователя нужно вывести краткую справку по Вес процедуры
      String[] vesDescr = new String[] {" - Вес определяет порядок выбора для исполнения одной из Команд, подходящих по Регексу", 
          " - Команда с наибольшим Весом будет выполнена последней", 
-         " - Вес должен быть больше 0,0 и меньше 1,0",
-         " - Для новой Команды рекомендуется значение 0,5",
+         " - Вес должен быть больше 0.0 и меньше 1.0",
+         " - Для новой Команды рекомендуется значение 0.5",
          "" };
      engine.get_OperatorConsole().PrintTextLines(vesDescr, EnumDialogConsoleColor.Сообщение);
      //ввод значения
@@ -262,8 +263,11 @@ public class ProcedureProcedures
          return EnumProcedureResult.CancelledByUser;
 
      //9 заполнить объект Процедуры и создать новую процедуру в БД
+     //сначала добавить название хранилища в объект Процедуры - согласно концепту Библиотек Процедур Оператора. 
+     proc.set_Storage(Procedure.StorageKeyForDatabaseItem);
      //engine.DbInsertProcedure(proc); заменено на:
      engine.get_ECM().AddProcedure(proc);
+     
      //10 вывести сообщение о результате операции: успешно
      engine.get_OperatorConsole().PrintTextLine(String.format("Команда \"%s\" создана успешно", proc.get_Title()), EnumDialogConsoleColor.Успех);
 
@@ -296,7 +300,7 @@ public class ProcedureProcedures
  *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
 * @throws Exception Ошибка при исполнении Процедуры.
  */
-@OperatorProcedure(State = ImplementationState.NotRealized, Title = "Показать список Команд.",
+@OperatorProcedure(State = ImplementationState.NotTested, Title = "Показать список Команд.",
         Description = "Вывести на экран список доступных Команд Оператора.")
 public static EnumProcedureResult CommandListProcedures(
         Engine engine,

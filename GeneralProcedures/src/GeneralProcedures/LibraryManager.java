@@ -179,6 +179,7 @@ public class LibraryManager extends LibraryManagerBase
         // Веб-путь или командная строкас аргументами или путь к процедуре в библиотеке процедур.
         p.set_Path("GeneralProcedures.TestProcedures.testHelloWorld()");// Скобки обязательны!
         // Регекс процедуры
+        //имена аргументов в регексе и простом регексе - только латинские и цифры! Поскольку русские буквы не поддерживаются в именах групп регекса.
         p.set_Regex("запустить тест хеловорд");
         // вес процедуры надо подобрать более точно, он зависит от общего набора Процедур.
         // TODO: придумать, как динамически изменять и определять вес Процедуры.
@@ -193,8 +194,8 @@ public class LibraryManager extends LibraryManagerBase
         p = new Procedure();
         p.set_Title("Создать команду");
         p.set_Description("Создать команду в БазаДанныхОператор");
-        p.set_Path("GeneralProcedures.ProcedureProcedures.CommandCreateProcedure(procedureTitle)");
-        p.set_Regex("создать команду %команда");
+        p.set_Path("GeneralProcedures.ProcedureProcedures.CommandCreateProcedure(procedureTitle)");//имена аргументов только латинские и цифры.
+        p.set_Regex("создать команду %cmd");//простой регекс, имена аргументов только латинские и цифры.
         p.set_Ves(0.5);
         p.set_Storage(this.m_LibraryTitle);
         result.add(p);

@@ -4,8 +4,10 @@
   Для обычного JAR все проходит нормально, но код не находит sqlite драйвер.
 - поместить JAR в каталог   .Operator как OperatorJava.jar
 
-- библиотеку GeneralProcedures создать как JAR и поместить в каталог  .Operator/GeneralProcedures/ как GeneralProcedures.jar
+- библиотеку GeneralProcedures создать как обычный, не-runnable JAR и поместить в каталог  .Operator/GeneralProcedures/ как GeneralProcedures.jar
   - все Процедуры и Места, определенные в ней, будут добавлены в Оператор автоматически при запуске, так что БД в этой версии для добавленных Процедур изменять не надо.
+  
+  
   
   
 
