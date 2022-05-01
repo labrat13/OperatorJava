@@ -8,6 +8,8 @@
 
 import JTerminal.Terminal;
 import OperatorEngine.Engine;
+import OperatorEngine.FileSystemManager;
+import Utility.SingleAppInstance;
 
 /**
  * @author jsmith
@@ -31,13 +33,17 @@ public class Operator
         try
         {
 
-            // 1. TODO: попытаться определить, запущен ли уже Оператор,
+            // 1. Первым делом, попытаться определить, запущен ли уже Оператор,
             // и если да, завершить работу и передать фокус ввода более старой копии
+            //TODO: фокус ввода передать не могу - не нашел способа.
+            boolean toExit = checkPreviousInstance();
+            if(toExit == false)
+            {
 
             // 2. TODO: приложение не умеет перехватывать свое завершение, поэтому не
             // обрабатывает закрытие окна, Ctrl+C / Break.
             // Так что в лог не выводится запись, завершающая сеанс работы.
-            // И БД не закрывается, это надо исправить!
+            // БД поэтому реализована так, что постоянно закрыта.
 
             // 3. create engine object
             engine = new Engine();
@@ -55,7 +61,8 @@ public class Operator
             // TODO: разобраться с исключениями в engine.Exit()
             engine.Exit();
             engine = null;
-
+            
+            }
         }
         catch (Exception e)
         {
@@ -64,9 +71,7 @@ public class Operator
             Engine.LoggingException(engine, e);
 
             // print exception
-            Terminal.WriteLine(e.getClass().getTypeName());
-            Terminal.WriteLine(e.getMessage());
-            Terminal.WriteLine();
+            PrintExceptionWithoutEngine(e);
         }
         finally
         {
@@ -77,12 +82,121 @@ public class Operator
             // if(engine != null)
             // engine.Exit();
             // engine = null;
-
+            
+            //завершить детектор запущенных копий приложения в самом конце работы приложения.
+            finalPreviousInstance();
         }
 
         return;
     }
 
+
+    /**
+     * NT-Освободить ресурсы детектора запущенных копий приложения.
+     */
+    private static void finalPreviousInstance()
+    {
+        try
+        {
+            SingleAppInstance.unlockInstance();
+        }
+        catch(Exception e)
+        {
+            PrintExceptionWithoutEngine(e);
+        }
+        
+        return;
+    }
+
+
+    /**
+     * NT-Запустить детектор запущенных копий приложения.
+     */
+    private static boolean checkPreviousInstance()
+    {
+        boolean toExit = false;
+        try
+        {
+            //create locking file path and start locking
+            String lockfilepath = FileSystemManager.getAppFolderPath() + FileSystemManager.FileSeparator + SingleAppInstance.LockingFileName;
+            SingleAppInstance.lockInstance(lockfilepath);
+            //check flags
+            if(SingleAppInstance.hasDuplicate() == true)
+            {
+                toExit = true;
+                AnotherCopyOnWork();
+            }
+            if(SingleAppInstance.needRestoreData() == true)
+            {
+                toExit = false;
+                needRestoreData();
+            }
+        }
+        catch(Exception e)
+        {
+            PrintExceptionWithoutEngine(e);
+            
+            //to exit because errors
+            finalPreviousInstance();
+            toExit = true;
+        }
+        
+        return toExit;
+    }
+
+    
+
+    /**
+     * NT-Обработчик состояния "Возможно, требуется восстановление данных после аварийного завершения Оператор".
+     */
+    private static void needRestoreData()
+    {
+        String msg = "Возможно, требуется восстановление данных после аварийного завершения предыдущего экземпляра Оператор.";
+        PrintMessageWithoutEngine(msg);
+        
+        // TODO Тут запустить проверку состояния и восстановление данных Оператора
+        
+        return;
+    }
+
+
+    /**
+     * NT-обработчик состояния "Другая копия Оператор уже запущена".
+     */
+    private static void AnotherCopyOnWork()
+    {
+        String msg = "Другая копия Оператор уже запущена. Эта копия будет закрыта.";
+        PrintMessageWithoutEngine(msg);
+        
+        // TODO тут найти другую копию и передать ей фокус ввода.  
+        
+        return;
+    }
+
+
+    /**
+     * @param e
+     */
+    private static void PrintExceptionWithoutEngine(Exception e)
+    {
+        // print exception
+        Terminal.WriteLine();
+        Terminal.WriteLine(e.getClass().getTypeName());
+        Terminal.WriteLine(e.getMessage());
+        Terminal.WriteLine();
+    }
+    
+    /**
+     * @param e
+     */
+    private static void PrintMessageWithoutEngine(String msg)
+    {
+        // print exception
+        Terminal.WriteLine();
+        Terminal.WriteLine(msg);
+        Terminal.WriteLine();
+    }
+    
     // /**
     // * @throws Exception
     // *

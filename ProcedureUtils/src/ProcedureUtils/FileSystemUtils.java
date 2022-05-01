@@ -23,7 +23,7 @@ import java.util.LinkedList;
 
 
 
-/**
+/** NT-Разные функции для Linux IO.
  * @author Селяков Павел
  *
  */
