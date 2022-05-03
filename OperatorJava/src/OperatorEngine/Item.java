@@ -61,6 +61,10 @@ public class Item implements Comparable<Item>
      * Не сохранять в таблицу БД!
      */
     protected String           m_storage;
+    /**
+     * Название пространства имен Сущности.
+     */
+    protected String m_namespace;
 
     // #endregion
 
@@ -74,12 +78,34 @@ public class Item implements Comparable<Item>
         this.m_tableid = 0;
         this.m_title = "";
         this.m_storage = "";
+        this.m_namespace = "";
 
         return;
     }
 
     /**
-     * Название Хранилища ( Библиотеки Процедур или БД).
+     * RT-Название пространства имен.
+     * 
+     * @return Функция возвращает название пространства имен для Сущности.
+     */
+    public String get_Namespace()
+    {
+        return this.m_namespace;
+    }
+
+    /**
+     * RT-Название пространства имен.
+     * 
+     * @param namespace
+     *            Название пространства имен для Сущности.
+     */
+    public void set_Namespace(String namespace)
+    {
+        this.m_storage = namespace;
+    }
+    
+    /**
+     * RT-Название Хранилища ( Библиотеки Процедур или БД).
      * Не сохранять в таблицу БД!
      * 
      * @return the storage
@@ -90,7 +116,7 @@ public class Item implements Comparable<Item>
     }
 
     /**
-     * Название Хранилища ( Библиотеки Процедур или БД)
+     * RT-Название Хранилища ( Библиотеки Процедур или БД)
      * Не сохранять в таблицу БД!
      * 
      * @param storage
@@ -103,7 +129,7 @@ public class Item implements Comparable<Item>
 
     // #region Properties
     /**
-     * первичный ключ таблицы
+     * RT-первичный ключ таблицы
      * 
      * @return the id
      */
@@ -113,7 +139,7 @@ public class Item implements Comparable<Item>
     }
 
     /**
-     * первичный ключ таблицы
+     * RT-первичный ключ таблицы
      * 
      * @param id
      *            the id to set
@@ -134,7 +160,7 @@ public class Item implements Comparable<Item>
     }
 
     /**
-     * Уникальное название сущности, до 255 символов
+     * RT-Уникальное название сущности, до 255 символов
      * 
      * @param title
      *            the title to set
@@ -145,7 +171,7 @@ public class Item implements Comparable<Item>
     }
 
     /**
-     * Описание Сущности
+     * RT-Описание Сущности
      * 
      * @return the descr
      */
@@ -155,7 +181,7 @@ public class Item implements Comparable<Item>
     }
 
     /**
-     * Описание Сущности
+     * RT-Описание Сущности
      * 
      * @param descr
      *            the descr to set
@@ -166,7 +192,7 @@ public class Item implements Comparable<Item>
     }
 
     /**
-     * Путь к сущности, или Значение, до 255 символов
+     * RT-Путь к сущности, или Значение, до 255 символов
      * 
      * @return the path
      */
@@ -176,7 +202,7 @@ public class Item implements Comparable<Item>
     }
 
     /**
-     * Путь к сущности, или Значение, до 255 символов
+     * RT-Путь к сущности, или Значение, до 255 символов
      * 
      * @param path
      *            the path to set
@@ -187,7 +213,7 @@ public class Item implements Comparable<Item>
     }
 
     /**
-     * NT-Получить строку описания свойств Процедуры для отладчика.
+     * RT-Получить строку описания свойств Процедуры для отладчика.
      * 
      * @return Функция возвращает описание свойств Процедуры одной строкой.
      */
