@@ -199,7 +199,7 @@ public class FuncArgument
      * 
      * @param p
      *            Найденное Место
-     * @throws Exception 
+     * @throws Exception Ошибка при создании объекта Места.
      */
     public void ПодставитьМесто(Place p) throws Exception
     {

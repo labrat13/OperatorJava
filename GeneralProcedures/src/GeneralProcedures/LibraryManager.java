@@ -209,7 +209,26 @@ public class LibraryManager extends LibraryManagerBase
         p.set_Storage(this.m_LibraryTitle);
         result.add(p);
         
-        //***  ***
+        
+        //*** Add Procedures from UnsortedProcedures class ***
+        
+        p = new Procedure();
+        p.set_Title("Открыть терминал");
+        p.set_Description("Открытие терминала по пути из ФайлНастроекОператора или ТаблицаНастроекОператора.");
+        p.set_Path("GeneralProcedures.UnsortedProcedures.OpenTerminal()");
+        p.set_Regex("открыть терминал");
+        p.set_Ves(0.5);
+        p.set_Storage(this.m_LibraryTitle);
+        result.add(p);
+        
+        p = new Procedure();
+        p.set_Title("Открыть консоль");
+        p.set_Description("Открытие терминала по пути из ФайлНастроекОператора или ТаблицаНастроекОператора.");
+        p.set_Path("GeneralProcedures.UnsortedProcedures.OpenTerminal()");
+        p.set_Regex("открыть консоль");
+        p.set_Ves(0.5);
+        p.set_Storage(this.m_LibraryTitle);
+        result.add(p);
         
         // вернуть выходной массив
         return result.toArray(new Procedure[result.size()]);

@@ -27,6 +27,7 @@ public class UserQuery
     // *** Constructors ***
     /**
      * RT- default constructor
+     * @param q Текст запроса.
      */
     public UserQuery(String q)
     {

@@ -178,11 +178,12 @@ public class FileSystemManager
     /**
      * NR-Get current user temporary folder path string
      * 
-     * @throws Exception
+     * @throws Exception Функция не реализована.
      */
     public static String getTempFolderPath() throws Exception
     {
         // TODO: add path to User temp folder
+        
         throw new Exception();
     }
 

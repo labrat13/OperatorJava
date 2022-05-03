@@ -44,8 +44,8 @@ public class Place extends Item
     /**
      * NT-Конструктор копирования
      * 
-     * @param p
-     * @throws Exception
+     * @param p Образец копирования.
+     * @throws Exception Ошибка при копировании.
      */
     public Place(Place p) throws Exception
     {
@@ -180,7 +180,7 @@ public class Place extends Item
      * Заполняет коллекцию типов места из внутренней переменной, которая хранит
      * упакованное значение.
      * 
-     * @throws Exception
+     * @throws Exception Ошибка при разборе выражения.
      */
     public void ParseEntityTypeString() throws Exception
     {

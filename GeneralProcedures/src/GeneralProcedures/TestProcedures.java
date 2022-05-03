@@ -112,5 +112,81 @@ public class TestProcedures
 
         // вернуть флаг продолжения работы
         return result;
-    }
+    }  
+    
 }
+
+//Заготовка функции обработчика Процедуры - скопируйте в нужный класс и выполните тодо.
+
+///**
+//* NR-Обработчик процедуры Шаблон обработчика процедуры.
+//* 
+//* 
+//* @param engine
+//*            Ссылка на объект Движка Оператор для доступа к консоли, логу, БД итп.
+//* @param manager
+//*            Ссылка на объект Менеджера Библиотеки Процедур для доступа к инициализированным ресурсам библиотеки.
+//* @param query
+//*            Текст исходного запроса пользователя для возможной дополнительной обработки.
+//* @param args
+//*            Массив аргументов Процедуры, соответствующий запросу.
+//* @return Функция возвращает результат как одно из значений EnumProcedureResult:
+//*         EnumProcedureResult.Success если Процедура выполнена успешно;
+//*         EnumProcedureResult.WrongArguments если аргументы не подходят для запуска Процедуры;
+//*         EnumProcedureResult.Error если произошла ошибка при выполнении Процедуры;
+//*         EnumProcedureResult.CancelledByUser если выполнение Процедуры прервано Пользователем;
+//*         EnumProcedureResult.Exit если после выполнения Процедуры требуется завершить работу Оператор;
+//*         EnumProcedureResult.ExitAndLogoff если после выполнения Процедуры требуется завершить сеанс пользователя;
+//*         EnumProcedureResult.ExitAndHybernate если после выполнения Процедуры требуется перевести компьютер в спящий режим;
+//*         EnumProcedureResult.ExitAndSleep если после выполнения Процедуры требуется перевести компьютер в спящий режим;
+//*         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
+//*         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
+//*/
+//@OperatorProcedure(State = ImplementationState.NotRealized,   //TODO: заменить на актуальное 
+//     Title = "Название команды",   //TODO: заменить название команды на актуальное 
+//     Description = "Однострочное описание команды.")      //TODO: заменить описание команды на актуальное 
+//public static EnumProcedureResult НазваниеШаблона(
+//     Engine engine,
+//     LibraryManagerBase manager,
+//     UserQuery query,
+//     ArgumentCollection args)
+//{
+// /*
+//  * 07042022 - Добавлена возможность внутри Процедуры изменять текст запроса,
+//  * чтобы применить новый текст запроса к дальнейшему поиску Процедур.
+//  * Изменение запроса не перезапускает поиск Процедур (в текущей версии Оператора).
+//  * Поэтому изменять запрос следует только в хорошо продуманных случаях.
+//  * 
+//  * Пример вызова функции переопределения запроса, с выводом в лог старого и нового значений.
+//  * Example: query.ChangeQuery(engine, "New query text");
+//  */
+
+// TODO: Не забудьте добавить эту Процедуру в LibraryManager.getLibraryProcedures() функцию, чтобы она была добавлена в Оператор.
+
+// EnumProcedureResult result = EnumProcedureResult.Success;
+// // название текущей процедуры для лога итп.
+// //TODO: указать здесь полный путь как название процедуры для вывода на экран.    
+// String currentProcedureTitle = "НазваниеБиблиотеки.НазваниеКласса.НазваниеФункции";
+// // выброшенное тут исключение будет заменено на Reflection исключение и его текст потеряется.
+// // Поэтому надо здесь его перехватить, вывести в лог и на консоль, и погасить, вернув EnumProcedureResult.Error.
+// try
+// {
+//     // TODO: вывести это тестовое сообщение о начале процедуры - в лог!
+//     engine.get_OperatorConsole().PrintTextLine("Начата процедура " + currentProcedureTitle + "()", EnumDialogConsoleColor.Сообщение);
+//     engine.get_OperatorConsole().PrintEmptyLine();
+//     
+//     //TODO: код алгоритма добавить здесь
+//     
+//     //TODO: вывести сообщение о результате операции: успешно
+//     engine.get_OperatorConsole().PrintTextLine("Команда успешно завершена.", EnumDialogConsoleColor.Успех);
+// }
+// catch (Exception ex)
+// {
+//     engine.PrintExceptionMessageToConsoleAndLog("Ошибка в процедуре " + currentProcedureTitle + "()", ex);
+//     result = EnumProcedureResult.Error;
+// }
+//
+// // вернуть флаг продолжения работы
+// return result;
+//}
+

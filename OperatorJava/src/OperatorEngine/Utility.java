@@ -66,12 +66,11 @@ public class Utility
     /**
      * NT-Create copy of specified string
      * 
-     * @param s
-     * @return
+     * @param s Образец для копирования.
+     * @return Функция возвращает копию образца.
      */
     public static String StringCopy(String s)
     {
-        // TODO: проверить что это работает и копируется а не хз что.
         String result = new String(s);
         return result;
     }

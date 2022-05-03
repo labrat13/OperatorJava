@@ -443,12 +443,15 @@ public class Engine
 
     /**
      * NT-Извлечь значение Настройки из ФайлНастроекОператора или ТаблицаНастроекОператора, иначе вывести сообщение о ее отсутствии.
-     * 
+     * @param setting Ключ Настройки.
+     * @param operation Название выполняемой операции для использования в текстах сообщений.
      * @return Функция возвращает значение настройки или null.
      * @throws Exception
      *             Ошибка при работе с файлом настроек.
+     * 
+     * Эта функция может использоваться в коде Процедур из Библиотек Процедур.
      */
-    private String getSettingOrMessage(EnumSettingKey setting, String operation)
+    public String getSettingOrMessage(EnumSettingKey setting, String operation)
             throws Exception
     {
         // TODO: хорошо бы и из БД извлекать такую настройку, если она там есть. Но пока - только ФайлНастроекОператора проверяется.
@@ -473,8 +476,10 @@ public class Engine
      * @return Функция возвращает значение настройки из ФайлНастроекОператора или ТаблицаНастроекОператора. 
      * Функция возвращает null, если поля настройки не найдено.
      * Функция возвращает пустую строку, если значение настройки не указано.
+     * 
+     * Эта функция может использоваться в коде Процедур из Библиотек Процедур.
      */
-    private String getSettingFromFileOrTable(EnumSettingKey setting)
+    public String getSettingFromFileOrTable(EnumSettingKey setting)
     {
         //Файл настроек всегда должен проверяться раньше, чем таблица настроек.
         String result = this.m_Settings.getValue(setting);
@@ -964,6 +969,50 @@ public class Engine
         return result;
     }
 
+    /**
+     * NT-Открыть пустой Терминал по пути LoneTerminal из ФайлНастроекОператора.
+     * 
+     * @param userQuery
+     *            Текущий текст запроса
+     * @return Функция возвращает EnumProcedureResult.Success при успехе.
+     *         Функция возвращает EnumProcedureResult.Error, если при запуске Терминала произошла ошибка.
+     */
+    public EnumProcedureResult StartAloneTerminal()
+    {
+        //Еще, для программ нужен рабочий каталог. Для wget подойдет каталог Downloads, для других программ - другие варианты желательны.
+        //Но возможно указать только один, и в нем все последствия запускаемых программ будут оставаться.
+        //Указать его в ФайлНастроекОператора - надо добавить поле для РабочийКаталог.
+        // - Рабочий каталог - текущий каталог - часть контекста текущей работы пользователя.
+        //   Если запаковать работу пользователя в Проект, то текущий рабочий каталог - это будет элемент контекста проекта.
+        // - а как сейчас - все приложения будут в одном этом каталоге исполняться? Там будет свалка.
+        // - в итоге, надо пока что избегать этой проблемы с текущим каталогом, и собирать материал по ней.
+        
+        //вызвать PEM.ExecuteApplicationSimple() or PEM.ExecuteApplication()
+        
+        EnumProcedureResult result = EnumProcedureResult.Success;
+        try
+        {
+            //1. извлечь из ФайлНастроекОператора или ТаблицаНастроекОператора значение командной строки терминала
+            String cmdterm = this.getSettingFromFileOrTable(EnumSettingKey.LoneTerminal); 
+            if(Utility.StringIsNullOrEmpty(cmdterm))
+                    throw new Exception("Не найдена команда запуска Терминала из настройки " + EnumSettingKey.LoneTerminal.getTitle());
+            //2. извлечь из ФайлНастроекОператора или ТаблицаНастроекОператора значение рабочего каталога терминала
+            String workDirectory = this.getSettingFromFileOrTable(EnumSettingKey.DefaultWorkingDirectory);
+            if(Utility.StringIsNullOrEmpty(workDirectory))
+                throw new Exception("Не найден путь к рабочему каталогу Терминала из настройки " + EnumSettingKey.DefaultWorkingDirectory.getTitle());
+            //3. TODO: разделить командную строку терминала на приложение и аргументы в классе RegexManager.
+            
+            //4. пока разделить нечем - вызвать PEM.ExecuteApplicationSimple()
+            this.m_PEM.ExecuteApplicationSimple(cmdterm, workDirectory);
+        }
+        catch (Exception e)
+        {
+            this.PrintExceptionMessageToConsoleAndLog("Ошибка", e);
+            result = EnumProcedureResult.Error;
+        }
+        return result;
+    }
+    
     /**
      * NT-Открыть Терминал и перенаправить в него текущий текст запроса.
      * 
