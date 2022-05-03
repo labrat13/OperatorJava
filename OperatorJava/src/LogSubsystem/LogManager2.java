@@ -33,7 +33,8 @@ public class LogManager2 extends LogManager
     protected XMLStreamWriter m_Writer;
 
     /**
-     * @param en
+     * NT-Param constructor.
+     * @param en Engine reference.
      */
     public LogManager2(Engine en)
     {

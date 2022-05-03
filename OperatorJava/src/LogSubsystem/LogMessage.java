@@ -216,9 +216,9 @@ public class LogMessage
         builder.append("<msg t=\"");
         builder.append(Utility.DateTimeToString(this.m_MsgStamp));
         builder.append("\" c=\"");
-        builder.append(this.m_MsgClass.getValueIntAsString());
+        builder.append(this.m_MsgClass.toString());
         builder.append("\" s=\"");
-        builder.append(this.m_MsgState.getValueIntAsString());
+        builder.append(this.m_MsgState.toString());
         builder.append("\" text=\"");
         builder.append(this.m_MsgText);
         builder.append("\" />");
@@ -238,8 +238,8 @@ public class LogMessage
     {
         writer.writeStartElement("msg");
         writer.writeAttribute("t", Utility.DateTimeToString(this.m_MsgStamp));
-        writer.writeAttribute("c", this.m_MsgClass.getValueIntAsString());
-        writer.writeAttribute("s", this.m_MsgState.getValueIntAsString());
+        writer.writeAttribute("c", this.m_MsgClass.toString());
+        writer.writeAttribute("s", this.m_MsgState.toString());
         writer.writeCharacters(this.m_MsgText);
         writer.writeEndElement();
 

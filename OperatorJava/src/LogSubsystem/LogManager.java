@@ -89,9 +89,9 @@ public class LogManager
     }
 
     /**
-     * Log subsystem is ready to serve
+     * RT-Log subsystem is ready to serve
      * 
-     * @return
+     * @return Функция возвращает значение флага готовности.
      */
     public boolean isReady()
     {
