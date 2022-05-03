@@ -68,7 +68,7 @@ public class UnsortedProcedures
   *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
   *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
   */
-  @OperatorProcedure(State = ImplementationState.NotTested,   
+  @OperatorProcedure(State = ImplementationState.Ready,   
        Title = "Открыть терминал",  
        Description = "Открытие терминала по пути из ФайлНастроекОператора или ТаблицаНастроекОператора.")       
   public static EnumProcedureResult OpenTerminal(

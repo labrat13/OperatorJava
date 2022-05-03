@@ -262,8 +262,10 @@ public class Engine
 
         // 5. Open PEM
         // TODO: дополнить код здесь полезными проверками
+        this.AddMessageToConsoleAndLog("Загрузка Библиотек Процедур..", EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.SubsystemEvent_Procedure, EnumLogMsgState.Default);
         this.m_PEM.Open();// TODO: this function not completed now.
-
+        this.AddMessageToConsoleAndLog("Загрузка Библиотек Процедур завершена.", EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.SubsystemEvent_Procedure, EnumLogMsgState.Default);
+        this.m_OperatorConsole.PrintEmptyLine();
         // 6. Open ECM
         // TODO: дополнить код здесь полезными проверками
         this.m_ECM.Open();// TODO: this function not completed now.
@@ -497,108 +499,6 @@ public class Engine
     // #endregion
 
     // #region Основной цикл исполнения механизма
-
-    /*
-     * Закомментировал старую функцию, пишу новую, более сложный алгоритм, можно запутаться.
-     * Старая оставлена как образец, новые функции все начинаются с (или содержат) Command
-     * 
-     * /// <summary>
-     * /// NR-Основной цикл исполнения механизма
-     * /// </summary>
-     * public ProcedureResult ProcessLoop()
-     * {
-     * 
-     * 
-     * 
-     * ProcedureResult result = ProcedureResult.Unknown;
-     * // запускаем цикл приема запросов
-     * while (true)
-     * {
-     * this.m_OperatorConsole.PrintTextLine("", EnumDialogConsoleColor.Сообщение);
-     * this.m_OperatorConsole.PrintTextLine("Введите ваш запрос:", EnumDialogConsoleColor.Сообщение);
-     * String query = this.OperatorConsole.ReadLine();
-     * // если был нажат CTRL+C, query может быть null
-     * // пока я не знаю, что делать в этом случае, просто перезапущу цикл
-     * // приема команды
-     * // и при пустой строке тоже просто перезапустить цикл приема команды
-     * 
-     * // Операторы: return закрывает Оператор, а continue - переводит на
-     * // следующий цикл приема команды
-     * if (String.IsNullOrEmpty(query))
-     * continue;
-     * 
-     * // триммим из запроса пробелы всякие лишние сразу же
-     * // если строка пустая, начинаем новый цикл приема команды
-     * query = query.Trim();// query теперь может оказаться пустой строкой
-     * if (String.IsNullOrEmpty(query))
-     * continue;
-     * // а если нет - обрабатываем запрос
-     * // logWriter.WriteLine("QUERY {0}", query);
-     * this.m_logman.AddMessage(new LogMessage(EnumLogMsgClass.QueryStarted, EnumLogMsgState.Default, query));
-     * 
-     * 
-     * 
-     * // Если запрос требует завершения работы, завершаем цикл приема
-     * // запросов.
-     * // Далее должно следовать сохранение результатов и закрытие
-     * // приложения.
-     * if (Dialogs.isSleepCommand(query) == true) // спящий режим
-     * // компьютера
-     * {
-     * PowerManager.DoSleep();// запущенные приложения не закрываются,
-     * // и Оператор - тоже
-     * continue; // не return, так как return завершает работу
-     * // Оператора!
-     * }
-     * else if (Dialogs.isExitAppCommand(query) == true)
-     * return ProcedureResult.Exit; // закрытие приложения
-     * else if (Dialogs.isExitShutdownCommand(query) == true)
-     * return ProcedureResult.ExitAndShutdown;// закрытие приложения и
-     * // выключение машины
-     * else if (Dialogs.isExitReloadCommand(query) == true)
-     * return ProcedureResult.ExitAndReload;// закрытие приложения и
-     * // перезагрузка машины
-     * else if (Dialogs.isExitLogoffCommand(query) == true)
-     * return ProcedureResult.ExitAndLogoff;// закрытие
-     * // приложения
-     * // и
-     * // завершение
-     * // сеанса
-     * // пользователя
-     * // TODO: вообще-то при команде перезагрузки надо сначала запрашивать
-     * // подтверждение
-     * // А это нужно делать внутри кода процедуры, а не здесь. Но пока мы
-     * // просто тестируем возможность.
-     * // TODO: пользователь должен решать, какие слова использовать для
-     * // этих команд. А они сейчас прошиты в коде. Надо вынести их в настройки Оператор.
-     * 
-     * 
-     * // если функция вернет любой флаг выхода, завершаем цикл приема
-     * // запросов
-     * result = EventCommandArrived(query);
-     * 
-     * // вывести сообщение-подтверждение результата процедуры
-     * describeProcedureResult(result);
-     * 
-     * // Режимы сна: если прочие программы не завершаются при
-     * // засыпании, то и завершать работу здесь не нужно.
-     * if ((result == ProcedureResult.Exit) || (result == ProcedureResult.ExitAndReload) // перезагрузка
-     * // компьютера
-     * || (result == ProcedureResult.ExitAndShutdown)// выключение
-     * // компьютера
-     * || (result == ProcedureResult.ExitAndLogoff)) // выход
-     * // пользователя
-     * // - программы
-     * // закрываются!
-     * return result;
-     * 
-     * // модификация запроса и перезапуск его обработки здесь не
-     * // предполагается.
-     * }
-     * 
-     * return ProcedureResult.Unknown; // тут никогда мы не должны оказаться.
-     * }
-     */
 
     /**
      * NR-Основной цикл исполнения механизма
@@ -1223,10 +1123,10 @@ public class Engine
             }
             // если массив не null, то исполняем команды из массива
             // а тут как выявить не-пустые значения массива?
-            if (settings == null)
+            if ((settings == null) || (settings.length == 0))
             {
                 // Вывести на консоль и в лог сообщение об отсутствии команд для стартапа.
-                this.AddMessageToConsoleAndLog("Исполнение процедуры старта Оператор невозможно: задания не определены.", EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.StartupExecution, EnumLogMsgState.OK);
+                this.AddMessageToConsoleAndLog("Нет заданий для процедуры старта Оператор.", EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.StartupExecution, EnumLogMsgState.OK);
             }
             else
             {
@@ -1250,11 +1150,13 @@ public class Engine
                     // TODO: результат Процедуры нужно обработать, вдруг он вызовет перезагрузку компьютера посреди исполнения следующего запроса в списке?
                     EnumProcedureResult result = DoCommandExecution(caQuery);
                 }
+                
+                // - вывести сообщение о завершении процедуры startUp.
+                this.AddMessageToConsoleAndLog("Исполнение процедуры старта Оператор завершено.", EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.StartupExecution, EnumLogMsgState.OK);
             }
             // - todo: пост-обработка для КодЗавершенияПроцедуры здесь не выполняется?
             // - TODO: С31 Событие завершения стартапа.
-            // - вывести сообщение о завершении процедуры startUp.
-            this.AddMessageToConsoleAndLog("Исполнение процедуры старта Оператор завершено.", EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.StartupExecution, EnumLogMsgState.OK);
+
 
         }
         else

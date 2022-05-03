@@ -29,7 +29,7 @@ import ProcedureSubsystem.LibraryManagerBase;
 public class TestProcedures
 {
     // Для всех операций с Процедурами и Местами из кода Процедур использовать класс ElementCacheManager, а не БД итп.
-    // engine.get_ECM().AddPlace(p);
+    // Пример: engine.get_ECM().AddPlace(p);
 
     // Памятка: Если аннотация @OperatorProcedure не указана, Движок будет выдавать исключение, что соответствующий элемент не помечен аннотацией, и не будет
     // исполнять Процедуру.
@@ -68,7 +68,8 @@ public class TestProcedures
      *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
      *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
      */
-    @OperatorProcedure(State = ImplementationState.Ready, Title = "Test method",
+    @OperatorProcedure(State = ImplementationState.NotTested, 
+            Title = "Test method",
             Description = "Test procedures engine method.")
     public static EnumProcedureResult testHelloWorld(
             Engine engine,

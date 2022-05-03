@@ -21,7 +21,7 @@ import ProcedureSubsystem.OperatorProcedure;
  * @author Селяков Павел
  *
  */
-@OperatorProcedure(State = ImplementationState.NotTested,
+@OperatorProcedure(State = ImplementationState.Ready,
         Title = "GeneralProcedures library manager",
         Description = "Library manager for GeneralProcedures library")
 public class LibraryManager extends LibraryManagerBase

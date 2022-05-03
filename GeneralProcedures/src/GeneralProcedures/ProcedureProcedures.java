@@ -83,7 +83,7 @@ public class ProcedureProcedures
      * @throws Exception
      *             Ошибка при исполнении Процедуры.
      */
-    @OperatorProcedure(State = ImplementationState.NotTested,
+    @OperatorProcedure(State = ImplementationState.Ready,
             Title = "Создать Команду",
             Description = "Создать Процедуру в БазаДанныхОператора.")
     public static EnumProcedureResult CommandCreateProcedure(
@@ -320,7 +320,7 @@ public class ProcedureProcedures
      *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
      *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
      */
-    @OperatorProcedure(State = ImplementationState.NotTested,
+    @OperatorProcedure(State = ImplementationState.Ready,
             Title = "Показать список Команд.",
             Description = "Вывести на экран список доступных Команд Оператора.")
     public static EnumProcedureResult CommandListProcedures(
