@@ -5,10 +5,12 @@
  */
 package Settings;
 
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map.Entry;
-import java.util.Set;
+import OperatorEngine.Item;
+
+// import java.util.Set;
+
+import Utility.ItemDictionaryBase;
 
 /**
  * NT-Класс коллекции элементов настроек.
@@ -21,45 +23,39 @@ public class SettingItemCollection
 
     // *** Constants and Fields ***
     /**
-     * Dictionary of Lists
+     * Вложенный класс коллекции - а не наследуемый, поскольку надо переопределять возвращаемые типы для гладкого применения класса.
      */
-    protected HashMap<String, LinkedList<SettingItem>> m_items;
-
-    /**
-     * Collection has been modified
-     */
-    private boolean                                    m_Modified;
+    protected ItemDictionaryBase m_items;
 
     // *** Constructors ***
     /**
-     * Constructor
+     * NT-Constructor
      */
     public SettingItemCollection()
     {
-        this.m_items = new HashMap<String, LinkedList<SettingItem>>();
-        this.m_Modified = false;
+        this.m_items = new ItemDictionaryBase();
     }
     // *** Properties ***
 
     /**
-     * Collection has been modified
+     * NT-Collection has been modified
      * 
      * @return the modified
      */
     protected boolean isModified()
     {
-        return m_Modified;
+        return this.m_items.isModified();
     }
 
     /**
-     * Collection has been modified
+     * NT-Collection set modified flag
      * 
      * @param modified
      *            the modified to set
      */
     protected void setModified(boolean modified)
     {
-        this.m_Modified = modified;
+        this.m_items.setModified(modified);
     }
 
     // *** Service functions ***
@@ -96,16 +92,8 @@ public class SettingItemCollection
      */
     public void Clear()
     {
-        // перечислить списки и очистить каждый из них
-        for (Entry<String, LinkedList<SettingItem>> entry : this.m_items.entrySet())
-        {
-            entry.getValue().clear();
-        }
-        // очистить словарь
-        this.m_items.clear();
-        // set modified flag
-        this.m_Modified = true;
-        // TODO: следует ли тут вызвать сборку мусора?
+        this.m_items.Clear();
+
         return;
     }
 
@@ -118,20 +106,19 @@ public class SettingItemCollection
      */
     public boolean hasTitle(String title)
     {
-        return this.m_items.containsKey(title);
+        return this.m_items.hasKey(title);
     }
 
     /**
      * NT-Get array of used titles.
      * 
+     * @param sorted
+     *            Sort titles.
      * @return Function returns array of used keyname strings.
      */
-    public String[] getTitles()
+    public String[] getTitles(boolean sorted)
     {
-        Set<String> result = this.m_items.keySet();
-        int len = result.size();
-
-        return result.toArray(new String[len]);
+        return this.m_items.getKeys(sorted);
     }
 
     /**
@@ -141,9 +128,10 @@ public class SettingItemCollection
      */
     public int getTitleCount()
     {
-        // TODO Auto-generated method stub
-        return this.m_items.size();
+        return this.m_items.getKeyCount();
     }
+
+    // *************************************************
 
     /**
      * NT-Get all items from collection as list.
@@ -152,51 +140,58 @@ public class SettingItemCollection
      */
     public LinkedList<SettingItem> getAllItems()
     {
+        LinkedList<Item> its = this.m_items.getAllItems();
+
+        // скопируем элементы в выходной список, чтобы привести типы к требуемым
         LinkedList<SettingItem> result = new LinkedList<SettingItem>();
-        // мержим все значения-списки в выходной список.
-        for (LinkedList<SettingItem> li : this.m_items.values())
-            if ((li != null) && (li.size() > 0))
-                result.addAll(li);
-        // возвращаем выходной список
+        for (Item it : its)
+            result.add((SettingItem) it);
+
         return result;
     }
-
-    // *************************************************
 
     /**
      * NT-Get settings item array by title
      * 
      * @param title
      *            Setting item title as key
+     * @param sorted
+     *            Sort items by title.
      * @return Returns SettingsItem[] array, or returns null if title not exists in
      *         collection.
      */
-    public SettingItem[] getItems(String title)
+    public SettingItem[] getItems(String title, boolean sorted)
     {
-        LinkedList<SettingItem> result = this.m_items.get(title);
-
-        if (result == null)
+        LinkedList<Item> its = this.m_items.getItems(title, sorted);
+        if (its == null)
             return null;
-        else return result.toArray(new SettingItem[result.size()]);
+
+        // скопируем элементы в выходной массив, чтобы привести типы к требуемым
+        int size = its.size();
+        SettingItem[] result = new SettingItem[size];
+        for (int i = 0; i < size; i++)
+            result[i] = (SettingItem) its.get(i);
+
+        return result;
     }
 
     /**
      * NT-Get only first setting item by title
-     * @param title Setting item title as key
+     * 
+     * @param title
+     *            Setting item title as key
      * @return Returns SettingsItem object, or returns null if title not exists in
      *         collection.
      */
     public SettingItem getFirstItem(String title)
     {
-        LinkedList<SettingItem> result = this.m_items.get(title);
+        Item result = this.m_items.getFirstItem(title);
 
         if (result == null)
             return null;
-        if(result.size() < 1)
-            return null;
-        else return result.get(0);
+        else return (SettingItem) result;
     }
-    
+
     // *****************************************************
 
     /**
@@ -207,36 +202,7 @@ public class SettingItemCollection
      */
     public void addItem(SettingItem item)
     {
-        this.addItem(item.get_Title(), item);
-
-        return;
-    }
-
-    /**
-     * NT-Add new settings item in collection.
-     * 
-     * @param title
-     *            Setting item title as key
-     * @param item
-     *            Settings item object.
-     */
-    public void addItem(String title, SettingItem item)
-    {
-        // get copy of title string
-        String tl = new String(title);
-        // get list by key
-        LinkedList<SettingItem> lsi = this.m_items.get(tl);
-        // if list == null, create it and add to dictionary
-        if (lsi == null)
-        {
-            lsi = new LinkedList<SettingItem>();
-            this.m_items.put(tl, lsi);
-        }
-        // add item to list
-        lsi.add(item);
-
-        // set modified flag
-        this.m_Modified = true;
+        this.m_items.addItem(item.get_Title(), item);
 
         return;
     }
@@ -251,10 +217,7 @@ public class SettingItemCollection
      */
     public void removeItems(String title)
     {
-        // remove list of items by title
-        this.m_items.remove(title);
-        // set modified flag
-        this.m_Modified = true;
+        this.m_items.removeItems(title);
 
         return;
     }
@@ -270,17 +233,7 @@ public class SettingItemCollection
      */
     public boolean removeItem(SettingItem item) throws Exception
     {
-        String key = item.get_Title();
-        LinkedList<SettingItem> list = this.m_items.get(key);
-        if (list == null)
-            throw new Exception(String.format("Ключ \"s\" отсутствует в словаре", key));
-        // remove item from list
-        boolean result = list.remove(item);
-        if (result == true)
-            // set modified flag
-            this.m_Modified = true;
-
-        return result;
+        return this.m_items.removeItem(item.get_Title(), item);
     }
 
     // *** End of file ***

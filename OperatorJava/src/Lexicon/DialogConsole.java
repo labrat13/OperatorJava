@@ -398,15 +398,16 @@ public class DialogConsole
         this.SureConsoleCursorStart();
         // тут надо вывести описание свойств Места в виде многострочной формы
         // или списка свойств.
-        String[] sar = new String[8];
+        String[] sar = new String[9];
         sar[0] = String.format("Свойства Места \"%s\":", p.get_Title());
-        sar[1] = String.format("Название: %s", p.get_Title());
-        sar[2] = String.format("Класс:    %s", p.get_PlaceTypeExpression());
-        sar[3] = String.format("Адрес:    %s", p.get_Path());
-        sar[4] = String.format("Синонимы: %s", p.get_Synonim());
-        sar[5] = String.format("Описание: %s", p.get_Description());
-        sar[6] = String.format("ID:       %d", p.get_TableId());
-        sar[7] = "";// пустая строка-разделитель
+        sar[1] = String.format("Название:  %s", p.get_Title());
+        sar[2] = String.format("Категория: %s", p.get_Namespace());
+        sar[3] = String.format("Класс:     %s", p.get_PlaceTypeExpression());
+        sar[4] = String.format("Адрес:     %s", p.get_Path());
+        sar[5] = String.format("Синонимы:  %s", p.get_Synonim());
+        sar[6] = String.format("Описание:  %s", p.get_Description());
+        sar[7] = String.format("ID:        %d", p.get_TableId());
+        sar[8] = "";// пустая строка-разделитель
         // print array of lines
         this.PrintTextLines(sar, EnumDialogConsoleColor.Сообщение);
 
@@ -480,12 +481,13 @@ public class DialogConsole
         // многострочной формы или списка свойств.
         String[] sar = new String[8];
         sar[0] = String.format("Свойства Команды \"%s\":", p.get_Title());
-        sar[1] = String.format("Название: %s", p.get_Title());
-        sar[2] = String.format("Описание: %s", p.get_Description());
-        sar[3] = String.format("Регекс:   %s", p.get_Regex());
-        sar[4] = String.format("Адрес:    %s", p.get_Path());
-        sar[5] = String.format("Вес:      %s", p.get_Ves().toString());
-        sar[6] = String.format("ID:       %d", p.get_TableId());
+        sar[1] = String.format("Название:  %s", p.get_Title());
+        sar[2] = String.format("Категория: %s", p.get_Namespace());
+        sar[2] = String.format("Описание:  %s", p.get_Description());
+        sar[3] = String.format("Регекс:    %s", p.get_Regex());
+        sar[4] = String.format("Адрес:     %s", p.get_Path());
+        sar[5] = String.format("Вес:       %s", p.get_Ves().toString());
+        sar[6] = String.format("ID:        %d", p.get_TableId());
         sar[7] = "";// пустая строка-разделитель
         // print array of lines
         this.PrintTextLines(sar, EnumDialogConsoleColor.Сообщение);

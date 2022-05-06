@@ -109,6 +109,7 @@ public class Procedure extends Item
     @Override
     public String getSingleLineProperties()
     {
+        //TODO: формат строки свойств Сущности неудовлетворительный - нужно переделать на понятный.
         // Одна строка, 80 символов макс.
         StringBuilder sb = new StringBuilder();
         sb.append(this.m_storage);
@@ -116,7 +117,10 @@ public class Procedure extends Item
         sb.append(this.m_tableid);
         sb.append(";");
         sb.append(this.m_title);
-        sb.append(";ves=");
+        sb.append(";");
+        sb.append("[").append(this.m_namespace).append("]");
+        sb.append(";"); 
+        sb.append("ves=");
         sb.append(this.m_ves);
         sb.append(";path=");
         sb.append(this.m_path);

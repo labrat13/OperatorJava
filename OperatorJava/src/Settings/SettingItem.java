@@ -42,6 +42,7 @@ public class SettingItem extends OperatorEngine.Item
         this.m_title = key.getTitle();
         this.m_descr = key.getDescription();
         this.m_path = value;
+        this.m_namespace = key.getNamespace();
 
         return;
     }
@@ -49,6 +50,8 @@ public class SettingItem extends OperatorEngine.Item
     /**
      * NT-Parameter constructor - not for Database Item.
      * 
+     * @param group
+     *              Setting item namespace as group.
      * @param title
      *            item title
      * @param value
@@ -56,12 +59,13 @@ public class SettingItem extends OperatorEngine.Item
      * @param descr
      *            item description text
      */
-    public SettingItem(String title, String value, String descr)
+    public SettingItem(String group, String title, String value, String descr)
     {
         this.m_tableid = 0;
         this.m_path = value;
         this.m_descr = descr;
         this.m_title = title;
+        this.m_namespace = group;
 
         return;
     }
@@ -71,6 +75,8 @@ public class SettingItem extends OperatorEngine.Item
      * 
      * @param id
      *            item table id or 0 if not.
+     * @param group
+     *              Setting item namespace as group.
      * @param title
      *            item title
      * @param value
@@ -81,12 +87,14 @@ public class SettingItem extends OperatorEngine.Item
      *            item storage keyword
      */
     public SettingItem(int id,
+            String group,
             String title,
             String value,
             String descr,
             String storage)
     {
         this.m_tableid = id;
+        this.m_namespace = group;
         this.m_path = value;
         this.m_descr = descr;
         this.m_title = title;

@@ -11,10 +11,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.LinkedList;
 
 import OperatorEngine.Engine;
 import OperatorEngine.Item;
 import OperatorEngine.Utility;
+import Utility.ItemDictionaryByNamespace;
 
 /**
  * NT-Класс настроек приложения, использующий EnumSettingKey в качестве ключей
@@ -28,9 +30,9 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
 
     // TODO: тут может быть неиспользуемых функций несколько. Следует ли их закомментировать после релиза?
     // А то что-то сейчас совсем не думается, так я набор функций и не проработал в подсистеме настроек этой.
-    
-    //TODO: Настройки в файле настроек разбросаны хаотично по всему файлу.
-    //Надо или группировать их в именованные секции, или сортировать по алфавиту при выводе в файл.
+
+    // TODO: Настройки в файле настроек разбросаны хаотично по всему файлу.
+    // Надо или группировать их в именованные секции, или сортировать по алфавиту при выводе в файл.
 
     // Добавление настроек:
     // Новые настройки добавлять в EnumSettingKey как название и описание,
@@ -173,12 +175,18 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
         String line, line2, title, value, descr;
         StringBuilder descriptionLines = new StringBuilder();
         boolean hasEndOfSettingsFile = false;// флаг, что был прочитан маркер окончания файла настроек.
+        String groupTitle = "";
         // read file lines
         while ((line = reader.readLine()) != null)
         {
             line = line.trim();
-            // if line has comment char - add it to description buffer
-            if (isCommentLine(line))
+            // if line is group header - set it as current group title
+            if (isGroupLine(line))
+            {
+                groupTitle = conditeGroupTitle(line);
+            }
+            // else if line has comment char - add it to description buffer
+            else if (isCommentLine(line))
             {
                 // удалить знак комментария и триммить остальной текст
                 line2 = conditeComment(line);
@@ -208,7 +216,7 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
                 descr = descriptionLines.toString();
                 descriptionLines.setLength(0);// clear string builder
                 // add item
-                this.addItem(title, value, descr);
+                this.addItem(groupTitle, title, value, descr);
             }
             // else line is wrong format and file is invalid
             else throw new Exception("Invalid settings file format: " + filepath);
@@ -224,6 +232,41 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
         this.m_Items.setModified(false);
 
         return;
+    }
+
+    /**
+     * NT-Очистить название группы от символов разметки файла настроек.
+     * 
+     * @param line
+     *            Строка со знаком комментария.
+     * @return Функция возвращает строку без знака комментария.
+     */
+    private String conditeGroupTitle(String line)
+    {
+        int len = line.length();
+        return line.substring(1, len - 1).trim();
+    }
+
+    /**
+     * NT-Проверить, что строка это Группа: [groupname]
+     * 
+     * @param line
+     *            Проверяемая строка.
+     * @return Функция возвращает True, если строка является строкой названия группы настроек.
+     *         Функция возвращает False в противном случае.
+     */
+    private boolean isGroupLine(String line)
+    {
+        if (line.isEmpty())
+            return false;
+        //
+        char begin = line.charAt(0);
+        int len = line.length();
+        char end = line.charAt(len - 1);
+        if ((begin == '[') && (end == ']'))
+            return true;
+
+        return false;
     }
 
     /**
@@ -305,6 +348,47 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
         return (pos == 0);
     }
 
+    // /**
+    // * NT- Write settings to file
+    // *
+    // * @param filepath
+    // * Settings file path
+    // * @throws Exception
+    // * Error on writing
+    // */
+    // @Override
+    // public void Store(String filepath) throws Exception
+    // {
+    // // 1. open specified file, write all items from dictionary to file and
+    // // close file.
+    // FileOutputStream os = new FileOutputStream(filepath, false);
+    // OutputStreamWriter writer = new OutputStreamWriter(os, "UTF-8");
+    // this.WriteCommentLines(writer, "Application settings file");
+    // this.WriteLine(writer);
+    //
+    // // write each item
+    // for (SettingItem item : this.m_Items.getAllItems())
+    // {
+    // // item.writeXml(writer);
+    // // write empty line
+    // this.WriteLine(writer);
+    // // write description
+    // String d = item.get_Description();
+    // this.WriteCommentLines(writer, d);
+    // // write key-value pair
+    // this.WriteKeyValuePair(writer, item.get_Title(), item.get_Path());// get value as Item.Path
+    // // write empty line
+    // this.WriteLine(writer);
+    // }
+    // this.WriteCommentLines(writer, EndOfSettingsFile);
+    // writer.close();
+    // // 2. do not set specified file as current file
+    // // 3. clear modified flag
+    // this.m_Items.setModified(false);
+    //
+    // return;
+    // }
+
     /**
      * NT- Write settings to file
      * 
@@ -321,22 +405,21 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
         FileOutputStream os = new FileOutputStream(filepath, false);
         OutputStreamWriter writer = new OutputStreamWriter(os, "UTF-8");
         this.WriteCommentLines(writer, "Application settings file");
-        this.WriteLine(writer);
-
-        // write each item
-        for (SettingItem item : this.m_Items.getAllItems())
+        writer.write(ApplicationSettingsBase.lineSeparator);
+        // write group sorted items
+        ItemDictionaryByNamespace itbn = new ItemDictionaryByNamespace();
+        itbn.addSettingItems(this.m_Items.getAllItems());
+        String[] keys = itbn.getKeys(true);
+        for (String group : keys)
         {
-            // item.writeXml(writer);
-            // write empty line
-            this.WriteLine(writer);
-            // write description
-            String d = item.get_Description();
-            this.WriteCommentLines(writer, d);
-            // write key-value pair
-            this.WriteKeyValuePair(writer, item.get_Title(), item.get_Path());// get value as Item.Path
-            // write empty line
-            this.WriteLine(writer);
+            this.WriteGroupHeader(writer, group);
+            LinkedList<Item> items = itbn.getItems(group, true);
+            for (Item it : items)
+            {
+                this.WriteSettingBlock(writer, it);
+            }
         }
+        // close file
         this.WriteCommentLines(writer, EndOfSettingsFile);
         writer.close();
         // 2. do not set specified file as current file
@@ -347,47 +430,101 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
     }
 
     /**
-     * NT-Write item title and value string
+     * NT-Write group header line
      * 
      * @param writer
-     *            File writer
-     * @param title
-     *            Item title as key
-     * @param value
-     *            Item value
+     *            File writer.
+     * @param group
+     *            Group title to write.
      * @throws IOException
-     *             Error on writing
+     *             Error on writing.
      */
-    private void WriteKeyValuePair(
-            OutputStreamWriter writer,
-            String title,
-            String value) throws IOException
+    private void WriteGroupHeader(OutputStreamWriter writer, String group)
+            throws IOException
     {
-        // 1. check title and value
-        // 2. print title=value
-        writer.write(Utility.GetStringTextNull(title));
-        writer.write(" = ");
-        writer.write(Utility.GetStringTextNull(value));
-        writer.write(lineSeparator);
+        // write empty line
+        writer.write(ApplicationSettingsBase.lineSeparator);
+        // write group line
+        writer.write("[");
+        writer.write(group.trim());
+        writer.write("]");
+        writer.write(ApplicationSettingsBase.lineSeparator);
 
         return;
     }
 
     /**
-     * NT-Write empty line to output file
+     * NT-Write setting item
      * 
      * @param writer
      *            File writer
+     * @param item
+     *            Item to write.
      * @throws IOException
-     *             Error on writing
+     *             Error on writing.
      */
-    private void WriteLine(OutputStreamWriter writer) throws IOException
+    private void WriteSettingBlock(OutputStreamWriter writer, Item item)
+            throws IOException
     {
+        // write empty line
+        writer.write(ApplicationSettingsBase.lineSeparator);
+        // write description
+        String d = item.get_Description();
+        this.WriteCommentLines(writer, d);
+        // write key-value pair
+        // 1. check title and value
+        // 2. print title=value
+        writer.write(Utility.GetStringTextNull(item.get_Title()));
+        writer.write(" = ");
+        writer.write(Utility.GetStringTextNull(item.get_Path()));
+        writer.write(ApplicationSettingsBase.lineSeparator);
         // write empty line
         writer.write(ApplicationSettingsBase.lineSeparator);
 
         return;
     }
+    // /**
+    // * NT-Write item title and value string
+    // *
+    // * @param writer
+    // * File writer
+    // * @param title
+    // * Item title as key
+    // * @param value
+    // * Item value
+    // * @throws IOException
+    // * Error on writing
+    // */
+    // private void WriteKeyValuePair(
+    // OutputStreamWriter writer,
+    // String title,
+    // String value) throws IOException
+    // {
+    // // 1. check title and value
+    // // 2. print title=value
+    // writer.write(Utility.GetStringTextNull(title));
+    // writer.write(" = ");
+    // writer.write(Utility.GetStringTextNull(value));
+    // writer.write(ApplicationSettingsBase.lineSeparator);
+    //
+    // return;
+    // }
+
+    // /**
+    // * NT-Write empty line to output file
+    // *
+    // * @param writer
+    // * File writer
+    // * @throws IOException
+    // * Error on writing
+    // */
+    // private void WriteLine(OutputStreamWriter writer) throws IOException
+    // {
+    // // write empty line
+    // writer.write(ApplicationSettingsBase.lineSeparator);
+    //
+    // return;
+    // }
 
     /**
      * NT-Write item description as multiline comments
@@ -406,13 +543,13 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
         if (Utility.StringIsNullOrEmpty(s))
             return;
         // 2. split to lines and print each line as comment
-        String[] sar = Utility.StringSplit(s, lineSeparator, true);
+        String[] sar = Utility.StringSplit(s, ApplicationSettingsBase.lineSeparator, true);
         for (String r : sar)
         {
             writer.write(commentChar);
             writer.write(" ");
             writer.write(r);
-            writer.write(lineSeparator);
+            writer.write(ApplicationSettingsBase.lineSeparator);
         }
 
         return;
@@ -439,12 +576,14 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
      * 
      * @param key
      *            Setting item key
+     * @param sorted
+     *            Sort items.
      * @return Returns SettingsItem[] array, or returns null if title not exists in
      *         collection.
      */
-    public SettingItem[] getItems(EnumSettingKey key)
+    public SettingItem[] getItems(EnumSettingKey key, boolean sorted)
     {
-        return super.getItems(key.getTitle());
+        return super.getItems(key.getTitle(), sorted);
     }
 
     /**
@@ -471,7 +610,7 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
      */
     public void addItem(EnumSettingKey key, Integer value)
     {
-        super.addItem(key.getTitle(), value, key.getDescription());
+        super.addItem(key.getNamespace(), key.getTitle(), value, key.getDescription());
     }
 
     /**
@@ -484,7 +623,7 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
      */
     public void addItem(EnumSettingKey key, Boolean value)
     {
-        super.addItem(key.getTitle(), value, key.getDescription());
+        super.addItem(key.getNamespace(), key.getTitle(), value, key.getDescription());
     }
 
     /**
@@ -496,7 +635,7 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
      */
     public String getValue(EnumSettingKey key)
     {
-        SettingItem[] sar = super.getItems(key.getTitle());
+        SettingItem[] sar = super.getItems(key.getTitle(), false);
         if (sar == null)
             return null;
         if (sar.length == 0)
@@ -514,7 +653,7 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
      */
     public Boolean getValueAsBoolean(EnumSettingKey key)
     {
-        SettingItem[] sar = super.getItems(key.getTitle());
+        SettingItem[] sar = super.getItems(key.getTitle(), false);
         if (sar == null)
             return null;
         if (sar.length == 0)
@@ -532,7 +671,7 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
      */
     public Integer getValueAsInteger(EnumSettingKey key)
     {
-        SettingItem[] sar = super.getItems(key.getTitle());
+        SettingItem[] sar = super.getItems(key.getTitle(), false);
         if (sar == null)
             return null;
         if (sar.length == 0)

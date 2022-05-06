@@ -95,11 +95,13 @@ public class ApplicationSettingsBase
     /**
      * NT-Get array of used titles.
      * 
+     * @param sorted
+     *            Sort keys.
      * @return Function returns array of used keyname strings.
      */
-    public String[] getKeyArray()
+    public String[] getKeyArray(boolean sorted)
     {
-        return this.m_Items.getTitles();
+        return this.m_Items.getTitles(sorted);
     }
 
     /**
@@ -208,12 +210,14 @@ public class ApplicationSettingsBase
      * 
      * @param title
      *            Setting item title as key
+     * @param sorted
+     *            Sort items by title.
      * @return Returns SettingsItem[] array, or returns null if title not exists in
      *         collection.
      */
-    public SettingItem[] getItems(String title)
+    public SettingItem[] getItems(String title, boolean sorted)
     {
-        return this.m_Items.getItems(title);
+        return this.m_Items.getItems(title, sorted);
     }
 
     /**
@@ -235,6 +239,8 @@ public class ApplicationSettingsBase
     /**
      * NT-Add new settings item in collection.
      * 
+     * @param group
+     *            Setting item namespace as group.
      * @param title
      *            Setting item title as key.
      * @param value
@@ -242,13 +248,13 @@ public class ApplicationSettingsBase
      * @param descr
      *            Setting item description as multiline String.
      */
-    public void addItem(String title, String value, String descr)
+    public void addItem(String group, String title, String value, String descr)
     {
-        SettingItem item = new SettingItem(title, value, descr);
+        SettingItem item = new SettingItem(group, title, value, descr);
         // set item storage title
         item.set_Storage(Item.StorageKeyForSettingFileItem);
         // add
-        this.m_Items.addItem(title, item);
+        this.m_Items.addItem(item);
 
         return;
     }
@@ -256,6 +262,8 @@ public class ApplicationSettingsBase
     /**
      * NT-Add new settings item in collection.
      * 
+     * @param group
+     *            Setting item namespace as group.
      * @param title
      *            Setting item title as key.
      * @param value
@@ -263,10 +271,10 @@ public class ApplicationSettingsBase
      * @param descr
      *            Setting item description as multiline String.
      */
-    public void addItem(String title, Integer value, String descr)
+    public void addItem(String group, String title, Integer value, String descr)
     {
         String val = value.toString();
-        this.addItem(title, val, descr);
+        this.addItem(group, title, val, descr);
 
         return;
     }
@@ -274,6 +282,8 @@ public class ApplicationSettingsBase
     /**
      * NT-Add new settings item in collection.
      * 
+     * @param group
+     *            Setting item namespace as group.
      * @param title
      *            Setting item title as key.
      * @param value
@@ -281,10 +291,10 @@ public class ApplicationSettingsBase
      * @param descr
      *            Setting item description as multiline String.
      */
-    public void addItem(String title, Boolean value, String descr)
+    public void addItem(String group, String title, Boolean value, String descr)
     {
         String val = value.toString();
-        this.addItem(title, val, descr);
+        this.addItem(group, title, val, descr);
 
         return;
     }

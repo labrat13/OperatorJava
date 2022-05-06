@@ -7,7 +7,7 @@
 package OperatorEngine;
 
 /**
- * Абстрактный класс для Процедур и Мест Оператора
+ * NT-Базовый класс для Процедур и Мест Оператора
  * 
  * @author 1
  */
@@ -34,7 +34,7 @@ public class Item implements Comparable<Item>
     /**
      * Значение неправильного TableID, если итем не из ТаблицаНастроекОператора.
      */
-    public static final int    Invalid_TableID              = -1;           // TODO: удалить позднее или переместить в БД адаптер.
+    public static final int    Invalid_TableID              = -1;                      // TODO: удалить позднее или переместить в БД адаптер.
 
     /**
      * первичный ключ таблицы
@@ -61,10 +61,11 @@ public class Item implements Comparable<Item>
      * Не сохранять в таблицу БД!
      */
     protected String           m_storage;
+
     /**
      * Название пространства имен Сущности.
      */
-    protected String m_namespace;
+    protected String           m_namespace;
 
     // #endregion
 
@@ -103,7 +104,7 @@ public class Item implements Comparable<Item>
     {
         this.m_storage = namespace;
     }
-    
+
     /**
      * RT-Название Хранилища ( Библиотеки Процедур или БД).
      * Не сохранять в таблицу БД!
@@ -254,6 +255,7 @@ public class Item implements Comparable<Item>
      */
     public String getSingleLineProperties()
     {
+        // TODO: формат строки свойств Сущности неудовлетворительный - нужно переделать на понятный.
         // Одна строка, 80 символов макс.
         StringBuilder sb = new StringBuilder();
         sb.append(this.m_storage);
@@ -261,6 +263,8 @@ public class Item implements Comparable<Item>
         sb.append(this.m_tableid);
         sb.append(";");
         sb.append(this.m_title);
+        sb.append(";");
+        sb.append("[").append(this.m_namespace).append("]");
         sb.append(";");
         sb.append(this.m_path);
         sb.append(";");
