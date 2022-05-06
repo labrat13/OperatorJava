@@ -44,8 +44,10 @@ public class Place extends Item
     /**
      * NT-Конструктор копирования
      * 
-     * @param p Образец копирования.
-     * @throws Exception Ошибка при копировании.
+     * @param p
+     *            Образец копирования.
+     * @throws Exception
+     *             Ошибка при копировании.
      */
     public Place(Place p) throws Exception
     {
@@ -156,7 +158,7 @@ public class Place extends Item
     @Override
     public String getSingleLineProperties()
     {
-        //TODO: формат строки свойств Места неудовлетворительный - нужно переделать на понятный.
+        // TODO: формат строки свойств Места неудовлетворительный - нужно переделать на понятный.
         // Одна строка, 80 символов макс.
         StringBuilder sb = new StringBuilder();
         sb.append(this.m_storage);
@@ -166,7 +168,7 @@ public class Place extends Item
         sb.append(this.m_title);
         sb.append(";");
         sb.append("[").append(this.m_namespace).append("]");
-        sb.append(";");       
+        sb.append(";");
         sb.append(this.m_placetype);
         sb.append(";");
         sb.append(this.m_path);
@@ -177,13 +179,40 @@ public class Place extends Item
         return sb.toString();
     }
 
+    //Закомиментировал, чтоыб использовать базовую версию функции: название и описание элемента.
+    //Путь, возможно, не следует выводить в качестве описания места. Надо оценить это.
+//    /**
+//     * NT-Получить одну строку описания свойств Места: название и путь, длиной менее 80 символов.
+//     * 
+//     * @return Функция возвращает строку вроде: название места;(Путь места.)
+//     */
+//    @Override
+//    public String GetShortInfo()
+//    {
+//        // TODO: формат строки свойств Сущности неудовлетворительный - нужно переделать на понятный.
+//        // Одна строка, 80 символов макс.
+//        StringBuilder sb = new StringBuilder();
+//        sb.append(Utility.GetStringTextNull(this.m_title));
+//        sb.append(";");
+//        sb.append('(');
+//        sb.append(Utility.GetStringTextNull(this.m_path));
+//        if (sb.length() > 75)
+//        {
+//            sb.setLength(75);
+//        }
+//        sb.append(')');
+//
+//        return sb.toString();
+//    }
+
     /**
      * NT-распарсить выражение типов места.
      * Вызывается вручную, после загрузки места из БД через проперти.
      * Заполняет коллекцию типов места из внутренней переменной, которая хранит
      * упакованное значение.
      * 
-     * @throws Exception Ошибка при разборе выражения.
+     * @throws Exception
+     *             Ошибка при разборе выражения.
      */
     public void ParseEntityTypeString() throws Exception
     {

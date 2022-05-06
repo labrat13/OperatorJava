@@ -109,7 +109,7 @@ public class Procedure extends Item
     @Override
     public String getSingleLineProperties()
     {
-        //TODO: формат строки свойств Сущности неудовлетворительный - нужно переделать на понятный.
+        // TODO: формат строки свойств Сущности неудовлетворительный - нужно переделать на понятный.
         // Одна строка, 80 символов макс.
         StringBuilder sb = new StringBuilder();
         sb.append(this.m_storage);
@@ -119,7 +119,7 @@ public class Procedure extends Item
         sb.append(this.m_title);
         sb.append(";");
         sb.append("[").append(this.m_namespace).append("]");
-        sb.append(";"); 
+        sb.append(";");
         sb.append("ves=");
         sb.append(this.m_ves);
         sb.append(";path=");
@@ -132,6 +132,30 @@ public class Procedure extends Item
         }
         return sb.toString();
     }
+
+//    /**
+//     * NT-Получить одну строку описания свойств Процедуры: название и описание, длиной менее 80 символов.
+//     * 
+//     * @return Функция возвращает строку вроде: название процедуры;(Описание процедуры.)
+//     */
+//    @Override
+//    public String GetShortInfo()
+//    {
+//        // TODO: формат строки свойств Сущности неудовлетворительный - нужно переделать на понятный.
+//        // Одна строка, 80 символов макс.
+//        StringBuilder sb = new StringBuilder();
+//        sb.append(Utility.GetStringTextNull(this.m_title));
+//        sb.append(";");
+//        sb.append('(');
+//        sb.append(Utility.GetStringTextNull(this.m_descr));
+//        if (sb.length() > 75)
+//        {
+//            sb.setLength(75);
+//        }
+//        sb.append(')');
+//
+//        return sb.toString();
+//    }
 
     /**
      * NT-Проверить на допустимость значение Вес Процедуры, введенное

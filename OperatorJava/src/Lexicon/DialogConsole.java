@@ -6,17 +6,15 @@
  */
 package Lexicon;
 
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
-import java.util.Locale;
 
 import JTerminal.Terminal;
 import OperatorEngine.Engine;
+import OperatorEngine.Item;
 import OperatorEngine.Place;
 import OperatorEngine.Procedure;
 import OperatorEngine.Utility;
+import Utility.ItemDictionaryByNamespace;
 
 /**
  * @author jsmith
@@ -253,7 +251,7 @@ public class DialogConsole
     }
 
     /**
-     * NT-вывести на консоль вопрос и принять ответ. 
+     * NT-вывести на консоль вопрос и принять ответ.
      * Оболочка для упрощения кода диалогов, принимает комбинацию флагов как int.
      * 
      * @param SpeakDialogResultKeys
@@ -269,13 +267,17 @@ public class DialogConsole
      * @throws Exception
      *             Функция выбрасывает исключение, если параметр keys имеет неправильные значения.
      */
-    public String PrintQuestionAnswer(int SpeakDialogResultKeys, String question, boolean newLine, boolean noEmptyAnswer) throws Exception
+    public String PrintQuestionAnswer(
+            int SpeakDialogResultKeys,
+            String question,
+            boolean newLine,
+            boolean noEmptyAnswer) throws Exception
     {
         EnumSpeakDialogResult esdr = new EnumSpeakDialogResult(SpeakDialogResultKeys);
-        
+
         return this.PrintQuestionAnswer(esdr, question, newLine, noEmptyAnswer);
     }
-    
+
     /**
      * NT-Диалог Да-Нет-Отменить. Другие ответы не принимаются.
      * 
@@ -415,7 +417,7 @@ public class DialogConsole
     }
 
     /**
-     * NT-Вывести на экран список существующих мест - только названия мест
+     * NT-Вывести на экран список существующих мест - только названия и описания мест.
      */
     public void PrintListOfPlaces()
     {
@@ -423,35 +425,65 @@ public class DialogConsole
         // получить список мест
         LinkedList<Place> places = this.m_Engine.get_ECM().getPlacesAsList();
 
-        // сортировать список мест по алфавиту
-        Collections.sort(places); // Sort by Title over interface Comparable
-        // вывести на экран одни только названия мест
-        // TODO: перенести формирование строки в объект Места
+        // сортировать список мест по алфавиту и неймспейсам.
+        // вывести на экран одни только названия и описания мест
         // TODO: Удобство - если строк много, вывести порциями по 20 штук с
         // перерывом на Enter
-        for (Place p : places)
-            this.PrintTextLine(String.format("%s [%s]", p.get_Title(), p.get_Path()), EnumDialogConsoleColor.Сообщение);
+
+        // write namespace sorted items
+        ItemDictionaryByNamespace itbn = new ItemDictionaryByNamespace();
+        itbn.addPlaceItems(places);
+        String[] keys = itbn.getKeys(true);
+        for (String group : keys)
+        {
+            // this.WriteGroupHeader(writer, group);
+            this.PrintTextLine("[" + group + "]", EnumDialogConsoleColor.Сообщение);
+            // write procedure lines
+            LinkedList<Item> items = itbn.getItems(group, true);
+            for (Item it : items)
+            {
+                Place p = (Place) it;
+                String shortline = "   " + p.GetShortInfo();
+                this.PrintTextLine(shortline, EnumDialogConsoleColor.Сообщение);
+            }
+            this.PrintEmptyLine();
+        }
 
         return;
     }
 
     /**
-     * NT-Вывести на экран список существующих Процедур - только названия процедур.
+     * NT-Вывести на экран список существующих Процедур - только названия и описания процедур.
      */
-    public void PrintListOfProcedures() 
+    public void PrintListOfProcedures()
     {
         this.SureConsoleCursorStart();
         // получить список процедур
         LinkedList<Procedure> procedures = this.m_Engine.get_ECM().getProceduresAsList();
 
-        // сортировать список мест по алфавиту
-        Collections.sort(procedures); // Sort by Title over interface Comparable
-        // вывести на экран одни только названия процедур
-        // TODO: перенести формирование строки в объект Места
+        // сортировать список мест по алфавиту и неймспейсам.
+        // вывести на экран одни только названия и описания процедур
         // TODO: Удобство - если строк много, вывести порциями по 20 штук с
         // перерывом на Enter
-        for (Procedure p : procedures)
-            this.PrintTextLine(String.format("%s [%s]", p.get_Title(), p.get_Description()), EnumDialogConsoleColor.Сообщение);
+
+        // write namespace sorted items
+        ItemDictionaryByNamespace itbn = new ItemDictionaryByNamespace();
+        itbn.addProcedureItems(procedures);
+        String[] keys = itbn.getKeys(true);
+        for (String group : keys)
+        {
+            // this.WriteGroupHeader(writer, group);
+            this.PrintTextLine("[" + group + "]", EnumDialogConsoleColor.Сообщение);
+            // write procedure lines
+            LinkedList<Item> items = itbn.getItems(group, true);
+            for (Item it : items)
+            {
+                Procedure p = (Procedure) it;
+                String shortline = "   " + p.GetShortInfo();
+                this.PrintTextLine(shortline, EnumDialogConsoleColor.Сообщение);
+            }
+            this.PrintEmptyLine();
+        }
 
         return;
     }
@@ -460,6 +492,7 @@ public class DialogConsole
      * NT-Вывести на консоль короткое описание Процедуры в одну строку
      * 
      * @param p
+     *            Объект Процедуры.
      */
     public void PrintProcedureShortLine(Procedure p)
     {
@@ -473,6 +506,7 @@ public class DialogConsole
      * NT-вывести на консоль свойства Процедуры подробно, как форму
      * 
      * @param p
+     *            Объект Процедуры.
      */
     public void PrintProcedureForm(Procedure p)
     {

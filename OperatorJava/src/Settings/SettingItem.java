@@ -5,6 +5,8 @@
  */
 package Settings;
 
+
+
 /**
  * NT-Класс представляет элемент данных в файле настроек приложения.
  * Элемент данных содержит название-ключ, текстовое значение и текстовое описание.
@@ -51,7 +53,7 @@ public class SettingItem extends OperatorEngine.Item
      * NT-Parameter constructor - not for Database Item.
      * 
      * @param group
-     *              Setting item namespace as group.
+     *            Setting item namespace as group.
      * @param title
      *            item title
      * @param value
@@ -76,7 +78,7 @@ public class SettingItem extends OperatorEngine.Item
      * @param id
      *            item table id or 0 if not.
      * @param group
-     *              Setting item namespace as group.
+     *            Setting item namespace as group.
      * @param title
      *            item title
      * @param value

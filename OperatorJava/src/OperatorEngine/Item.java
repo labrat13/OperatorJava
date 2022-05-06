@@ -34,7 +34,7 @@ public class Item implements Comparable<Item>
     /**
      * Значение неправильного TableID, если итем не из ТаблицаНастроекОператора.
      */
-    public static final int    Invalid_TableID              = -1;                      // TODO: удалить позднее или переместить в БД адаптер.
+    public static final int    Invalid_TableID              = -1;                                 // TODO: удалить позднее или переместить в БД адаптер.
 
     /**
      * первичный ключ таблицы
@@ -271,6 +271,29 @@ public class Item implements Comparable<Item>
         sb.append(this.m_descr);
         if (sb.length() > 80)
             sb.setLength(80);
+        return sb.toString();
+    }
+
+    /**
+     * NT-Получить одну строку описания свойств Элемента: название и описание, длиной менее 80 символов.
+     * 
+     * @return Функция возвращает строку вроде: название Элемента;(Описание Элемента.)
+     */
+    public String GetShortInfo()
+    {
+        // TODO: формат строки свойств Сущности неудовлетворительный - нужно переделать на понятный.
+        // Одна строка, 80 символов макс.
+        StringBuilder sb = new StringBuilder();
+        sb.append(Utility.GetStringTextNull(this.m_title));
+        sb.append(";");
+        sb.append('(');
+        sb.append(Utility.GetStringTextNull(this.m_descr));
+        if (sb.length() > 75)
+        {
+            sb.setLength(75);
+        }
+        sb.append(')');
+
         return sb.toString();
     }
 

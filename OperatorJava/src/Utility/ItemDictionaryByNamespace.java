@@ -8,6 +8,8 @@ package Utility;
 import java.util.LinkedList;
 
 import OperatorEngine.Item;
+import OperatorEngine.Place;
+import OperatorEngine.Procedure;
 import Settings.SettingItem;
 
 /**
@@ -125,9 +127,39 @@ public class ItemDictionaryByNamespace extends ItemDictionaryBase
 
         return;
     }
-    
 
-    
+    /**
+     * NT- Add Procedure items from source.
+     * 
+     * @param items
+     *            List of items to add.
+     */
+    public void addProcedureItems(LinkedList<Procedure> items)
+    {
+        for (Item item : items)
+        {
+            this.addItem(item.get_Namespace(), item);
+        }
+
+        return;
+    }
+
+    /**
+     * NT- Add Place items from source.
+     * 
+     * @param items
+     *            List of items to add.
+     */
+    public void addPlaceItems(LinkedList<Place> items)
+    {
+        for (Item item : items)
+        {
+            this.addItem(item.get_Namespace(), item);
+        }
+
+        return;
+    }
+
     /**
      * NT-Добавить элемент, используя поле Namespace в качестве ключа для словаря.
      * 
