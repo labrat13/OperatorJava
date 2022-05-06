@@ -402,7 +402,7 @@ public class OperatorDbAdapter extends SqliteDbAdapter
 
         if (ps == null)
         {
-            String query = String.format("INSERT INTO \"%s\"(\"ns\", \"title\", \"ves\", \"path\", \"regex\", \"descr\") VALUES (?,?,?,?,?);", OperatorDbAdapter.TableProcs);
+            String query = String.format("INSERT INTO \"%s\"(\"ns\", \"title\", \"ves\", \"path\", \"regex\", \"descr\") VALUES (?,?,?,?,?,?);", OperatorDbAdapter.TableProcs);
             ps = this.m_connection.prepareStatement(query);
             // set timeout here
             ps.setQueryTimeout(this.m_Timeout);
@@ -529,7 +529,7 @@ public class OperatorDbAdapter extends SqliteDbAdapter
 
         if (ps == null)
         {
-            String query = String.format("INSERT INTO \"%s\"(\"ns\", \"title\", \"descr\", \"val\") VALUES (?,?,?);", OperatorDbAdapter.TableSetting);
+            String query = String.format("INSERT INTO \"%s\"(\"ns\", \"title\", \"descr\", \"val\") VALUES (?,?,?,?);", OperatorDbAdapter.TableSetting);
             ps = this.m_connection.prepareStatement(query);
             // set timeout here
             ps.setQueryTimeout(this.m_Timeout);

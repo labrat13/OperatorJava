@@ -102,7 +102,7 @@ public class Item implements Comparable<Item>
      */
     public void set_Namespace(String namespace)
     {
-        this.m_storage = namespace;
+        this.m_namespace = namespace;
     }
 
     /**
