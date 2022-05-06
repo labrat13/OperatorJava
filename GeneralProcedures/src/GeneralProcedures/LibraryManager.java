@@ -8,6 +8,7 @@ package GeneralProcedures;
 import java.util.LinkedList;
 
 import OperatorEngine.Engine;
+import OperatorEngine.NamespaceConstants;
 import OperatorEngine.Place;
 import OperatorEngine.Procedure;
 import ProcedureSubsystem.ImplementationState;
@@ -113,37 +114,39 @@ public class LibraryManager extends LibraryManagerBase
     @Override
     public Place[] getLibraryPlaces() throws Exception
     {
-        Place[] result = new Place[0];// TODO: add library places here
+        LinkedList<Place> result = new LinkedList<Place>();// TODO: add library places here
 
-        // //Это шаблон, образец, не трогать его!
-        // //TODO: Описать правила заполнения полей объекта, привести ссылки на
-        // форматы, документацию.
+        //Это шаблон, образец, не трогать его!
+        //TODO: Описать правила заполнения полей объекта, привести ссылки на форматы, документацию.
 
-        // Place p;
-        //
-        // //заполнить вручную поля
-        // p = new Place();
-        // //Уникальный идентификатор элемента или первичный ключ таблицы. 0 по умолчанию, здесь можно не указывать.
-        // //p.set_TableId(0);
-        // //Краткое однострочное название сущности места.
-        // p.set_Title("title");
-        // //Краткое однострочное описание Сущности, не обязателен.
-        // p.set_Description("descr");
-        // //Веб-путь или файловый путь к месту
-        // p.set_Path("path");
-        // //Перечисление типов сущности по моей методике.
-        // //TODO: добавить сюда ссылку на документацию по методике классов Мест.
-        // p.set_PlaceTypeExpression("Приложение::ТекстовыйРедактор<Файл::ТекстовыйФайл>;");
-        // //добавить название источника как название текущей библиотеки.
-        // p.set_Storage(this.m_LibraryTitle);
-        // //Список синонимов названия сущности, должны быть уникальными в системе.
-        // p.set_Synonim("слон, слона, слону, слоне, слоном");
-        // //Распарсить список типов сущностей
-        // p.ParseEntityTypeString();
-        // //добавить объект Места в выходной массив
-        // result[0] = p;
+         Place p;
+        
+         //заполнить вручную поля
+         p = new Place();
+         //Уникальный идентификатор элемента или первичный ключ таблицы. 0 по умолчанию, здесь можно не указывать.
+         //p.set_TableId(0);
+         //Краткое однострочное название сущности места.
+         p.set_Title("title");
+         //Краткое однострочное описание Сущности, не обязателен.
+         p.set_Description("descr");
+         //Веб-путь или файловый путь к месту
+         p.set_Path("path");
+         //Перечисление типов сущности по моей методике.
+         //TODO: добавить сюда ссылку на документацию по методике классов Мест.
+         p.set_PlaceTypeExpression("Приложение::ТекстовыйРедактор<Файл::ТекстовыйФайл>;");
+         //добавить название источника как название текущей библиотеки.
+         p.set_Storage(this.m_LibraryTitle);
+         //установить неймспейс для Места.
+         p.set_Namespace(NamespaceConstants.NsDefault);
+         //Список синонимов названия сущности, должны быть уникальными в системе.
+         p.set_Synonim("слон, слона, слону, слоне, слоном");
+         //Распарсить список типов сущностей
+         p.ParseEntityTypeString();
+         //добавить объект Места в выходной массив
+         result.add(p);
 
-        return result;
+         // вернуть выходной массив
+         return result.toArray(new Place[result.size()]);
     }
 
     /**
@@ -187,6 +190,8 @@ public class LibraryManager extends LibraryManagerBase
         p.set_Ves(0.5);
         // добавить название источника как название текущей библиотеки.
         p.set_Storage(this.m_LibraryTitle);
+        //установить неймспейс для команды
+        p.set_Namespace(NamespaceConstants.NsService);
         // Добавить Процедуру в выходной массив
         result.add(p);
 
@@ -198,6 +203,7 @@ public class LibraryManager extends LibraryManagerBase
         p.set_Regex("создать команду %cmd");//простой регекс, имена аргументов только латинские и цифры.
         p.set_Ves(0.5);
         p.set_Storage(this.m_LibraryTitle);
+        p.set_Namespace(NamespaceConstants.NsService);
         result.add(p);
         
         p = new Procedure();
@@ -207,6 +213,7 @@ public class LibraryManager extends LibraryManagerBase
         p.set_Regex("показать команды");
         p.set_Ves(0.5);
         p.set_Storage(this.m_LibraryTitle);
+        p.set_Namespace(NamespaceConstants.NsService);
         result.add(p);
         
         
@@ -219,6 +226,7 @@ public class LibraryManager extends LibraryManagerBase
         p.set_Regex("открыть терминал");
         p.set_Ves(0.5);
         p.set_Storage(this.m_LibraryTitle);
+        p.set_Namespace(NamespaceConstants.NsDefault);
         result.add(p);
         
         p = new Procedure();
@@ -228,6 +236,7 @@ public class LibraryManager extends LibraryManagerBase
         p.set_Regex("открыть консоль");
         p.set_Ves(0.5);
         p.set_Storage(this.m_LibraryTitle);
+        p.set_Namespace(NamespaceConstants.NsDefault);
         result.add(p);
         
         // вернуть выходной массив

@@ -26,8 +26,6 @@ import Settings.SettingItem;
 public class OperatorDbAdapter extends SqliteDbAdapter
 {
 
-    // Для сообщений в лог использовать только функцию this.safeAddLogMsg(...)
-
     /**
      * Application database file name
      */
@@ -54,7 +52,8 @@ public class OperatorDbAdapter extends SqliteDbAdapter
      */
     protected Engine            m_Engine;
 
-    // TODO: add new command here! Add code for new command to ClearCommand()!
+    // TODO: add new command here! Add init to constructor, Add code for new command to ClearCommand()!
+    
     /**
      * SQL Command for AddPlace function
      */
@@ -180,7 +179,7 @@ public class OperatorDbAdapter extends SqliteDbAdapter
     }
 
     /**
-     * RT-Create database tables
+     * NT-Create database tables
      * 
      * @return Returns True if success, False otherwise.
      * @throws SQLException
@@ -194,15 +193,15 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         {
             // create Places table
             TableDrop(OperatorDbAdapter.TablePlaces, 60);
-            String query = String.format("CREATE TABLE \"%s\" (\"id\" INTEGER PRIMARY KEY AUTOINCREMENT,\"title\" TEXT,\"type\" TEXT,\"path\" TEXT\"descr\" TEXT,\"syno\" TEXT);", OperatorDbAdapter.TablePlaces);
+            String query = String.format("CREATE TABLE \"%s\" (\"id\" INTEGER PRIMARY KEY AUTOINCREMENT, \"ns\" TEXT NOT NULL DEFAULT '', \"title\" TEXT NOT NULL DEFAULT '', \"type\" TEXT NOT NULL DEFAULT '', \"path\" TEXT NOT NULL DEFAULT '', \"descr\" TEXT NOT NULL DEFAULT '', \"syno\" TEXT NOT NULL DEFAULT '');", OperatorDbAdapter.TablePlaces);
             this.ExecuteNonQuery(query, 60);
             // create Procedures table
             TableDrop(OperatorDbAdapter.TableProcs, 60);
-            query = String.format("CREATE TABLE \"%s\"(\"id\" INTEGER PRIMARY KEY AUTOINCREMENT,\"title\" TEXT,\"ves\" Real,\"path\" TEXT,\"regex\" TEXT,\"descr\" TEXT);", OperatorDbAdapter.TableProcs);
+            query = String.format("CREATE TABLE \"%s\"(\"id\" INTEGER PRIMARY KEY AUTOINCREMENT, \"ns\" TEXT NOT NULL DEFAULT '', \"title\" TEXT NOT NULL DEFAULT '', \"ves\" Real, \"path\" TEXT NOT NULL DEFAULT '', \"regex\" TEXT NOT NULL DEFAULT '', \"descr\" TEXT NOT NULL DEFAULT '');", OperatorDbAdapter.TableProcs);
             this.ExecuteNonQuery(query, 60);
             // create Setting table
             TableDrop(OperatorDbAdapter.TableSetting, 60);
-            query = String.format("CREATE TABLE \"%s\" ( \"id\" INTEGER PRIMARY KEY AUTOINCREMENT, \"title\" TEXT NOT NULL DEFAULT '', \"descr\" TEXT NOT NULL DEFAULT '', \"val\" TEXT NOT NULL DEFAULT '' )", OperatorDbAdapter.TableSetting);
+            query = String.format("CREATE TABLE \"%s\" ( \"id\" INTEGER PRIMARY KEY AUTOINCREMENT, \"ns\" TEXT NOT NULL DEFAULT '', \"title\" TEXT NOT NULL DEFAULT '', \"descr\" TEXT NOT NULL DEFAULT '', \"val\" TEXT NOT NULL DEFAULT '' )", OperatorDbAdapter.TableSetting);
             this.ExecuteNonQuery(query, 60);
             // create index
             query = String.format("CREATE INDEX \"%s_ix_title\" ON \"%s\" (\"title\" ASC);", OperatorDbAdapter.TableSetting, OperatorDbAdapter.TableSetting);
@@ -221,7 +220,7 @@ public class OperatorDbAdapter extends SqliteDbAdapter
     // === Places table function =============================
 
     /**
-     * RT-Получить все записи таблицы Places
+     * NT-Получить все записи таблицы Places
      * 
      * @return Функция возвращает список записей таблицы Places
      * @throws Exception
@@ -240,11 +239,12 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         {
             Place place = new Place();
             place.set_TableId(reader.getInt(1));
-            place.set_Title(reader.getString(2));
-            place.set_PlaceTypeExpression(reader.getString(3));
-            place.set_Path(reader.getString(4));
-            place.set_Description(reader.getString(5));
-            place.set_Synonim(reader.getString(6));
+            place.set_Namespace(reader.getString(2));
+            place.set_Title(reader.getString(3));
+            place.set_PlaceTypeExpression(reader.getString(4));
+            place.set_Path(reader.getString(5));
+            place.set_Description(reader.getString(6));
+            place.set_Synonim(reader.getString(7));
             place.ParseEntityTypeString();// TODO: перенести этот вызов на более
                                           // поздний этап и обложить катчем на
                                           // всякий случай.
@@ -261,7 +261,7 @@ public class OperatorDbAdapter extends SqliteDbAdapter
     }
 
     /**
-     * RT-Добавить Место в таблицу Мест.
+     * NT-Добавить Место в таблицу Мест.
      * 
      * @param p
      *            Добавляемое Место.
@@ -275,7 +275,7 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         // create if not exists
         if (ps == null)
         {
-            String query = String.format("INSERT INTO \"%s\"(\"title\", \"type\", \"path\", \"descr\", \"syno\") VALUES (?,?,?,?,?);", OperatorDbAdapter.TablePlaces);
+            String query = String.format("INSERT INTO \"%s\"(\"ns\", \"title\", \"type\", \"path\", \"descr\", \"syno\") VALUES (?,?,?,?,?,?);", OperatorDbAdapter.TablePlaces);
             ps = this.m_connection.prepareStatement(query);
             // set timeout here
             ps.setQueryTimeout(this.m_Timeout);
@@ -284,11 +284,12 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         }
 
         // set parameters
-        ps.setString(1, p.get_Title());
-        ps.setString(2, p.get_PlaceTypeExpression());
-        ps.setString(3, p.get_Path());
-        ps.setString(4, p.get_Description());
-        ps.setString(5, p.get_Synonim());
+        ps.setString(1, p.get_Namespace());
+        ps.setString(2, p.get_Title());
+        ps.setString(3, p.get_PlaceTypeExpression());
+        ps.setString(4, p.get_Path());
+        ps.setString(5, p.get_Description());
+        ps.setString(6, p.get_Synonim());
 
         ps.executeUpdate();
         // Do not close command here - for next reusing
@@ -326,7 +327,7 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         // create if not exists
         if (ps == null)
         {
-            String query = String.format("UPDATE \"%s\" SET \"title\" = ?, \"type\" = ?, \"path\" = ?, \"descr\" = ?, \"syno\" = ?) WHERE(\"id\" = ?);", OperatorDbAdapter.TablePlaces);
+            String query = String.format("UPDATE \"%s\" SET \"ns\" = ?, \"title\" = ?, \"type\" = ?, \"path\" = ?, \"descr\" = ?, \"syno\" = ?) WHERE(\"id\" = ?);", OperatorDbAdapter.TablePlaces);
             ps = this.m_connection.prepareStatement(query);
             // set timeout here
             ps.setQueryTimeout(this.m_Timeout);
@@ -335,12 +336,13 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         }
 
         // set parameters
-        ps.setString(1, p.get_Title());
-        ps.setString(2, p.get_PlaceTypeExpression());
-        ps.setString(3, p.get_Path());
-        ps.setString(4, p.get_Description());
-        ps.setString(5, p.get_Synonim());
-        ps.setInt(6, p.get_TableId());
+        ps.setString(1, p.get_Namespace());
+        ps.setString(2, p.get_Title());
+        ps.setString(3, p.get_PlaceTypeExpression());
+        ps.setString(4, p.get_Path());
+        ps.setString(5, p.get_Description());
+        ps.setString(6, p.get_Synonim());
+        ps.setInt(7, p.get_TableId());
 
         int result = ps.executeUpdate();
         // Do not close command here - for next reusing
@@ -368,11 +370,12 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         {
             Procedure proc = new Procedure();
             proc.set_TableId(reader.getInt(1));
-            proc.set_Title(reader.getString(2));
-            proc.set_Ves(reader.getDouble(3));
-            proc.set_Path(reader.getString(4));
-            proc.set_Regex(reader.getString(5));
-            proc.set_Description(reader.getString(6));
+            proc.set_Namespace(reader.getString(2));
+            proc.set_Title(reader.getString(3));
+            proc.set_Ves(reader.getDouble(4));
+            proc.set_Path(reader.getString(5));
+            proc.set_Regex(reader.getString(6));
+            proc.set_Description(reader.getString(7));
             // set storage title as database
             proc.set_Storage(Item.StorageKeyForDatabaseItem);
             // add to result list
@@ -385,7 +388,7 @@ public class OperatorDbAdapter extends SqliteDbAdapter
     }
 
     /**
-     * RT-Добавить Процедуру.
+     * NT-Добавить Процедуру.
      * 
      * @param p
      *            Добавляемая Процедура.
@@ -399,7 +402,7 @@ public class OperatorDbAdapter extends SqliteDbAdapter
 
         if (ps == null)
         {
-            String query = String.format("INSERT INTO \"%s\"(\"title\", \"ves\", \"path\", \"regex\", \"descr\") VALUES (?,?,?,?,?);", OperatorDbAdapter.TableProcs);
+            String query = String.format("INSERT INTO \"%s\"(\"ns\", \"title\", \"ves\", \"path\", \"regex\", \"descr\") VALUES (?,?,?,?,?);", OperatorDbAdapter.TableProcs);
             ps = this.m_connection.prepareStatement(query);
             // set timeout here
             ps.setQueryTimeout(this.m_Timeout);
@@ -408,11 +411,12 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         }
 
         // set parameters
-        ps.setString(1, p.get_Title());
-        ps.setDouble(2, p.get_Ves());
-        ps.setString(3, p.get_Path());
-        ps.setString(4, p.get_Regex());
-        ps.setString(5, p.get_Description());
+        ps.setString(1, p.get_Namespace());
+        ps.setString(2, p.get_Title());
+        ps.setDouble(3, p.get_Ves());
+        ps.setString(4, p.get_Path());
+        ps.setString(5, p.get_Regex());
+        ps.setString(6, p.get_Description());
 
         ps.executeUpdate();
         // Do not close command here - for next reusing
@@ -421,7 +425,7 @@ public class OperatorDbAdapter extends SqliteDbAdapter
     }
 
     /**
-     * RT-Удалить Процедуру
+     * NT-Удалить Процедуру
      * 
      * @param id
      *            ИД Процедуры
@@ -449,7 +453,7 @@ public class OperatorDbAdapter extends SqliteDbAdapter
 
         if (ps == null)
         {
-            String query = String.format("UPDATE \"%s\" SET \"title\" = ?, \"ves\" = ?, \"path\" = ?, \"regex\" = ?, \"descr\" = ? WHERE (\"id\" = ?);", OperatorDbAdapter.TableProcs);
+            String query = String.format("UPDATE \"%s\" SET \"ns\" = ?, \"title\" = ?, \"ves\" = ?, \"path\" = ?, \"regex\" = ?, \"descr\" = ? WHERE (\"id\" = ?);", OperatorDbAdapter.TableProcs);
             ps = this.m_connection.prepareStatement(query);
             // set timeout here
             ps.setQueryTimeout(this.m_Timeout);
@@ -458,12 +462,13 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         }
 
         // set parameters
-        ps.setString(1, p.get_Title());
-        ps.setDouble(2, p.get_Ves());
-        ps.setString(3, p.get_Path());
-        ps.setString(4, p.get_Regex());
-        ps.setString(5, p.get_Description());
-        ps.setInt(6, p.get_TableId());
+        ps.setString(1, p.get_Namespace());
+        ps.setString(2, p.get_Title());
+        ps.setDouble(3, p.get_Ves());
+        ps.setString(4, p.get_Path());
+        ps.setString(5, p.get_Regex());
+        ps.setString(6, p.get_Description());
+        ps.setInt(7, p.get_TableId());
 
         int result = ps.executeUpdate();
         // Do not close command here - for next reusing
@@ -492,9 +497,10 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         {
             SettingItem si = new SettingItem();
             si.set_TableId(reader.getInt(1));
-            si.set_Title(reader.getString(2));
-            si.set_Description(reader.getString(3));
-            si.set_Path(reader.getString(4));// set value as Item.Path
+            si.set_Namespace(reader.getString(2));
+            si.set_Title(reader.getString(3));
+            si.set_Description(reader.getString(4));
+            si.set_Path(reader.getString(5));// set value as Item.Path
             // set storage field as db
             si.set_Storage(Item.StorageKeyForDatabaseItem);
             // add to result list
@@ -518,13 +524,12 @@ public class OperatorDbAdapter extends SqliteDbAdapter
      */
     public void AddSetting(SettingItem item) throws SQLException
     {
-        // INSERT INTO `setting` (`title`, `descr`, `val`) VALUES('t1', 'd1', 'v1');
 
         PreparedStatement ps = this.m_cmdAddSetting;
 
         if (ps == null)
         {
-            String query = String.format("INSERT INTO \"%s\"(\"title\", \"descr\", \"val\") VALUES (?,?,?);", OperatorDbAdapter.TableSetting);
+            String query = String.format("INSERT INTO \"%s\"(\"ns\", \"title\", \"descr\", \"val\") VALUES (?,?,?);", OperatorDbAdapter.TableSetting);
             ps = this.m_connection.prepareStatement(query);
             // set timeout here
             ps.setQueryTimeout(this.m_Timeout);
@@ -533,9 +538,10 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         }
 
         // set parameters
-        ps.setString(1, item.get_Title());
-        ps.setString(2, item.get_Description());
-        ps.setString(3, item.get_Path());// get value as Item.Path
+        ps.setString(1, item.get_Namespace());
+        ps.setString(2, item.get_Title());
+        ps.setString(3, item.get_Description());
+        ps.setString(4, item.get_Path());// get value as Item.Path
 
         ps.executeUpdate();
         // Do not close command here - for next reusing
@@ -569,13 +575,11 @@ public class OperatorDbAdapter extends SqliteDbAdapter
      */
     public int UpdateSetting(SettingItem item) throws SQLException
     {
-        // UPDATE `setting` SET `val` = 'new value', `descr` = 'new description' WHERE (`id` = 1);
-
         PreparedStatement ps = this.m_cmdUpdateSetting;
 
         if (ps == null)
         {
-            String query = String.format("UPDATE \"%s\" SET \"title\" = ?, \"descr\" = ?, \"val\" = ? WHERE (\"id\" = ?);", OperatorDbAdapter.TableSetting);
+            String query = String.format("UPDATE \"%s\" SET \"ns\" = ?, \"title\" = ?, \"descr\" = ?, \"val\" = ? WHERE (\"id\" = ?);", OperatorDbAdapter.TableSetting);
             ps = this.m_connection.prepareStatement(query);
             // set timeout here
             ps.setQueryTimeout(this.m_Timeout);
@@ -584,10 +588,11 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         }
 
         // set parameters
-        ps.setString(1, item.get_Title());
-        ps.setString(2, item.get_Description());
-        ps.setString(3, item.get_Path());// get value as Item.Path
-        ps.setInt(4, item.get_TableId());
+        ps.setString(1, item.get_Namespace());   
+        ps.setString(2, item.get_Title());
+        ps.setString(3, item.get_Description());
+        ps.setString(4, item.get_Path());// get value as Item.Path
+        ps.setInt(5, item.get_TableId());
 
         int result = ps.executeUpdate();
         // Do not close command here - for next reusing
