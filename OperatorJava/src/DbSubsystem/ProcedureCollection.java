@@ -8,9 +8,11 @@ package DbSubsystem;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 import OperatorEngine.Procedure;
+import OperatorEngine.Utility;
 
 /**
  * Коллекция - список Процедур
@@ -159,20 +161,37 @@ public class ProcedureCollection
         return result;
     }
 
-    /** 
+    /**
      * NT - Получить из коллекции Процедуру по ее Пути, без учета регистра символов.
-     * @param procedurePath Путь Процедуры.
-     * @return Функция возвращает объект Процедуры, соответствующий указанному пути. Функция возвращает null, если Процедура не найдена. 
+     * 
+     * @param procedurePath
+     *            Путь Процедуры.
+     * @return Функция возвращает объект Процедуры, соответствующий указанному пути. Функция возвращает null, если Процедура не найдена.
      */
     public Procedure getByPath(String procedurePath)
-    {        
+    {
         for (Procedure p : this.m_proclist)
         {
             if (procedurePath.equalsIgnoreCase(p.get_Path()))
                 return p;
         }
-        
+
         return null;
+    }
+
+    /**
+     * NT-Получить множество уникальных названий неймспейсов элементов коллекции.
+     * 
+     * @return Функция возвращает множество уникальных названий неймспейсов элементов коллекции.
+     */
+    public HashSet<String> getNamespaces()
+    {
+        HashSet<String> set = new HashSet<String>();
+        // add existing item namespaces
+        for (Procedure p : this.m_proclist)
+            set.add(Utility.GetStringTextNull(p.get_Namespace()));
+
+        return set;
     }
 
 }

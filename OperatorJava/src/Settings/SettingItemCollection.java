@@ -5,8 +5,11 @@
  */
 package Settings;
 
+import java.util.HashSet;
 import java.util.LinkedList;
+
 import OperatorEngine.Item;
+import OperatorEngine.Utility;
 
 // import java.util.Set;
 
@@ -234,6 +237,21 @@ public class SettingItemCollection
     public boolean removeItem(SettingItem item) throws Exception
     {
         return this.m_items.removeItem(item.get_Title(), item);
+    }
+
+    /**
+     * NT-Получить множество уникальных названий неймспейсов элементов коллекции.
+     * 
+     * @return Функция возвращает множество уникальных названий неймспейсов элементов коллекции.
+     */
+    public HashSet<String> getNamespaces()
+    {
+        HashSet<String> set = new HashSet<String>();
+        // add existing item namespaces
+        for (Item p : this.m_items.getAllItems())
+            set.add(Utility.GetStringTextNull(p.get_Namespace()));
+
+        return set;
     }
 
     // *** End of file ***

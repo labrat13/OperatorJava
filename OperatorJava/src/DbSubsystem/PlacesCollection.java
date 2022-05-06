@@ -7,6 +7,7 @@
 package DbSubsystem;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -319,6 +320,21 @@ public class PlacesCollection
         result.addAll(this.m_places.values());
 
         return result;
+    }
+
+    /**
+     * NT-Получить множество уникальных названий неймспейсов элементов коллекции.
+     * 
+     * @return Функция возвращает множество уникальных названий неймспейсов элементов коллекции.
+     */
+    public HashSet<String> getNamespaces()
+    {
+        HashSet<String> set = new HashSet<String>();
+        // add existing item namespaces
+        for (Place p : this.m_places.values())
+            set.add(Utility.GetStringTextNull(p.get_Namespace()));
+
+        return set;
     }
 
 }

@@ -5,6 +5,8 @@
  */
 package OperatorEngine;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 import DbSubsystem.OperatorDbAdapter;
@@ -891,6 +893,67 @@ public class ElementCacheManager
         SettingItem si = this.m_settings.getFirstItem(title);
         if(si != null)
             result = si.get_Path().trim();
+        
+        return result;
+    }
+
+    /** NT- Получить облако тегов-неймспейсов для элементов этого менеджера.
+     * @param forProcedures Извлекать теги коллекции Процедур.
+     * @param forPlaces Извлекать теги коллекции Мест.
+     * @param forSettings Извлекать теги коллекции Настроек.
+     * @return
+     * Функция возвращает строку - перечисление названий неймспейсов элементов этого менеджера.
+     */
+    public String getNamespacesChainString(boolean forProcedures, boolean forPlaces, boolean forSettings)
+    {
+        //Получить сортированный массив уникальных названий неймспейсов 
+        String[] nss = this.getNamespaces(forProcedures, forPlaces, forSettings, true);
+        //собрать их в строку с разделителем - пробелом или табом.
+        String result = "";
+        if(nss.length == 0)
+            result = NamespaceConstants.NsDefault;
+        else
+        {
+            StringBuilder sb = new StringBuilder();
+            for(String s : nss)
+                sb.append(s).append('\t');
+            result = sb.toString().trim();
+        }
+        
+        return result;
+    }
+    
+    /** NT-Получить массив названий неймспейсов для элементов этого менеджера.
+     * @param forProcedures Извлекать теги коллекции Процедур.
+     * @param forPlaces Извлекать теги коллекции Мест.
+     * @param forSettings Извлекать теги коллекции Настроек.
+     * @param sorted Сортировать по алфавиту.
+     * @return
+     * Функция возвращает массив названий неймспейсов элементов этого менеджера.
+     */
+    public String[] getNamespaces(boolean forProcedures, boolean forPlaces, boolean forSettings, boolean sorted)
+    {        
+        HashSet<String> set = new HashSet<String>();
+        HashSet<String> nss = null;
+        if(forProcedures == true)
+        {
+            nss = this.m_procedures.getNamespaces();
+            set.addAll(nss);
+        }
+        if(forPlaces == true)
+        {
+            nss = this.m_places.getNamespaces();
+            set.addAll(nss);
+        }
+        if(forSettings == true)
+        {
+            nss = this.m_settings.getNamespaces();
+            set.addAll(nss);
+        }
+        
+        String[] result  = set.toArray(new String[set.size()]);
+        if(sorted)
+            Arrays.sort(result);
         
         return result;
     }

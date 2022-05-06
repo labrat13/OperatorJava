@@ -184,7 +184,8 @@ public class ProcedureProcedures
             if (Dialogs.этоОтмена(str))
                 return EnumProcedureResult.CancelledByUser;
             proc.set_Description(str);
-
+          
+            
             // 3. Пользователь должен ввести регекс процедуры
             engine.get_OperatorConsole().PrintEmptyLine();
             engine.get_OperatorConsole().PrintTextLine("3. Регекс Команды", EnumDialogConsoleColor.Сообщение);
@@ -261,10 +262,34 @@ public class ProcedureProcedures
             }
             while (isValidValue == false);
 
-            // proc.Ves = Double.Parse(str, engine.OperatorConsole.RuCulture); заменено на :
             Double ves = Double.valueOf(str);
             proc.set_Ves(ves);
-            // 6. Вывести свойства Процедуры и запросить подтверждение создания процедуры.
+            
+            //6 Пользователь должен ввести неймспейс для Процедуры.
+            engine.get_OperatorConsole().PrintEmptyLine();
+            engine.get_OperatorConsole().PrintTextLine("6. Пространство имен для Команды", EnumDialogConsoleColor.Сообщение);
+            //Для пользователя надо вывести краткую справку и примеры по пространствам имен.
+            String[] namespaceDescr = new String[] {
+                    " - Пространство имен группирует Команды и Места для удобства отображения в списке.",
+                    " - Название пространства имен должно быть очень коротким, не должно содержать пробелы, может разделяться точками.",
+                    " - Если вы затрудняетесь выбрать пространство имен, введите текст \"Default\" ",
+                    " - Для подробной информации о пространстве имен обратитесь к документации Оператор.",
+                    "" };
+            engine.get_OperatorConsole().PrintTextLines(namespaceDescr, EnumDialogConsoleColor.Сообщение);
+            //показать существующие неймспейсы, пока только для Процедур.
+            String existingNsChain = engine.get_ECM().getNamespacesChainString(true, false, false);
+            engine.get_OperatorConsole().PrintTextLine(" - Можно придумать новое пространство имен для этой Команды, или использовать уже существующее:", EnumDialogConsoleColor.Сообщение);
+            engine.get_OperatorConsole().PrintTextLine(existingNsChain, EnumDialogConsoleColor.Сообщение);
+            engine.get_OperatorConsole().PrintEmptyLine();
+            //пользователь должен ввести название пространства имен для новой Процедуры
+            str = engine.get_OperatorConsole().PrintQuestionAnswer(EnumSpeakDialogResult.Отмена, "Введите название пространства имен для Команды:", false, true);
+            if (Dialogs.этоОтмена(str))
+                return EnumProcedureResult.CancelledByUser;
+            //set namespace value
+            proc.set_Namespace(str.trim());
+            
+            
+            // 7. Вывести свойства Процедуры и запросить подтверждение создания процедуры.
             // Вроде все свойства должны быть заполнены, теперь надо вывести все их в форме
             engine.get_OperatorConsole().PrintEmptyLine();
             engine.get_OperatorConsole().PrintTextLine("6. Подтвердите создание Команды", EnumDialogConsoleColor.Сообщение);// пункт плана
@@ -275,14 +300,14 @@ public class ProcedureProcedures
             EnumSpeakDialogResult sdr = engine.get_OperatorConsole().PrintДаНетОтмена("Желаете создать новую Команду?");
             if (sdr.isНет() || sdr.isОтмена())
                 return EnumProcedureResult.CancelledByUser;
-
-            // 9 заполнить объект Процедуры и создать новую процедуру в БД
+            
+            // 8. заполнить объект Процедуры и создать новую процедуру в БД
             // сначала добавить название хранилища в объект Процедуры - согласно концепту Библиотек Процедур Оператора.
             proc.set_Storage(Procedure.StorageKeyForDatabaseItem);
             // engine.DbInsertProcedure(proc); заменено на:
             engine.get_ECM().AddProcedure(proc);
 
-            // 10 вывести сообщение о результате операции: успешно
+            // 9. вывести сообщение о результате операции: успешно
             engine.get_OperatorConsole().PrintTextLine(String.format("Команда \"%s\" создана успешно", proc.get_Title()), EnumDialogConsoleColor.Успех);
         }
         catch (Exception ex)
