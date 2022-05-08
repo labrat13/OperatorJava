@@ -1,0 +1,88 @@
+Образцы данных клипборда:  
+
+      [jsmith@localhost bin]$ java ClipboardTest
+---------------------------
+1. обычный текст
+  System.out.println("press enter to next");
+
+Available content types:
+- DataFlavor.plainTextFlavor(java.io.InputStream)
+- DataFlavor.stringFlavor(java.io.InputStream)
+------------------------------
+2. Копирован файл с рабочего стола в Проводнике Линукс
+
+file:///home/jsmith/Desktop/InternetNotes-2.txt
+
+Available content types:
+- DataFlavor.plainTextFlavor(java.io.InputStream)
+- DataFlavor.stringFlavor(java.io.InputStream)
+---------------------------
+3. Копирован файл в Проводнике Линукс.
+или  Копирована папка в Проводнике 
+
+/home/jsmith/Desktop/InternetNotes-2.txt
+
+или 
+
+/home/jsmith/Documents/Супер
+
+Available content types:
+- DataFlavor.javaFileListFlavor(java.io.InputStream)
+- DataFlavor.plainTextFlavor(java.io.InputStream)
+- DataFlavor.stringFlavor(java.io.InputStream)
+
+
+---------------------
+4. Копировано несколько папок в Проводнике Линукс.
+    
+/home/jsmith/Documents/CalibreLibrary
+/home/jsmith/Documents/JAVA
+/home/jsmith/Documents/myJavaLibrary
+/home/jsmith/Documents/myProjectGit
+/home/jsmith/Documents/OperatorJava
+/home/jsmith/Documents/Tools
+/home/jsmith/Documents/Супер
+
+
+Available content types:
+- DataFlavor.javaFileListFlavor(java.io.InputStream)
+- DataFlavor.plainTextFlavor(java.io.InputStream)
+- DataFlavor.stringFlavor(java.io.InputStream)
+
+------------------------------------------
+5. Копирована веб-ссылка на страницу из файрфокса
+
+https://yandex.ru/news/story/Rogozin_dopustil_unichtozhenie_stran_NATO_zapolchasa_vsluchae_yadernoj_vojny--4487226282ea932224ff43678ab0fa2f?lang=ru&from=main_portal&fan=1&stid=hMqJq4fqohB1WAP1QMZZ&t=1652016888&persistent_id=200995118&story=87743b2c-fc6d-58c3-aa62-4e5605c97358&lr=65&msid=1652017358770922-9130838197004043935-sas6-5261-bf6-sas-l7-balancer-8080-BAL-7460&mlid=1652016888.glob_225.44872262&utm_source=morda_desktop&utm_medium=topnews_news
+
+Available content types:
+- DataFlavor.plainTextFlavor(java.io.InputStream)
+- DataFlavor.stringFlavor(java.io.InputStream)
+
+-----------------------
+7. Копирована веб-ссылка на файл из файрфокса
+
+http://books.ifmo.ru/file/pdf/3072.pdf
+
+Available content types:
+- DataFlavor.plainTextFlavor(java.io.InputStream)
+- DataFlavor.stringFlavor(java.io.InputStream)
+
+-----------------------
+8. Копирована часть текста веб-страницы из файрфокса
+
+    
+Киберфизические системы. Методы высокоуровневого проектирования: учебное пособие.
+
+Горбачев Я.Г., Платунов А.Е., Пинкевич В.Ю., Кольчурин М.В. Киберфизические системы. Методы высокоуровневого проектирования: учебное пособие. - Санкт-Петербург: Университет ИТМО, 2022. - 48 с. - экз.
+
+Аннотация :
+
+       В учебном пособии представлены современные методы высокоуровневого проектирования, применяемые при создании киберфизических систем. Стандарт Essence предлагает методологическое ядро и язык описания методов программной инженерии. Изменение ядра Essence для системной инженерии позволяет успешно применять его для анализа проектов киберфизических систем. Метод ARCADIA предназначен для модельно-ориентированного архитектурного проектирования систем разного назначения. Инструментальная поддержка данного метода реализована в среде Capella. Учебное пособие включает лабораторный практикум по данным методам высокоуровневого проектирования. Студенты работают с примерами реальных киберфизических систем, используют современные инструментальные средства и лабораторные стенды.
+
+Available content types:
+- DataFlavor.allHtmlFlavor(java.io.InputStream)
+- DataFlavor.fragmentHtmlFlavor(java.io.InputStream)
+- DataFlavor.plainTextFlavor(java.io.InputStream)
+- DataFlavor.selectionHtmlFlavor(java.io.InputStream)
+- DataFlavor.stringFlavor(java.io.InputStream)
+
