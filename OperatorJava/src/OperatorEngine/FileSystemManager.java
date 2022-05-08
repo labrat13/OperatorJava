@@ -77,7 +77,7 @@ public class FileSystemManager
      */
     public static String getAppFolderPath()
     {
-        return SystemInfoManager.GetUserHomeFolderPath() + File.separator + "." + Engine.ApplicationTitle;
+        return SystemInfoManager.GetUserHomeFolderPath() + FileSeparator + "." + Engine.ApplicationTitle;
     }
 
     /**
@@ -97,7 +97,7 @@ public class FileSystemManager
      */
     public static String getAppSettingsFilePath()
     {
-        return getAppFolderPath() + File.separator + ApplicationSettingsBase.AppSettingsFileName;
+        return getAppFolderPath() + FileSeparator + ApplicationSettingsBase.AppSettingsFileName;
     }
 
     /**
@@ -110,6 +110,16 @@ public class FileSystemManager
         return FileSystemManager.isFileExists(FileSystemManager.getAppSettingsFilePath());
     }
 
+    /**
+     * NT-Get path of user directory Documents. 
+     * @return Function returns User directory Documents path string.
+     */
+    public static String getUserDocumentsFolderPath()
+    {
+        //TODO: тут надо автоматически получать папку документов. Она для русской версии ОС называется Документы, для английской - Documents.
+        return SystemInfoManager.GetUserHomeFolderPath() + FileSeparator + "." + "Documents" + FileSeparator;
+    }
+    
     /**
      * NT-Check file exists
      * 
@@ -177,7 +187,7 @@ public class FileSystemManager
 
     /**
      * NR-Get current user temporary folder path string
-     * 
+     * @return Function returns current user temporary filder path string.
      * @throws Exception Функция не реализована.
      */
     public static String getTempFolderPath() throws Exception
@@ -389,5 +399,7 @@ public class FileSystemManager
 
         return false;
     }
+
+
 
 }

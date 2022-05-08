@@ -14,6 +14,7 @@ import java.io.OutputStreamWriter;
 import java.util.LinkedList;
 
 import OperatorEngine.Engine;
+import OperatorEngine.FileSystemManager;
 import OperatorEngine.Item;
 import OperatorEngine.Utility;
 import Utility.ItemDictionaryByNamespace;
@@ -97,7 +98,7 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
         this.addItem(EnumSettingKey.LoneTerminal, "exo-open --launch TerminalEmulator");
         this.addItem(EnumSettingKey.ForCommandTerminal, "xfce4-terminal -x ");
         this.addItem(EnumSettingKey.ForProcedureTerminal, "xfce4-terminal -x ");
-        this.addItem(EnumSettingKey.DefaultWorkingDirectory, "/home/jsmith/Документы/");
+        this.addItem(EnumSettingKey.DefaultWorkingDirectory, FileSystemManager.getUserDocumentsFolderPath());
         this.addItem(EnumSettingKey.ShellExecuteCommand, "exo-open ");
         // тексты встроенных команд Оператор
         this.addItem(EnumSettingKey.ExitAppCommands, "выход, выйти, закрыть, quit, close, exit");
@@ -132,11 +133,18 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
          * Стандартный формат файла:
          * Комментарий Заголовок с копирайтом
          * Пустая строка
+         * [группа настроек]
+         * Пустая строка
          * Комментарий Описание настройки
          * Строка ключ=значение настройки
          * Пустая строка
          * Комментарий Описание настройки №2
          * Строка ключ=значение настройки №2
+         * Пустая строка
+         * [группа настроек]
+         * Пустая строка
+         * Комментарий Описание настройки
+         * Строка ключ=значение настройки
          * Пустая строка
          * и так далее...
          * Запись о окончании файла настроек EndOfSettingsFile
@@ -348,47 +356,6 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
         return (pos == 0);
     }
 
-    // /**
-    // * NT- Write settings to file
-    // *
-    // * @param filepath
-    // * Settings file path
-    // * @throws Exception
-    // * Error on writing
-    // */
-    // @Override
-    // public void Store(String filepath) throws Exception
-    // {
-    // // 1. open specified file, write all items from dictionary to file and
-    // // close file.
-    // FileOutputStream os = new FileOutputStream(filepath, false);
-    // OutputStreamWriter writer = new OutputStreamWriter(os, "UTF-8");
-    // this.WriteCommentLines(writer, "Application settings file");
-    // this.WriteLine(writer);
-    //
-    // // write each item
-    // for (SettingItem item : this.m_Items.getAllItems())
-    // {
-    // // item.writeXml(writer);
-    // // write empty line
-    // this.WriteLine(writer);
-    // // write description
-    // String d = item.get_Description();
-    // this.WriteCommentLines(writer, d);
-    // // write key-value pair
-    // this.WriteKeyValuePair(writer, item.get_Title(), item.get_Path());// get value as Item.Path
-    // // write empty line
-    // this.WriteLine(writer);
-    // }
-    // this.WriteCommentLines(writer, EndOfSettingsFile);
-    // writer.close();
-    // // 2. do not set specified file as current file
-    // // 3. clear modified flag
-    // this.m_Items.setModified(false);
-    //
-    // return;
-    // }
-
     /**
      * NT- Write settings to file
      * 
@@ -483,48 +450,7 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
 
         return;
     }
-    // /**
-    // * NT-Write item title and value string
-    // *
-    // * @param writer
-    // * File writer
-    // * @param title
-    // * Item title as key
-    // * @param value
-    // * Item value
-    // * @throws IOException
-    // * Error on writing
-    // */
-    // private void WriteKeyValuePair(
-    // OutputStreamWriter writer,
-    // String title,
-    // String value) throws IOException
-    // {
-    // // 1. check title and value
-    // // 2. print title=value
-    // writer.write(Utility.GetStringTextNull(title));
-    // writer.write(" = ");
-    // writer.write(Utility.GetStringTextNull(value));
-    // writer.write(ApplicationSettingsBase.lineSeparator);
-    //
-    // return;
-    // }
 
-    // /**
-    // * NT-Write empty line to output file
-    // *
-    // * @param writer
-    // * File writer
-    // * @throws IOException
-    // * Error on writing
-    // */
-    // private void WriteLine(OutputStreamWriter writer) throws IOException
-    // {
-    // // write empty line
-    // writer.write(ApplicationSettingsBase.lineSeparator);
-    //
-    // return;
-    // }
 
     /**
      * NT-Write item description as multiline comments

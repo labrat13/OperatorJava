@@ -2,9 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/home/jsmith/Документы/OperatorJava/Libraries/sqlite-jdbc-3.34.0.jar" sourcepath="/home/jsmith/Документы/OperatorJava/Libraries/sqlite-jdbc-3.34.0-sources.jar">
+	<classpathentry kind="lib" path="/home/jsmith/Documents/OperatorJava/Libraries/sqlite-jdbc-3.34.0.jar" sourcepath="/home/jsmith/Documents/OperatorJava/Libraries/sqlite-jdbc-3.34.0-sources.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/home/jsmith/Документы/OperatorJava/Libraries/sqlite-jdbc-3.34.0-javadoc.jar!/"/>
+			<attribute name="javadoc_location" value="jar:file:/home/jsmith/Documents/OperatorJava/Libraries/sqlite-jdbc-3.34.0-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/ProcedureUtils"/>

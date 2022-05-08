@@ -98,7 +98,7 @@ public class SingleAppInstance
         boolean isExists = false;
         boolean isLocked = false;
         //wait random time
-        waitRandom(7000.0d);
+        waitRandom(3000.0d);
         
         File fi = new File(lockfilepath);
         //store filepath to variable
