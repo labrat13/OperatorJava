@@ -214,11 +214,12 @@ public class ProcedureProcedures
             // TODO: для Пользователя нужно вывести краткую справку с примерами путей
             String[] adresDescr = new String[] {
                     " - Описывает командную строку исполняемого файла или путь к Процедуре Команды в Сборке Процедур",
-                    " - Для исполняемых файлов, используемых в качестве Процедур, путь может содержать аргументы.",
-                    "   Например: \"/home/username/firefox/firefox.sh %www\"",
+                    " - Для исполняемых файлов, вызываемых в качестве Процедур, путь может содержать аргументы.",
+                    "   Пример вызова без аргументов: \"shutdown -h now\"",
+                    "   Пример вызова с аргументами: \"/home/username/firefox/firefox.sh %www\"",
                     "   Аргументы идентифицируются по своим именам, заданным в Регексе Команды.",
                     " - Для Процедур из СборкиПроцедур прописывается путь в формате БиблиотекаПроцедур.Класс.Функция().",
-                    "   Аргументы идентифицируются внутри кода функции Процедуры, по своим именам, заданным в Регексе Команды.",
+                    "   Аргументы идентифицируются по своим именам, заданным в Регексе Команды.",
                     "   Например: ProceduresInt.ProcedureProcedures.CommandCreateProcedure()",
                     " - Обратитесь к документации, чтобы узнать больше о Адресе Процедуры Команды",
                     "" };
@@ -278,11 +279,12 @@ public class ProcedureProcedures
             engine.get_OperatorConsole().PrintTextLines(namespaceDescr, EnumDialogConsoleColor.Сообщение);
             //показать существующие неймспейсы, пока только для Процедур.
             String existingNsChain = engine.get_ECM().getNamespacesChainString(true, false, false);
-            engine.get_OperatorConsole().PrintTextLine(" - Можно придумать новое пространство имен для этой Команды, или использовать уже существующее:", EnumDialogConsoleColor.Сообщение);
+            engine.get_OperatorConsole().PrintTextLine(" - Можно придумать новую категорию для этой Команды, или использовать уже существующую:", 
+                    EnumDialogConsoleColor.Сообщение);
             engine.get_OperatorConsole().PrintTextLine(existingNsChain, EnumDialogConsoleColor.Сообщение);
             engine.get_OperatorConsole().PrintEmptyLine();
             //пользователь должен ввести название пространства имен для новой Процедуры
-            str = engine.get_OperatorConsole().PrintQuestionAnswer(EnumSpeakDialogResult.Отмена, "Введите название пространства имен для Команды:", false, true);
+            str = engine.get_OperatorConsole().PrintQuestionAnswer(EnumSpeakDialogResult.Отмена, "Введите название категории для Команды:", false, true);
             if (Dialogs.этоОтмена(str))
                 return EnumProcedureResult.CancelledByUser;
             //set namespace value

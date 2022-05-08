@@ -37,7 +37,7 @@ public enum EnumDialogConsoleColor
     /**
      * Цвет текста выводимых в консоли вопросов пользователю.
      */
-    Вопрос(TerminalMode.COLOR_YELLOW),
+    Вопрос(TerminalMode.COLOR_BRIGHT_YELLOW),
 
     /**
      * Цвет текста выводимых в консоли подтверждений.
