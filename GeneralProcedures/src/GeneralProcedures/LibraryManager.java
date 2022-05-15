@@ -239,6 +239,17 @@ public class LibraryManager extends LibraryManagerBase
         p.set_Namespace(NamespaceConstants.NsDefault);
         result.add(p);
         
+        p = new Procedure();
+        p.set_Title("Создать заметку Х");
+        p.set_Description("Создание текстовой заметки на рабочем столе.");
+        p.set_Path("GeneralProcedures.UnsortedProcedures.CommandCreateNotepadNote(noteTitle)");
+        p.set_Regex("создать заметку %title");
+        p.set_Ves(0.5);
+        p.set_Storage(this.m_LibraryTitle);
+        p.set_Namespace(NamespaceConstants.NsDefault);
+        result.add(p);
+        
+        
         // вернуть выходной массив
         return result.toArray(new Procedure[result.size()]);
     }

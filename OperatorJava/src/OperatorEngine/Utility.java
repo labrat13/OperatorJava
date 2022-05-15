@@ -6,6 +6,16 @@
  */
 package OperatorEngine;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
@@ -66,7 +76,8 @@ public class Utility
     /**
      * NT-Create copy of specified string
      * 
-     * @param s Образец для копирования.
+     * @param s
+     *            Образец для копирования.
      * @return Функция возвращает копию образца.
      */
     public static String StringCopy(String s)
@@ -293,6 +304,85 @@ public class Utility
     }
 
     /**
+     * NT-Open or Create text file.
+     * 
+     * @param fpath
+     *            file pathname string
+     * @param encoding
+     *            Text file encoding, "UTF-8" as sample.
+     * @return Function returns BufferedWriter object. Close it on exit!
+     * @throws IOException
+     *             General IO error.
+     * @throws FileNotFoundException
+     *             File not found.
+     * @throws UnsupportedEncodingException
+     *             Unsupported encoding.
+     */
+    public static BufferedWriter FileWriterOpenOrCreate(
+            String fpath,
+            String encoding)
+            throws IOException, FileNotFoundException,
+            UnsupportedEncodingException
+    {
+        File f = new File(fpath);
+        if (f.exists() == false)
+        {
+            f.createNewFile();
+        }
+        FileOutputStream os = new FileOutputStream(f, true);
+        OutputStreamWriter osw = new OutputStreamWriter(os, encoding);
+        BufferedWriter result = new BufferedWriter(osw);
+        
+        return result;
+    }
+
+    /**
+     * NT-Open Buffered Reader for read file with specified encoding.
+     * 
+     * @param filepath
+     *            File pathname.
+     * @param encoding
+     *            File text encoding. For example: UTF-8 UTF-16.
+     * @return Returns BufferedReader object ready for use.
+     * @throws FileNotFoundException
+     *             File not founded.
+     * @throws UnsupportedEncodingException
+     *             Wrong encoding title.
+     */
+    public static BufferedReader openBufferedReader(String filepath, String encoding)
+            throws FileNotFoundException, UnsupportedEncodingException
+    {
+        FileInputStream fis = new FileInputStream(filepath);
+        InputStreamReader isr = new InputStreamReader(fis, encoding);
+        BufferedReader result = new BufferedReader(isr);
+        
+        return result;
+    }
+    
+    /**
+     * NT- Open Buffered Writer for write to file with specified encoding.
+     * 
+     * @param filepath
+     *            File pathname.
+     * @param encoding
+     *            File text encoding. For example: UTF-8 UTF-16.
+     * @return Returns BufferedWriter object ready for use.
+     * @throws FileNotFoundException
+     *             File cannot be created.
+     * @throws UnsupportedEncodingException
+     *             Wrong encoding title.
+     */
+    public static BufferedWriter openBufferedWriter(String filepath, String encoding)
+            throws FileNotFoundException, UnsupportedEncodingException
+    {
+        FileOutputStream fos = new FileOutputStream(filepath);
+        OutputStreamWriter osw = new OutputStreamWriter(fos, encoding);
+        BufferedWriter result = new BufferedWriter(osw);
+        
+        return result;
+    }
+    
+    /**
      * NT-Проверить что указанный массив содержит указанную строку.
      * 
      * @param array
@@ -324,15 +414,22 @@ public class Utility
         return false;
     }
 
-    // 0123.4
 
-    // /**
-    // * NT-Получить версию сборки Оператора
-    // * @return
-    // */
-    // public static Version getOperatorVersion()
-    // {
-    // return Assembly.GetExecutingAssembly().GetName().Version;
-    // }
+    /**
+     * NT-Заменить недопустимые символы в названии файла на указанный символ
+     * @param title Название файла без расширения
+     * @param p Символ-замена.
+     * @return Возвращает безопасное название файла
+     */
+    public static String ReplaceInvalidPathChars(String title, String p)
+    {
+        //TODO: перенести эту функцию в более правильное место по семантике.
+        String result = title.replaceAll("[\\\\/:*?\"<>|]", p);
+        
+        return result;        
+    }
+
+
+
 
 }

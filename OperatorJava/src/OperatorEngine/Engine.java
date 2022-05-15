@@ -957,6 +957,38 @@ public class Engine
     }
 
     /**
+     * NT-Исполнить ShellExecute по пути ShellExecuteCommand из ФайлНастроекОператора.
+     * 
+     * @return Функция возвращает EnumProcedureResult.Success при успехе.
+     *         Функция возвращает EnumProcedureResult.Error, если при запуске Терминала произошла ошибка.
+     */
+    public EnumProcedureResult StartShellExecute(String arg)
+    {
+        EnumProcedureResult result = EnumProcedureResult.Success;
+        try
+        {
+            // 1. извлечь из ФайлНастроекОператора или ТаблицаНастроекОператора значение командной строки терминала
+            String cmdterm = this.getSettingFromFileOrTable(EnumSettingKey.ShellExecuteCommand);
+            if (Utility.StringIsNullOrEmpty(cmdterm))
+                throw new Exception("Не найдена команда запуска Терминала из настройки " + EnumSettingKey.ShellExecuteCommand.getTitle());
+            // 2. извлечь из ФайлНастроекОператора или ТаблицаНастроекОператора значение рабочего каталога терминала
+            String workDirectory = this.getSettingFromFileOrTable(EnumSettingKey.DefaultWorkingDirectory);
+            if (Utility.StringIsNullOrEmpty(workDirectory))
+                throw new Exception("Не найден путь к рабочему каталогу Терминала из настройки " + EnumSettingKey.DefaultWorkingDirectory.getTitle());
+            // 3. TODO: разделить командную строку терминала на приложение и аргументы в классе RegexManager.
+
+            // 4. пока разделить нечем - вызвать PEM.ExecuteApplicationSimple()
+            this.m_PEM.ExecuteApplicationSimple(cmdterm + " " + arg, workDirectory);
+        }
+        catch (Exception e)
+        {
+            this.PrintExceptionMessageToConsoleAndLog("Ошибка", e);
+            result = EnumProcedureResult.Error;
+        }
+        return result;
+    }
+    
+    /**
      * NT-Запустить команду через механизм ShellExecute.
      * 
      * @param p

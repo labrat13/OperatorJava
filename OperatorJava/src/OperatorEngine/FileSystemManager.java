@@ -121,6 +121,16 @@ public class FileSystemManager
     }
     
     /**
+     * NT-Get path of user directory Desktop. 
+     * @return Function returns User directory Desktop path string.
+     */
+    public static String getUserDesktopFolderPath()
+    {
+        //TODO: тут надо автоматически получать папку рабочего стола. Она для русской версии ОС называется Рабочий стол, для английской - Desktop.
+        return SystemInfoManager.GetUserHomeFolderPath() + FileSeparator + "." + "Desktop" + FileSeparator;
+    }
+    
+    /**
      * NT-Check file exists
      * 
      * @param filepath
