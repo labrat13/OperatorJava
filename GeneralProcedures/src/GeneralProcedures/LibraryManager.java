@@ -240,7 +240,7 @@ public class LibraryManager extends LibraryManagerBase
         result.add(p);
         
         p = new Procedure();
-        p.set_Title("Создать заметку Х");
+        p.set_Title("Создать заметку НазваниеЗаметки");
         p.set_Description("Создание текстовой заметки на рабочем столе.");
         p.set_Path("GeneralProcedures.UnsortedProcedures.CommandCreateNotepadNote(noteTitle)");
         p.set_Regex("создать заметку %title");

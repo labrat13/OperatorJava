@@ -277,7 +277,7 @@ public class Item implements Comparable<Item>
     /**
      * NT-Получить одну строку описания свойств Элемента: название и описание, длиной менее 80 символов.
      * 
-     * @return Функция возвращает строку вроде: название Элемента;(Описание Элемента.)
+     * @return Функция возвращает строку вроде: название Элемента (Описание Элемента.)
      */
     public String GetShortInfo()
     {
@@ -285,7 +285,7 @@ public class Item implements Comparable<Item>
         // Одна строка, 80 символов макс.
         StringBuilder sb = new StringBuilder();
         sb.append(Utility.GetStringTextNull(this.m_title));
-        sb.append(";");
+        sb.append(" ");
         sb.append('(');
         sb.append(Utility.GetStringTextNull(this.m_descr));
         if (sb.length() > 75)
