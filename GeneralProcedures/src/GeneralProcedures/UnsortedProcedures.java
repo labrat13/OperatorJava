@@ -155,7 +155,7 @@ public class UnsortedProcedures
   *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
   *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
   */
-  @OperatorProcedure(State = ImplementationState.NotTested,   
+  @OperatorProcedure(State = ImplementationState.Ready,   
        Title = "Создать заметку",  
        Description = "Создание заметки на рабочем столе.")       
   public static EnumProcedureResult CommandCreateNotepadNote(
@@ -180,12 +180,15 @@ public class UnsortedProcedures
        
      //извлечь название файла: берем из аргумента сырую строку запроса, так как Места тут не нужны, даже если движок подставил одно из них.
        String title = args.getByIndex(0).get_ArgumentQueryValue().trim();
-       
+       //копируем название заметки для последующей записи в файл.
+       String titleAsContent = new String(title);
        //вывести это тестовое сообщение о начале процедуры - в лог!
        String msg1 = String.format("Начата процедура %s(\"%s\")", currentProcedureTitle, title);
        engine.get_OperatorConsole().PrintTextLine(msg1, EnumDialogConsoleColor.Сообщение);
        engine.get_OperatorConsole().PrintEmptyLine();
        
+       //TODO: если этот цикл переписать с использованием File как основы для хранния пути файла, 
+       // то он будет немного проще и быстрее, и потом URI из него получать будет быстрее.
        boolean ФайлУжеСуществует = false;
        String fpath = null;
        //label_1:
@@ -231,9 +234,10 @@ public class UnsortedProcedures
        BufferedWriter writer = Utility.FileWriterOpenOrCreate(fpath, "UTF-8");
 
      //если файл новый, то вывести в него строку названия заметки как заголовок
+       //и добавить пустую строку как разделитель.
        if(ФайлУжеСуществует == false)
        {
-           writer.write(title);
+           writer.write(titleAsContent);
            writer.newLine();
            writer.newLine();
        }
@@ -251,7 +255,13 @@ public class UnsortedProcedures
        {
            result = epr;
            //вывести сообщение о результате операции: успешно
-           engine.get_OperatorConsole().PrintTextLine(String.format("Заметка \"%s\" создана", title), EnumDialogConsoleColor.Успех);
+           String msgT;
+           if(ФайлУжеСуществует)
+               msgT = "Существующая заметка \"%s\" открыта для изменения.";
+           else
+               msgT = "Новая заметка \"%s\" создана.";
+           
+           engine.get_OperatorConsole().PrintTextLine(String.format(msgT, title), EnumDialogConsoleColor.Успех);
        }
        else
        {
