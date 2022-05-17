@@ -117,7 +117,7 @@ public class FileSystemManager
     public static String getUserDocumentsFolderPath()
     {
         //TODO: тут надо автоматически получать папку документов. Она для русской версии ОС называется Документы, для английской - Documents.
-        return SystemInfoManager.GetUserHomeFolderPath() + FileSeparator + "." + "Documents" + FileSeparator;
+        return SystemInfoManager.GetUserHomeFolderPath() + FileSeparator + "Documents" + FileSeparator;
     }
     
     /**
@@ -127,7 +127,7 @@ public class FileSystemManager
     public static String getUserDesktopFolderPath()
     {
         //TODO: тут надо автоматически получать папку рабочего стола. Она для русской версии ОС называется Рабочий стол, для английской - Desktop.
-        return SystemInfoManager.GetUserHomeFolderPath() + FileSeparator + "." + "Desktop" + FileSeparator;
+        return SystemInfoManager.GetUserHomeFolderPath() + FileSeparator + "Desktop" + FileSeparator;
     }
     
     /**

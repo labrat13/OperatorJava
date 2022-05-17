@@ -99,7 +99,44 @@ public enum EnumSettingKey
     /**
      * Текст команды или путь Процедуры, исполняемой при EnumProcedureResult.ExitAndHybernate.
      */
-    CmdHybernate("AfterCommands", "CmdHybernate", "Текст команды или путь Процедуры, исполняемой при EnumProcedureResult.ExitAndHybernate");
+    CmdHybernate("AfterCommands", "CmdHybernate", "Текст команды или путь Процедуры, исполняемой при EnumProcedureResult.ExitAndHybernate"),
+    
+    //*** Пути к каталогам пользовательского аккаунта ***
+    /**
+     * Путь к каталогу документов пользовательского аккаунта.
+     */
+    UserFolderDocuments("UserDirectories", "UserFolderDocuments", "Путь к каталогу документов пользовательского аккаунта"),
+    /**
+     * Путь к каталогу рабочего стола пользовательского аккаунта.
+     */
+    UserFolderDesktop("UserDirectories", "UserFolderDesktop", "Путь к каталогу рабочего стола пользовательского аккаунта"),
+    /**
+     * Путь к каталогу загрузок пользовательского аккаунта.
+     */
+    UserFolderDownloads("UserDirectories", "UserFolderDownloads", "Путь к каталогу загрузок пользовательского аккаунта"),
+    /**
+     * Путь к каталогу музыки пользовательского аккаунта.
+     */
+    UserFolderMusic("UserDirectories", "UserFolderMusic", "Путь к каталогу музыки пользовательского аккаунта"),
+    /**
+     * Путь к каталогу изображений пользовательского аккаунта.
+     */
+    UserFolderPictures("UserDirectories", "UserFolderPictures", "Путь к каталогу изображений пользовательского аккаунта"),
+    /**
+     * Путь к каталогу публикаций пользовательского аккаунта.
+     */
+    UserFolderPublic("UserDirectories", "UserFolderPublic", "Путь к каталогу публикаций пользовательского аккаунта"),
+    /**
+     * Путь к каталогу шаблонов пользовательского аккаунта.
+     */
+    UserFolderTemplates("UserDirectories", "UserFolderTemplates", "Путь к каталогу шаблонов пользовательского аккаунта"),
+    /**
+     * Путь к каталогу видеороликов пользовательского аккаунта.
+     */
+    UserFolderVideos("UserDirectories", "UserFolderVideos", "Путь к каталогу видеороликов пользовательского аккаунта");
+    
+    
+    //*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
 
     // *** Enum members ***
     /**

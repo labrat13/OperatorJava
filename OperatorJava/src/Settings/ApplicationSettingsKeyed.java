@@ -108,11 +108,18 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
         this.addItem(EnumSettingKey.IgnoreStartup, "false");
         // Команды или Процедуры результата исполнения Процедур.
         this.addItem(EnumSettingKey.CmdLogoff, "");
-        this.addItem(EnumSettingKey.CmdReload, "");
-        this.addItem(EnumSettingKey.CmdShutdown, "");
+        this.addItem(EnumSettingKey.CmdReload, "shutdown -r now");
+        this.addItem(EnumSettingKey.CmdShutdown, "shutdown -h now");
         this.addItem(EnumSettingKey.CmdSleep, "");
         this.addItem(EnumSettingKey.CmdHybernate, "");
-
+        //TODO: добавить сюда пути папок пользователя
+        // енумы для него уже созданы, если они потребуются.
+        //TODO: выяснить, как можно получать эти пути из Java-фреймворка, чтобы не прописывать их здесь.
+        // - а может, все же, прописывать тут? Вдруг пользователь предпочитает хранить файлы не в стандартном аккаунте?
+        //  - тогда, если путь в настройках не переопределен, то формировать путь для стандартного аккаунта.
+        //  - а код для этого формирования разместить в FileSystemManager, как сейчас.
+        // - этот процесс переопределения настроек надо документировать, а то я забуду. 
+        
         // TODO: определить, нужно ли тут сбрасывать флаг modified? this.m_Items.setModified()
         return;
     }
