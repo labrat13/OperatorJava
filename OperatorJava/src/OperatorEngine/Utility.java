@@ -429,7 +429,36 @@ public class Utility
         return result;        
     }
 
-
+    /** NT-заменить пробелы в пути для ShellExecute на URI-код %20
+     * @param t путь
+     * @return Функция возвращает путь, в котором пробелы заменены на URI-эквивалент.
+     */
+    public static String ReplaceSpaces(String t)
+    {
+        StringBuilder sb = new StringBuilder();
+        String st = t.trim();
+        
+        int len = st.length();
+        for(int i = 0; i < len; i++)
+        {
+            char c = st.charAt(i);
+            if(c == ' ')
+                sb.append("%20");
+            else
+                sb.append(c);
+        }
+            
+        return sb.toString();
+    }
+    /**
+     * NT-Создать для ShellExecute URI из пути к файлу.
+     * @param filepath Путь к файлу.
+     * @return Функция возвращает халтурно изготовленный URI файла.
+     */
+    public static String UriFromFilePath(String filepath)
+    {
+        return "file:////" + ReplaceSpaces(filepath);
+    }
 
 
 }
