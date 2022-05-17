@@ -959,6 +959,7 @@ public class Engine
     /**
      * NT-Исполнить ShellExecute по пути ShellExecuteCommand из ФайлНастроекОператора.
      * 
+     * @param arg URI-путь к запускаемому объекту. Пример: file:///home/jsmith/Documents/Путь%20с%20пробелами.txt
      * @return Функция возвращает EnumProcedureResult.Success при успехе.
      *         Функция возвращает EnumProcedureResult.Error, если при запуске Терминала произошла ошибка.
      */

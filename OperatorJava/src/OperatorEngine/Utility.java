@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
@@ -428,37 +429,23 @@ public class Utility
         
         return result;        
     }
-
-    /** NT-заменить пробелы в пути для ShellExecute на URI-код %20
-     * @param t путь
-     * @return Функция возвращает путь, в котором пробелы заменены на URI-эквивалент.
+    
+    /** 
+     * NT-Превратить путь к файлу в URI для вызова ShellExecute
+     * 
+     * @param path Путь к файлу.
+     * @return Функция возвращает текстовый URI файла для использования в ShellExecute. 
      */
-    public static String ReplaceSpaces(String t)
+    public static String MakeUriFromFilePath(String path)
     {
-        StringBuilder sb = new StringBuilder();
-        String st = t.trim();
+        File f = new File(path);
+        URI uri = f.toURI();
+        //URL url = uri.toURL();
+        String result = uri.toString();
         
-        int len = st.length();
-        for(int i = 0; i < len; i++)
-        {
-            char c = st.charAt(i);
-            if(c == ' ')
-                sb.append("%20");
-            else
-                sb.append(c);
-        }
-            
-        return sb.toString();
+        return result;
     }
-    /**
-     * NT-Создать для ShellExecute URI из пути к файлу.
-     * @param filepath Путь к файлу.
-     * @return Функция возвращает халтурно изготовленный URI файла.
-     */
-    public static String UriFromFilePath(String filepath)
-    {
-        return "file:////" + ReplaceSpaces(filepath);
-    }
+    
 
 
 }

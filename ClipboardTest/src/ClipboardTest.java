@@ -2,7 +2,10 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 
 /**
  * @author Селяков Павел
@@ -22,6 +25,9 @@ public class ClipboardTest
      */
     public static void main(String[] args)
     {
+
+        
+        
         // test beep()
         ClipboardManager.Beep();
 
@@ -32,6 +38,8 @@ public class ClipboardTest
         {
             try
             {
+               
+                
                 System.out.println(c.getData(DataFlavor.stringFlavor));
 
                 printAvailableContentTypes2(c);

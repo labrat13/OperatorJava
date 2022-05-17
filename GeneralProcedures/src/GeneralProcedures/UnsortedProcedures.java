@@ -243,8 +243,9 @@ public class UnsortedProcedures
      //TODO: а можно получить путь к блокноту из места Блокнот? Надо это тоже обсудить в вики: можно ли использовать Места из кода процедур?    
        //1. извлечь из настроек команду открытия терминала: сначала из ФайлНастроекОператора, потом из ТаблицаНастроекОператора.
        //2. если пути нет, вывести сообщение об ошибке  и вернуть WrongArguments, чтобы Оператор искал другую Процедуру для этого запроса.
-       String fpath2 = Utility.UriFromFilePath(fpath);
-       //TODO: тут лучше весь путь к файлу превратить в URI типа "file:///" стандартными средсвами явы.
+       
+       // тут лучше весь путь к файлу превратить в URI типа "file:///" стандартными средствами явы.
+       String fpath2 = Utility.MakeUriFromFilePath(fpath);
        EnumProcedureResult epr = engine.StartShellExecute(fpath2);
        if (epr == EnumProcedureResult.Success)
        {
