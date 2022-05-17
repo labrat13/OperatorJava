@@ -1,0 +1,4 @@
+Version file for GeneralProcedures library for OperatorJava project.
+
+1.0.0.0 - Начальная версия.
+

@@ -1,0 +1,6 @@
+OperatorJava Version file
+
+Описание версий сборки OperatorJava.
+
+1.0.0.0 - начальная версия.
+
