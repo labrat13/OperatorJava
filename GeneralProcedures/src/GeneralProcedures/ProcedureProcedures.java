@@ -92,15 +92,6 @@ public class ProcedureProcedures
             UserQuery query,
             ArgumentCollection args) throws Exception
     {
-        /*
-         * 07042022 - Добавлена возможность внутри Процедуры изменять текст запроса,
-         * чтобы применить новый текст запроса к дальнейшему поиску Процедур.
-         * Изменение запроса не перезапускает поиск Процедур (в текущей версии Оператора).
-         * Поэтому изменять запрос следует только в хорошо продуманных случаях.
-         * 
-         * Пример вызова функции переопределения запроса, с выводом в лог старого и нового значений.
-         * Example: query.ChangeQuery(engine, "New query text");
-         */
 
         // содержимое списка аргументов
         // args[0].name = "команда" - название аргумента в строке регекса команды
@@ -137,7 +128,9 @@ public class ProcedureProcedures
                 ; // TODO: обработать тут случай автоподстановки места вместо названия команды
                   // если он возникнет
             }
-
+            //вывести справку по созданию названия для команды.
+            printHelpProcedureTitleProp(engine);
+            
             // 2 проверить что в БД нет Процедуры с таким названием, без учета регистра символов
             // TODO: я просто скопировал этот код из похожей процедуры создания мест, и не знаю, подойдет ли он.
             boolean notUnicalProcedure = false;
@@ -180,6 +173,9 @@ public class ProcedureProcedures
             // 2 Пользователь должен ввести описание процедуры
             engine.get_OperatorConsole().PrintEmptyLine();
             engine.get_OperatorConsole().PrintTextLine("2. Описание Команды", EnumDialogConsoleColor.Сообщение);
+            //вывести справку по полю Описание команды
+            printHelpProcedureDescriptionProp(engine);
+            //
             str = engine.get_OperatorConsole().PrintQuestionAnswer(EnumSpeakDialogResult.Отмена, "Введите краткое описание Команды:", true, true);
             if (Dialogs.этоОтмена(str))
                 return EnumProcedureResult.CancelledByUser;
@@ -191,16 +187,7 @@ public class ProcedureProcedures
             engine.get_OperatorConsole().PrintTextLine("3. Регекс Команды", EnumDialogConsoleColor.Сообщение);
             // TODO: для Пользователя нужно вывести краткую справку с примерами регекса,
             // простым и сложным форматом регекса. Целую краткую инструкцию и примеры
-            String[] regexDescr = new String[] {
-                    " - Команда будет выбрана для исполнения, если ее Регекс опознает текст, введенный Пользователем",
-                    " - Простой Регекс содержит текст Команды и аргументы. Аргумент обозначается словом с знаком % перед ним.",
-                    " - Название аргумента должно содержать только латинские буквы, цифры, знак_подчеркивания.",
-                    " - Например: Открыть сайт %arg_1",
-                    " - Простой регекс может быть и без аргументов, например: выключить компьютер",
-                    " - Сложный Регекс это специально форматированный текст. ",
-                    " - Обратитесь к документации, чтобы узнать больше о Регексе Команды",
-                    "" };
-            engine.get_OperatorConsole().PrintTextLines(regexDescr, EnumDialogConsoleColor.Сообщение);
+            printHelpProcedureRegexProp(engine);
 
             str = engine.get_OperatorConsole().PrintQuestionAnswer(EnumSpeakDialogResult.Отмена, "Введите регекс для Команды:", true, true);
             if (Dialogs.этоОтмена(str))
@@ -212,18 +199,7 @@ public class ProcedureProcedures
             engine.get_OperatorConsole().PrintEmptyLine();
             engine.get_OperatorConsole().PrintTextLine("4. Адрес Процедуры Команды", EnumDialogConsoleColor.Сообщение);
             // TODO: для Пользователя нужно вывести краткую справку с примерами путей
-            String[] adresDescr = new String[] {
-                    " - Описывает командную строку исполняемого файла или путь к Процедуре Команды в Сборке Процедур",
-                    " - Для исполняемых файлов, вызываемых в качестве Процедур, путь может содержать аргументы.",
-                    "   Пример вызова без аргументов: \"shutdown -h now\"",
-                    "   Пример вызова с аргументами: \"/home/username/firefox/firefox.sh %www\"",
-                    "   Аргументы идентифицируются по своим именам, заданным в Регексе Команды.",
-                    " - Для Процедур из СборкиПроцедур прописывается путь в формате БиблиотекаПроцедур.Класс.Функция().",
-                    "   Аргументы идентифицируются по своим именам, заданным в Регексе Команды.",
-                    "   Например: ProceduresInt.ProcedureProcedures.CommandCreateProcedure()",
-                    " - Обратитесь к документации, чтобы узнать больше о Адресе Процедуры Команды",
-                    "" };
-            engine.get_OperatorConsole().PrintTextLines(adresDescr, EnumDialogConsoleColor.Сообщение);
+            printHelpProcedureAdresProp(engine);
 
             str = engine.get_OperatorConsole().PrintQuestionAnswer(EnumSpeakDialogResult.Отмена, "Введите адрес Процедуры для Команды:", true, true);
             if (Dialogs.этоОтмена(str))
@@ -236,13 +212,7 @@ public class ProcedureProcedures
             engine.get_OperatorConsole().PrintEmptyLine();
             engine.get_OperatorConsole().PrintTextLine("5. Вес Команды", EnumDialogConsoleColor.Сообщение);
             // для Пользователя нужно вывести краткую справку по Вес процедуры
-            String[] vesDescr = new String[] {
-                    " - Вес определяет порядок выбора для исполнения одной из Команд, подходящих по Регексу",
-                    " - Команда с наибольшим Весом будет выполнена последней",
-                    " - Вес должен быть больше 0.0 и меньше 1.0",
-                    " - Для новой Команды рекомендуется значение 0.5",
-                    "" };
-            engine.get_OperatorConsole().PrintTextLines(vesDescr, EnumDialogConsoleColor.Сообщение);
+            printHelpProcedureVesProp(engine);
             // ввод значения
             boolean isValidValue = false;
             str = engine.get_OperatorConsole().PrintQuestionAnswer(EnumSpeakDialogResult.Отмена, "Введите Вес Команды:", true, true);
@@ -270,13 +240,7 @@ public class ProcedureProcedures
             engine.get_OperatorConsole().PrintEmptyLine();
             engine.get_OperatorConsole().PrintTextLine("6. Категория для Команды", EnumDialogConsoleColor.Сообщение);
             //Для пользователя надо вывести краткую справку и примеры по пространствам имен.
-            String[] namespaceDescr = new String[] {
-                    " - Категория группирует Команды и Места для удобства отображения в списке.",
-                    " - Название категории должно быть очень коротким, не должно содержать пробелы, может разделяться точками.",
-                    " - Если вы затрудняетесь выбрать категорию, введите текст \"Default\" ",
-                    " - Для подробной информации о категориях обратитесь к документации Оператор.",
-                    "" };
-            engine.get_OperatorConsole().PrintTextLines(namespaceDescr, EnumDialogConsoleColor.Сообщение);
+            printHelpProcedureNsProp(engine);
             //показать существующие неймспейсы, пока только для Процедур.
             String existingNsChain = engine.get_ECM().getNamespacesChainString(true, false, false);
             engine.get_OperatorConsole().PrintTextLine(" - Можно придумать новую категорию для этой Команды, или использовать уже существующую:", 
@@ -322,6 +286,116 @@ public class ProcedureProcedures
         return result;
     }
 
+    /** 
+     * NT-вывести на консоль справку по свойству команды Название.
+     * @param engine Ссылка на объект движка Оператор.
+     */
+    private static void printHelpProcedureTitleProp(Engine engine)
+    {
+        String[] titleDescr = new String[] {
+                " - Название команды идентифицирует команду для пользователя.",
+                " - Название команды должно быть коротким, понятным, уникальным.",
+                " - Для удобства пользователя, название команды должно совпадать с текстом команды, но начинаться с заглавной буквы.",
+                " - Если команда предполагает аргументы, они могут быть включены в Название команды в порядке их следования.",
+                "   Например: Создать команду НазваниеКоманды",
+                "   Или: Скачать файл и сохранить как НазваниеФайла",
+                " - Для подробной информации о названиях команд обратитесь к документации Оператор.",
+                "" };
+        engine.get_OperatorConsole().PrintTextLines(titleDescr, EnumDialogConsoleColor.Сообщение);
+        return;
+    }
+    
+    /** 
+     * NT-вывести на консоль справку по свойству команды Описание
+     * @param engine Ссылка на объект движка Оператор.
+     */
+    private static void printHelpProcedureDescriptionProp(Engine engine)
+    {
+        String[] descr = new String[] {
+                " - Описание команды описывает смысл и действие команды для пользователя.",
+                " - Описание должно быть коротким, однострочным но понятным.",
+                " - Описание  должно начинаться с заглавной буквы и оканчиваться точкой.",
+                " - Описание должно позволить пользователю различать схожие по названию команды.",
+                " - Для подробной информации о описаниях команд обратитесь к документации Оператор.",
+                "" };
+        engine.get_OperatorConsole().PrintTextLines(descr, EnumDialogConsoleColor.Сообщение);
+        return;
+        
+    }
+
+    /** 
+     * NT-вывести на консоль справку по свойству команды Категория.
+     * @param engine Ссылка на объект движка Оператор.
+     */
+    private static void printHelpProcedureNsProp(Engine engine)
+    {
+        String[] namespaceDescr = new String[] {
+                " - Категория группирует Команды и Места для удобства отображения в списке.",
+                " - Название категории должно быть очень коротким, не должно содержать пробелы, может разделяться точками.",
+                " - Если вы затрудняетесь выбрать категорию, введите текст \"Default\" ",
+                " - Для подробной информации о категориях обратитесь к документации Оператор.",
+                "" };
+        engine.get_OperatorConsole().PrintTextLines(namespaceDescr, EnumDialogConsoleColor.Сообщение);
+        return;
+    }
+
+    /** 
+     * NT-вывести на консоль справку по свойству команды Вес.
+     * @param engine Ссылка на объект движка Оператор.
+     */
+    private static void printHelpProcedureVesProp(Engine engine)
+    {
+        String[] vesDescr = new String[] {
+                " - Вес определяет порядок выбора для исполнения одной из Команд, подходящих по Регексу",
+                " - Команда с наибольшим Весом будет выполнена последней",
+                " - Вес должен быть больше 0.0 и меньше 1.0",
+                " - Для новой Команды рекомендуется значение 0.5",
+                " - Для подробной информации о весе команды обратитесь к документации Оператор.",
+                "" };
+        engine.get_OperatorConsole().PrintTextLines(vesDescr, EnumDialogConsoleColor.Сообщение);
+        return;
+    }
+
+    /** 
+     * NT-вывести на консоль справку по свойству команды Адрес.
+     * @param engine Ссылка на объект движка Оператор.
+     */
+    private static void printHelpProcedureAdresProp(Engine engine)
+    {
+        String[] adresDescr = new String[] {
+                " - Описывает командную строку исполняемого файла или путь к Процедуре Команды в Сборке Процедур",
+                " - Для исполняемых файлов, вызываемых в качестве Процедур, путь может содержать аргументы.",
+                "   Пример вызова без аргументов: \"shutdown -h now\"",
+                "   Пример вызова с аргументами: \"/home/username/firefox/firefox.sh %www\"",
+                "   Аргументы идентифицируются по своим именам, заданным в Регексе Команды.",
+                " - Для Процедур из СборкиПроцедур прописывается путь в формате БиблиотекаПроцедур.Класс.Функция().",
+                "   Аргументы идентифицируются по своим именам, заданным в Регексе Команды.",
+                "   Например: ProceduresInt.ProcedureProcedures.CommandCreateProcedure()",
+                " - Для подробной информации о адресе процедуры команды обратитесь к документации Оператор.",
+                "" };
+        engine.get_OperatorConsole().PrintTextLines(adresDescr, EnumDialogConsoleColor.Сообщение);
+        return;
+    }
+
+    /** 
+     * NT-вывести на консоль справку по свойству команды Регекс.
+     * @param engine Ссылка на объект движка Оператор.
+     */
+    private static void printHelpProcedureRegexProp(Engine engine)
+    {
+        String[] regexDescr = new String[] {
+                " - Команда будет выбрана для исполнения, если ее Регекс опознает текст, введенный Пользователем",
+                " - Простой Регекс содержит текст Команды и аргументы. Аргумент обозначается словом с знаком % перед ним.",
+                " - Название аргумента должно содержать только латинские буквы, цифры, знак_подчеркивания.",
+                " - Например: Открыть сайт %arg_1",
+                " - Простой регекс может быть и без аргументов, например: выключить компьютер",
+                " - Сложный Регекс это специально форматированный текст. ",
+                " - Для подробной информации о регексе команды обратитесь к документации Оператор.",
+                "" };
+        engine.get_OperatorConsole().PrintTextLines(regexDescr, EnumDialogConsoleColor.Сообщение);
+        return;
+    }
+
     /**
      * NT- Обработчик процедуры вывода пользователю списка Команд.
      * 
@@ -355,15 +429,6 @@ public class ProcedureProcedures
             UserQuery query,
             ArgumentCollection args)
     {
-        /*
-         * 07042022 - Добавлена возможность внутри Процедуры изменять текст запроса,
-         * чтобы применить новый текст запроса к дальнейшему поиску Процедур.
-         * Изменение запроса не перезапускает поиск Процедур (в текущей версии Оператора).
-         * Поэтому изменять запрос следует только в хорошо продуманных случаях.
-         * 
-         * Пример вызова функции переопределения запроса, с выводом в лог старого и нового значений.
-         * Example: query.ChangeQuery(engine, "New query text");
-         */
         EnumProcedureResult result = EnumProcedureResult.Success;
         // название текущей процедуры для лога итп.
         String currentProcedureTitle = "GeneralProcedures.ProcedureProcedures.CommandListProcedures";
@@ -424,15 +489,6 @@ public class ProcedureProcedures
          UserQuery query,
          ArgumentCollection args)
  {
-     /*
-      * 07042022 - Добавлена возможность внутри Процедуры изменять текст запроса,
-      * чтобы применить новый текст запроса к дальнейшему поиску Процедур.
-      * Изменение запроса не перезапускает поиск Процедур (в текущей версии Оператора).
-      * Поэтому изменять запрос следует только в хорошо продуманных случаях.
-      * 
-      * Пример вызова функции переопределения запроса, с выводом в лог старого и нового значений.
-      * Example: query.ChangeQuery(engine, "New query text");
-      */
      EnumProcedureResult result = EnumProcedureResult.Success;
      // название текущей процедуры для лога итп.
      //TODO: указать здесь полный путь как название процедуры для вывода на экран.    
@@ -477,7 +533,7 @@ public class ProcedureProcedures
     
     
     /**
-     * NR-Обработчик процедуры Шаблон обработчика процедуры.
+     * NR-Обработчик процедуры Изменить команду НазваниеКоманды.
      * 
      * 
      * @param engine
@@ -509,15 +565,7 @@ public class ProcedureProcedures
             UserQuery query,
             ArgumentCollection args)
     {
-        /*
-         * 07042022 - Добавлена возможность внутри Процедуры изменять текст запроса,
-         * чтобы применить новый текст запроса к дальнейшему поиску Процедур.
-         * Изменение запроса не перезапускает поиск Процедур (в текущей версии Оператора).
-         * Поэтому изменять запрос следует только в хорошо продуманных случаях.
-         * 
-         * Пример вызова функции переопределения запроса, с выводом в лог старого и нового значений.
-         * Example: query.ChangeQuery(engine, "New query text");
-         */
+
         EnumProcedureResult result = EnumProcedureResult.Success;
         // название текущей процедуры для лога итп.
         //TODO: указать здесь полный путь как название процедуры для вывода на экран.    
