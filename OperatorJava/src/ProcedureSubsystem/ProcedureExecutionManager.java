@@ -159,7 +159,7 @@ public class ProcedureExecutionManager
     /**
      * NT-Load LibraryManager object from each of founded Procedure Library JAR file.
      * 
-     * @return Function returns HashMap<title, manager>.
+     * @return Function returns HashMap[title, manager]
      * @throws Exception
      *             Error on loading.
      */

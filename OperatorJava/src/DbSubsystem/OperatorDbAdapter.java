@@ -29,22 +29,27 @@ public class OperatorDbAdapter extends SqliteDbAdapter
     /**
      * Application database file name
      */
-    public final static String  AppDbFileName = "db.sqlite";
+    public final static String  AppDbFileName   = "db.sqlite";
 
     /**
      * Places table title
      */
-    public final static String  TablePlaces   = "places";
+    public final static String  TablePlaces     = "places";
 
     /**
      * Routines table title
      */
-    public final static String  TableProcs    = "routines";
+    public final static String  TableProcs      = "routines";
 
     /**
      * Settings table title
      */
-    public final static String  TableSetting  = "setting";
+    public final static String  TableSetting    = "setting";
+
+    /**
+     * Значение неправильного TableID итема, если итем не из таблиц БД.
+     */
+    public static final int     Invalid_TableID = -1;
 
     /**
      * Backreference to Engine object - for logging
@@ -53,7 +58,7 @@ public class OperatorDbAdapter extends SqliteDbAdapter
     protected Engine            m_Engine;
 
     // TODO: add new command here! Add init to constructor, Add code for new command to ClearCommand()!
-    
+
     /**
      * SQL Command for AddPlace function
      */
@@ -588,7 +593,7 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         }
 
         // set parameters
-        ps.setString(1, item.get_Namespace());   
+        ps.setString(1, item.get_Namespace());
         ps.setString(2, item.get_Title());
         ps.setString(3, item.get_Description());
         ps.setString(4, item.get_Path());// get value as Item.Path

@@ -251,9 +251,9 @@ public class Place extends Item
     /**
      * NT-проверяет что список не содержит такой строки
      * 
-     * @param lis
-     * @param sss
-     * @return
+     * @param lis Проверяемый список строк.
+     * @param sss Искомая строка.
+     * @return Функция возвращает true если список содержит искомую строку, false  в противном случае.
      */
     private boolean listNotContains(LinkedList<String> lis, String sss)
     {

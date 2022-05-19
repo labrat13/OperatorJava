@@ -593,7 +593,9 @@ public class Engine
      * 
      * @param query
      *            Строка запроса или путь к Процедуре.
+     * @return Функция возвращает код результата исполнения Процедуры.
      * @throws Exception
+     *             Исключение при ошибке.
      */
     private EnumProcedureResult DoCommandExecution(String query)
             throws Exception
@@ -652,6 +654,7 @@ public class Engine
      * 
      * @param userQuery
      *            Объект введенного пользователем запроса.
+     * @return Функция возвращает код результата исполнения Процедуры, выбранной как пред-обработка поступившего запроса.
      */
     private EnumProcedureResult DoPreProcessing(UserQuery userQuery)
     {
@@ -780,6 +783,8 @@ public class Engine
      * @param args
      *            Procedure argument collection
      * @return Функция возвращает код результата исполнения Процедуры.
+     * @throws Exception
+     *             Исключение при ошибке.
      */
     private EnumProcedureResult DoProcedureExecute(
             UserQuery userQuery,
@@ -959,7 +964,8 @@ public class Engine
     /**
      * NT-Исполнить ShellExecute по пути ShellExecuteCommand из ФайлНастроекОператора.
      * 
-     * @param arg URI-путь к запускаемому объекту. Пример: file:///home/jsmith/Documents/Путь%20с%20пробелами.txt
+     * @param arg
+     *            URI-путь к запускаемому объекту. Пример: file:///home/jsmith/Documents/Путь%20с%20пробелами.txt
      * @return Функция возвращает EnumProcedureResult.Success при успехе.
      *         Функция возвращает EnumProcedureResult.Error, если при запуске Терминала произошла ошибка.
      */
@@ -988,7 +994,7 @@ public class Engine
         }
         return result;
     }
-    
+
     /**
      * NT-Запустить команду через механизм ShellExecute.
      * 
@@ -1114,6 +1120,7 @@ public class Engine
      * 
      * @return Вернуть код результата для правильного перехода в вызывающем алгоритме.
      * @throws Exception
+     *             Исключение при ошибке.
      */
     private int CommandStartupProcedure() throws Exception
     {
@@ -1203,8 +1210,9 @@ public class Engine
      * 
      * @param pr
      *            Код результата после завершения цикла исполнения команд.
-     * @return
+     * @return Вернуть код результата для правильного перехода в вызывающем алгоритме.
      * @throws Exception
+     *             Исключение при ошибке.
      */
     private int CommandFinishProcedure(EnumProcedureResult pr) throws Exception
     {
@@ -1414,7 +1422,9 @@ public class Engine
      * NT-Сопоставить данные аргументов и места из коллекции мест, насколько это возможно.
      * 
      * @param args
+     *            Коллекция аргументов.
      * @throws Exception
+     *             Исключение при ошибке.
      */
     private void TryAssignPlaces(ArgumentCollection args) throws Exception
     {

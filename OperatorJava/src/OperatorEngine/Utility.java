@@ -173,8 +173,8 @@ public class Utility
      * @param regex
      *            regex string as described in String.split() function
      *            documentation.
-     *            " " -> " ";
-     *            "k" "m " -> "[km]" and so on...
+     *            " " result " ";
+     *            "k" "m " result "[km]" and so on...
      * @param RemoveEmptyItems
      *            if True - remove empty items from result array.
      * @return Returns array of string's
@@ -442,6 +442,37 @@ public class Utility
         URI uri = f.toURI();
         //URL url = uri.toURL();
         String result = uri.toString();
+        
+        return result;
+    }
+
+    /** 
+     * NT-Превратить логическое значение в русскоязычное Да или Нет.
+     * @param flag Логическое значение.
+     * @return Функция возвращает русскоязычное значение логического значения.
+     */
+    public static String BoolToДаНет(boolean flag)
+    {
+        if(flag == true) return "Да";
+        else return "Нет";
+    }
+
+    /** NT-Распарсить строку в целое число.
+     * @param str входная строка
+     * @return Функция возвращает объект числа, если удалось его распарсить.
+     * Функция возвращает null при любой ошибке парсинга.
+     */
+    public static Integer tryParseInteger(String str)
+    {
+        Integer result = null;
+        try 
+        {
+            result = new Integer(str);
+        }
+        catch(Exception ex)
+        {
+         result = null;   
+        }
         
         return result;
     }

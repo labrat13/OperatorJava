@@ -111,6 +111,7 @@ public class Operator
 
     /**
      * NT-Запустить детектор запущенных копий приложения.
+     * @return Функция возвращает true, если предыдущая копия уже запущена и текущую копию надо завершить, false в противном случае. 
      */
     private static boolean checkPreviousInstance()
     {
@@ -174,8 +175,8 @@ public class Operator
     }
 
 
-    /**
-     * @param e
+    /**NT-Вывести сообщение об исключении без использования Движка Оператор. 
+     * @param e Объект исключения.
      */
     private static void PrintExceptionWithoutEngine(Exception e)
     {
@@ -186,8 +187,8 @@ public class Operator
         Terminal.WriteLine();
     }
     
-    /**
-     * @param e
+    /** NT-Вывести сообщение без использования Движка Оператор.
+     * @param msg Текст сообщения.
      */
     private static void PrintMessageWithoutEngine(String msg)
     {

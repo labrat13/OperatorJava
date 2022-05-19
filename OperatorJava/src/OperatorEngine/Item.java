@@ -32,11 +32,6 @@ public class Item implements Comparable<Item>
     public static final String StorageKeyForSettingFileItem = "SettingFile";
 
     /**
-     * Значение неправильного TableID, если итем не из ТаблицаНастроекОператора.
-     */
-    public static final int    Invalid_TableID              = -1;                                 // TODO: удалить позднее или переместить в БД адаптер.
-
-    /**
      * первичный ключ таблицы
      */
     protected int              m_tableid;
@@ -249,6 +244,30 @@ public class Item implements Comparable<Item>
     }
 
     /**
+     * NT-Может ли объект быть удален из своего Хранилища.
+     * 
+     * @return Функция возвращает True, если элемент может быть удален, False в противном случае.
+     */
+    public boolean isItemCanRemoved()
+    {
+        // сейчас только объекты, хранящиеся в БД или Файл настроек, могут быть изменены или удалены.
+        return isItemFromStorage(Item.StorageKeyForDatabaseItem) || isItemFromStorage(Item.StorageKeyForSettingFileItem);
+        // TODO: а вообще, надо получить объект Хранилища и запросить это значение у него.
+    }
+
+    /**
+     * NT-Может ли объект быть изменен в своем Хранилище.
+     * 
+     * @return Функция возвращает True, если элемент может быть изменен, False в противном случае.
+     */
+    public boolean isItemCanChanged()
+    {
+        // сейчас только объекты, хранящиеся в БД или Файл настроек, могут быть изменены или удалены.
+        return isItemFromStorage(Item.StorageKeyForDatabaseItem) || isItemFromStorage(Item.StorageKeyForSettingFileItem);
+        // TODO: а вообще, надо получить объект Хранилища и запросить это значение у него.
+    }
+
+    /**
      * NT-Получить одну строку описания свойств итема
      * 
      * @return Функция возвращает строку описания свойств итема
@@ -307,7 +326,7 @@ public class Item implements Comparable<Item>
      * @param y
      *            Item object
      * @return
-     *         Returns: -1 if x<y; 0 if x=y; 1 if x>y;
+     *         Returns: -1 if x меньше y; 0 if x равно y; 1 if x больше y;
      */
     public static int CompareByTitle(Item x, Item y)
     {

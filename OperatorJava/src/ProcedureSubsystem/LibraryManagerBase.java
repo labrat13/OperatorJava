@@ -250,6 +250,7 @@ public class LibraryManagerBase
     // *** Override this in child classes ***
     /**
      * NT-Initialize Library Data. This function must be overrided in child classes.
+     * @throws Exception at Function must be overridden.
      */
     protected void onInit() throws Exception
     {
@@ -258,6 +259,7 @@ public class LibraryManagerBase
 
     /**
      * NT-De-initialize Library Data. This function must be overrided in child classes.
+     * @throws Exception at Function must be overridden.
      */
     protected void onExit() throws Exception
     {

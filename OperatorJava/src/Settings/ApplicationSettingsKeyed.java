@@ -317,7 +317,7 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
      * 
      * @param line
      *            Проверяемая строка
-     * @return
+     * @return Функция возвращает true, если переданная строка содержит пару ключ=значение, false  в противном случае.
      */
     private boolean isKeyValueLine(String line)
     {
@@ -354,13 +354,15 @@ public class ApplicationSettingsKeyed extends ApplicationSettingsBase
      * 
      * @param line
      *            Строка
-     * @return
+     * @return Функция возвращает true, если переданная строка является строкой комментария, false  в противном случае.
      */
     private boolean isCommentLine(String line)
     {
         // первым символом строки комментария должен быть символ комментария
-        int pos = line.indexOf(commentChar);
-        return (pos == 0);
+//        int pos = line.indexOf(commentChar);
+//        return (pos == 0);
+        return line.startsWith(commentChar);
+        
     }
 
     /**

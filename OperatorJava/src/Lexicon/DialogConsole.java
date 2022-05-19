@@ -328,6 +328,51 @@ public class DialogConsole
         // EnumSpeakDialogResult.Unknown);
     }
 
+    /** 
+     * NT-Запросить у пользователя ввести индекс [1..n] элемента из ранее выведенного нумерованного списка.
+     * @param listSize Размер ранее выведенного списка, для проверки границ значений введенного пользователем индекса.
+     * @return Функция возвращает введенный пользователем индекс элемента списка, либо -1 при отказе пользователя.
+     */
+    public int InputListIndex( int listSize)
+    {
+        int result = -1;
+        String res = null;
+        try {
+            while(true)
+            {
+                //get integer number string from user
+                res = this.PrintQuestionAnswer(EnumSpeakDialogResult.Отмена, "Введите номер (без №) элемента списка:", false, true);
+                //если введен Отмена, вернуть значение -1.
+                if(Dialogs.этоОтмена(res))
+                {
+                    result = -1;
+                    break;
+                }
+                //если введен не номер, то повторять запрос.
+                Integer ir = Utility.tryParseInteger(res);
+              //если введен допустимый номер, вернуть его значение.
+              //если введен номер менее 1 или более listSize, то вывести сообщение и снова запросить номер элемента.
+                if((ir != null) && (ir.intValue() > 0) && (ir.intValue() <= listSize))
+                {
+                    result = ir.intValue();
+                    break;
+                }
+                else
+                {
+                    this.SureConsoleCursorStart();// убедиться что курсор находится
+                                                  // в начале строки
+                    this.PrintTextLine(String.format("Принимаются только числа от 1 до %d и Отмена", listSize), EnumDialogConsoleColor.Предупреждение);
+                }   
+            }
+        }
+        catch(Exception ex)
+        {
+            //TODO: add message to log here
+            result = -1;
+        }
+        return result;
+    }
+    
     /**
      * NT- вывести сообщение об исключении
      * 
@@ -400,7 +445,7 @@ public class DialogConsole
         this.SureConsoleCursorStart();
         // тут надо вывести описание свойств Места в виде многострочной формы
         // или списка свойств.
-        String[] sar = new String[9];
+        String[] sar = new String[10];
         sar[0] = String.format("Свойства Места \"%s\":", p.get_Title());
         sar[1] = String.format("Название:  %s", p.get_Title());
         sar[2] = String.format("Категория: %s", p.get_Namespace());
@@ -409,7 +454,8 @@ public class DialogConsole
         sar[5] = String.format("Синонимы:  %s", p.get_Synonim());
         sar[6] = String.format("Описание:  %s", p.get_Description());
         sar[7] = String.format("ID:        %d", p.get_TableId());
-        sar[8] = "";// пустая строка-разделитель
+        sar[8] = String.format("ТолькоЧтение: %s", Utility.BoolToДаНет(p.isItemCanChanged()));
+        sar[9] = "";// пустая строка-разделитель
         // print array of lines
         this.PrintTextLines(sar, EnumDialogConsoleColor.Сообщение);
 
@@ -513,7 +559,7 @@ public class DialogConsole
         this.SureConsoleCursorStart();
         // тут надо вывести описание свойств Процедуры в виде
         // многострочной формы или списка свойств.
-        String[] sar = new String[9];
+        String[] sar = new String[10];
         sar[0] = String.format("Свойства Команды \"%s\":", p.get_Title());
         sar[1] = String.format("Название:  %s", p.get_Title());
         sar[2] = String.format("Категория: %s", p.get_Namespace());
@@ -522,12 +568,35 @@ public class DialogConsole
         sar[5] = String.format("Адрес:     %s", p.get_Path());
         sar[6] = String.format("Вес:       %s", p.get_Ves().toString());
         sar[7] = String.format("ID:        %d", p.get_TableId());
-        sar[8] = "";// пустая строка-разделитель
+        sar[8] = String.format("ТолькоЧтение: %s", Utility.BoolToДаНет(p.isItemCanChanged())); 
+        sar[9] = "";// пустая строка-разделитель
         // print array of lines
         this.PrintTextLines(sar, EnumDialogConsoleColor.Сообщение);
 
     }
+    /**
+     * NT-Вывести на консоль нумерованный список процедур в виде многострочной формы с разделителями.
+     * @param list Список Процедур.
+     */
+    public void PrintProcedureFormNumberedList(LinkedList<Procedure> list)
+    {
+        String tmp;
+        Procedure p;
+        for(int i = 0; i < list.size(); i++)
+        {
+            p = list.get(i);
+            tmp = String.format("№%d Команда \"%s\":", i, p.get_Title());
+            this.PrintTextLine(tmp,  EnumDialogConsoleColor.Сообщение);
+            //
+            this.PrintProcedureForm(p);
+            //тут возможно нужен разделитель?
+        }
+        
+        return;
+    }
 
+
+    
     // #endregion
 
 }
