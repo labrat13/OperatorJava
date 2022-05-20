@@ -203,7 +203,7 @@ public class LibraryManager extends LibraryManagerBase
         p.set_Regex("создать команду %cmd");//простой регекс, имена аргументов только латинские и цифры.
         p.set_Ves(0.5);
         p.set_Storage(this.m_LibraryTitle);
-        p.set_Namespace(NamespaceConstants.NsService);
+        p.set_Namespace(NamespaceConstants.NsService_Command);
         result.add(p);
         
         p = new Procedure();
@@ -213,7 +213,7 @@ public class LibraryManager extends LibraryManagerBase
         p.set_Regex("показать команды");
         p.set_Ves(0.5);
         p.set_Storage(this.m_LibraryTitle);
-        p.set_Namespace(NamespaceConstants.NsService);
+        p.set_Namespace(NamespaceConstants.NsService_Command);
         result.add(p);
         
         p = new Procedure();
@@ -223,7 +223,7 @@ public class LibraryManager extends LibraryManagerBase
         p.set_Regex("удалить команду %cmd");
         p.set_Ves(0.5);
         p.set_Storage(this.m_LibraryTitle);
-        p.set_Namespace(NamespaceConstants.NsService);
+        p.set_Namespace(NamespaceConstants.NsService_Command);
         result.add(p);
         
         p = new Procedure();
@@ -233,7 +233,7 @@ public class LibraryManager extends LibraryManagerBase
         p.set_Regex("изменить команду %cmd");
         p.set_Ves(0.5);
         p.set_Storage(this.m_LibraryTitle);
-        p.set_Namespace(NamespaceConstants.NsService);
+        p.set_Namespace(NamespaceConstants.NsService_Command);
         result.add(p);
         
         p = new Procedure();
@@ -243,7 +243,7 @@ public class LibraryManager extends LibraryManagerBase
         p.set_Regex("редактировать команду %cmd");
         p.set_Ves(0.5);
         p.set_Storage(this.m_LibraryTitle);
-        p.set_Namespace(NamespaceConstants.NsService);
+        p.set_Namespace(NamespaceConstants.NsService_Command);
         result.add(p);
         
         //*** Add Procedures from UnsortedProcedures class ***

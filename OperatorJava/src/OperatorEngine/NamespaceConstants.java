@@ -18,10 +18,24 @@ public class NamespaceConstants
     //Добавить сюда новые неймспейсы для использования в БиблиотекаПроцедурОператор.
     
     /**
-     * Пространство служебных Сущностей (Процедур и Мест) Оператор
+     * Пространство служебных Сущностей Оператор.
      */
     public static final String NsService = "Service";
     
+    /**
+     * Пространство служебных Сущностей - Команд Оператор.
+     */
+    public static final String NsService_Command = "Service.Command";
+    
+    /**
+     * Пространство служебных Сущностей - Мест Оператор.
+     */
+    public static final String NsService_Place = "Service.Place";
+    
+    /**
+     * Пространство служебных Сущностей - Настроек Оператор.
+     */
+    public static final String NsService_Setting = "Service.Setting";
     /**
      * Пространство по умолчанию для Сущностей.  
      */
