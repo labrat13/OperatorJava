@@ -5,8 +5,11 @@
  */
 package Utility;
 
+import OperatorEngine.Place;
+import OperatorEngine.Procedure;
 
-/**
+/** 
+ * RT-Класс-контейнер для объектов, передаваемых в функции и обратно.
  * @author Селяков Павел
  *
  */
@@ -74,6 +77,23 @@ public class InOutArgument
     public Integer getValueInteger()
     {
         return (Integer) this.m_value;
+    }
+    /**
+     * Get value as Procedure
+     * @return Function returns value as Procedure
+     */
+    public Procedure getValueProcedure()
+    {
+        return (Procedure) this.m_value;   
+    }
+    
+    /**
+     * Get value as Place
+     * @return Function returns value as Place
+     */
+    public Place getValuePlace()
+    {
+        return (Place) this.m_value;   
     }
     /**
      * Return string representation of object.

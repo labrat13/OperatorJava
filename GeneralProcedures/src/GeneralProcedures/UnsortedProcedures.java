@@ -6,16 +6,16 @@
 package GeneralProcedures;
 
 import java.io.BufferedWriter;
-import java.io.OutputStreamWriter;
 
 import Lexicon.Dialogs;
 import Lexicon.EnumDialogConsoleColor;
 import Lexicon.EnumSpeakDialogResult;
+import LogSubsystem.EnumLogMsgClass;
+import LogSubsystem.EnumLogMsgState;
 import OperatorEngine.ArgumentCollection;
 import OperatorEngine.Engine;
 import OperatorEngine.EnumProcedureResult;
 import OperatorEngine.FileSystemManager;
-import OperatorEngine.SystemInfoManager;
 import OperatorEngine.UserQuery;
 import OperatorEngine.Utility;
 import ProcedureSubsystem.ImplementationState;
@@ -102,8 +102,9 @@ public class UnsortedProcedures
    // Поэтому надо здесь его перехватить, вывести в лог и на консоль, и погасить, вернув EnumProcedureResult.Error.
    try
    {
-       // TODO: вывести это тестовое сообщение о начале процедуры - в лог!
-       engine.get_OperatorConsole().PrintTextLine("Начата процедура " + currentProcedureTitle + "()", EnumDialogConsoleColor.Сообщение);
+       //вывести это тестовое сообщение о начале процедуры - в лог!
+       String str = "Начата процедура " + currentProcedureTitle + "()";
+       engine.AddMessageToConsoleAndLog(str, EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.SubsystemEvent_Procedure, EnumLogMsgState.OK);
        engine.get_OperatorConsole().PrintEmptyLine();
        
        //1. извлечь из настроек команду открытия терминала: сначала из ФайлНастроекОператора, потом из ТаблицаНастроекОператора.
@@ -173,21 +174,17 @@ public class UnsortedProcedures
    // Поэтому надо здесь его перехватить, вывести в лог и на консоль, и погасить, вернув EnumProcedureResult.Error.
    try
    {
-       //1. извлечь название заметки
-         //не прокатит: если НазваниеЗаметки совпадает с названием места, то вместо него будет подставлено место,  поэтому не получится получить название заметки.
-         //TODO: вот это проблема: Места, при совпадении текстов, заменяют собой аргументы во всех запросах, невзирая на ожидаемые классы аргументов.
-         //и как это разрулить? Вынести этот вопрос в концепцию в вики!
-       
-     //извлечь название файла: берем из аргумента сырую строку запроса, так как Места тут не нужны, даже если движок подставил одно из них.
+       //1. извлечь название заметки 
+       //извлечь название файла: берем из аргумента сырую строку запроса, так как Места тут не нужны, даже если движок подставил одно из них.
        String title = args.getByIndex(0).get_ArgumentQueryValue().trim();
        //копируем название заметки для последующей записи в файл.
        String titleAsContent = new String(title);
        //вывести это тестовое сообщение о начале процедуры - в лог!
        String msg1 = String.format("Начата процедура %s(\"%s\")", currentProcedureTitle, title);
-       engine.get_OperatorConsole().PrintTextLine(msg1, EnumDialogConsoleColor.Сообщение);
+       engine.AddMessageToConsoleAndLog(msg1, EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.SubsystemEvent_Procedure, EnumLogMsgState.OK);
        engine.get_OperatorConsole().PrintEmptyLine();
        
-       //TODO: если этот цикл переписать с использованием File как основы для хранния пути файла, 
+       //TODO: если этот цикл переписать с использованием File как основы для хранения пути файла, 
        // то он будет немного проще и быстрее, и потом URI из него получать будет быстрее.
        boolean ФайлУжеСуществует = false;
        String fpath = null;
@@ -239,14 +236,15 @@ public class UnsortedProcedures
        {
            writer.write(titleAsContent);
            writer.newLine();
+           writer.write(Utility.DateTimeNowToString());
            writer.newLine();
+           writer.newLine();     
        }
        writer.close();
        
-     //3 открыть этот файл в блокноте через командную строку.
-     //TODO: а можно получить путь к блокноту из места Блокнот? Надо это тоже обсудить в вики: можно ли использовать Места из кода процедур?    
-       //1. извлечь из настроек команду открытия терминала: сначала из ФайлНастроекОператора, потом из ТаблицаНастроекОператора.
-       //2. если пути нет, вывести сообщение об ошибке  и вернуть WrongArguments, чтобы Оператор искал другую Процедуру для этого запроса.
+       //3 открыть этот файл в блокноте через командную строку.   
+       //3.1 извлечь из настроек команду открытия терминала: сначала из ФайлНастроекОператора, потом из ТаблицаНастроекОператора.
+       //3.2 если пути нет, вывести сообщение об ошибке  и вернуть WrongArguments, чтобы Оператор искал другую Процедуру для этого запроса.
        
        // тут лучше весь путь к файлу превратить в URI типа "file:///" стандартными средствами явы.
        String fpath2 = Utility.MakeUriFromFilePath(fpath);
