@@ -454,7 +454,7 @@ public class DialogConsole
         sar[5] = String.format("Синонимы:  %s", p.get_Synonim());
         sar[6] = String.format("Описание:  %s", p.get_Description());
         sar[7] = String.format("ID:        %d", p.get_TableId());
-        sar[8] = String.format("ТолькоЧтение: %s", Utility.BoolToДаНет(p.isItemCanChanged()));
+        sar[8] = String.format("ТолькоЧтение: %s", Utility.BoolToДаНет(!p.isItemCanChanged()));
         sar[9] = "";// пустая строка-разделитель
         // print array of lines
         this.PrintTextLines(sar, EnumDialogConsoleColor.Сообщение);
@@ -568,7 +568,7 @@ public class DialogConsole
         sar[5] = String.format("Адрес:     %s", p.get_Path());
         sar[6] = String.format("Вес:       %s", p.get_Ves().toString());
         sar[7] = String.format("ID:        %d", p.get_TableId());
-        sar[8] = String.format("ТолькоЧтение: %s", Utility.BoolToДаНет(p.isItemCanChanged())); 
+        sar[8] = String.format("ТолькоЧтение: %s", Utility.BoolToДаНет(!p.isItemCanChanged())); 
         sar[9] = "";// пустая строка-разделитель
         // print array of lines
         this.PrintTextLines(sar, EnumDialogConsoleColor.Сообщение);

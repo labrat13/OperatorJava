@@ -216,6 +216,35 @@ public class LibraryManager extends LibraryManagerBase
         p.set_Namespace(NamespaceConstants.NsService);
         result.add(p);
         
+        p = new Procedure();
+        p.set_Title("Удалить команду НазваниеКоманды");
+        p.set_Description("Удалить указанную команду Оператора.");
+        p.set_Path("GeneralProcedures.ProcedureProcedures.CommandDeleteProcedure(procedureTitle)");
+        p.set_Regex("удалить команду %cmd");
+        p.set_Ves(0.5);
+        p.set_Storage(this.m_LibraryTitle);
+        p.set_Namespace(NamespaceConstants.NsService);
+        result.add(p);
+        
+        p = new Procedure();
+        p.set_Title("Изменить команду НазваниеКоманды");
+        p.set_Description("Изменить указанную команду Оператора.");
+        p.set_Path("GeneralProcedures.ProcedureProcedures.CommandChangeProcedure()");
+        p.set_Regex("изменить команду %cmd");
+        p.set_Ves(0.5);
+        p.set_Storage(this.m_LibraryTitle);
+        p.set_Namespace(NamespaceConstants.NsService);
+        result.add(p);
+        
+        p = new Procedure();
+        p.set_Title("Редактировать команду НазваниеКоманды");
+        p.set_Description("Синоним к Изменить команду НазваниеКоманды.");
+        p.set_Path("GeneralProcedures.ProcedureProcedures.CommandChangeProcedure()");
+        p.set_Regex("редактировать команду %cmd");
+        p.set_Ves(0.5);
+        p.set_Storage(this.m_LibraryTitle);
+        p.set_Namespace(NamespaceConstants.NsService);
+        result.add(p);
         
         //*** Add Procedures from UnsortedProcedures class ***
         

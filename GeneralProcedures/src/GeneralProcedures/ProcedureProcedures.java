@@ -465,7 +465,7 @@ public class ProcedureProcedures
     }
 
     /**
-     * NR-Обработчик процедуры Удалить команду НазваниеКоманды
+     * NT-Обработчик процедуры Удалить команду НазваниеКоманды
      * 
      * 
      * @param engine
@@ -488,7 +488,7 @@ public class ProcedureProcedures
      *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
      *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
      */
-    @OperatorProcedure(State = ImplementationState.NotRealized,
+    @OperatorProcedure(State = ImplementationState.NotTested,
             Title = "Процедура удаления команды",
             Description = "Удалить указанную команду Оператора.")
     public static EnumProcedureResult CommandDeleteProcedure(
@@ -505,14 +505,16 @@ public class ProcedureProcedures
         // Поэтому надо здесь его перехватить, вывести в лог и на консоль, и погасить, вернув EnumProcedureResult.Error.
         try
         {
-            // DONE: вывести это тестовое сообщение о начале процедуры - в лог!
-            String str = String.format("Начата процедура %s(\"%s\")", currentProcedureTitle, args.getByIndex(0).get_ArgumentValue());
-            engine.AddMessageToConsoleAndLog(str, EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.SubsystemEvent_Procedure, EnumLogMsgState.OK);
-
             // 1. Извлечь из аргумента название команды
             String procedureTitle;
             FuncArgument arg = args.getByIndex(0);
             procedureTitle = arg.get_ArgumentQueryValue().trim();// берем сырой текст аргумента из запроса
+            
+            // DONE: вывести это тестовое сообщение о начале процедуры - в лог!
+            String str = String.format("Начата процедура %s(\"%s\")", currentProcedureTitle, procedureTitle);
+            engine.AddMessageToConsoleAndLog(str, EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.SubsystemEvent_Procedure, EnumLogMsgState.OK);
+
+            // 1. Извлечь из аргумента название команды
             engine.get_OperatorConsole().PrintTextLine(String.format("Название удаляемой Команды: \"%s\"", procedureTitle), EnumDialogConsoleColor.Сообщение);
 
             // TODO: проверить признак того, что вместо названия команды движком было подставлено название зарегистрированного места
@@ -521,8 +523,15 @@ public class ProcedureProcedures
                 ; // TODO: обработать тут случай автоподстановки места вместо названия команды
                   // если он возникнет
             }
+            
             // 2. извлечь из БД список команд с таким названием и показать пользователю.
             // без учета регистра символов
+            //TODO: весь этот пункт 2 надо превратить в отдельную функцию выбора процедуры по ее названию, чтобы использовать ее во многих местах этого класса.
+            //вроде: 
+            //Procedure p = null;
+            //EnumProcedureResult res = selectProcedure(engine, procedureTitle, p);
+            //но тут надо возвращать и p и EnumProcedureResult.
+            
             Procedure proc = null;
             LinkedList<Procedure> lip = engine.get_ECM().get_ProcedureCollection().getByTitle(procedureTitle);
             int lipSize = lip.size();
@@ -590,7 +599,7 @@ public class ProcedureProcedures
             engine.get_ECM().RemoveProcedure(proc);
 
             // 6. вывести сообщение о результате операции: успешно
-            String msg6 = String.format("Команда %s успешно удалена", args);
+            String msg6 = String.format("Команда \"%s\" успешно удалена", procedureTitle);
             engine.get_OperatorConsole().PrintTextLine(msg6, EnumDialogConsoleColor.Успех);
         }
         catch (Exception ex)
