@@ -177,6 +177,7 @@ public class UnsortedProcedures
        //1. извлечь название заметки 
        //извлечь название файла: берем из аргумента сырую строку запроса, так как Места тут не нужны, даже если движок подставил одно из них.
        String title = args.getByIndex(0).get_ArgumentQueryValue().trim();
+       
        //копируем название заметки для последующей записи в файл.
        String titleAsContent = new String(title);
        //вывести это тестовое сообщение о начале процедуры - в лог!
@@ -184,6 +185,8 @@ public class UnsortedProcedures
        engine.AddMessageToConsoleAndLog(msg1, EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.SubsystemEvent_Procedure, EnumLogMsgState.OK);
        engine.get_OperatorConsole().PrintEmptyLine();
        
+       //Если в конце названия заметки стоит точка, то из имени файла ее надо убрать, а то она туда попадает и получается неправильно: заметка..txt
+       title = Utility.RemoveEndingDots(title).trim();       
        //TODO: если этот цикл переписать с использованием File как основы для хранения пути файла, 
        // то он будет немного проще и быстрее, и потом URI из него получать будет быстрее.
        boolean ФайлУжеСуществует = false;
@@ -193,6 +196,7 @@ public class UnsortedProcedures
        {
           //удалить из названия неправильные символы - заменить на _
           title = Utility.ReplaceInvalidPathChars(title, "_");
+          
           
           //2 если файл уже существует, запросить новое имя для заметки
           fpath = FileSystemManager.getUserDesktopFolderPath() + title + ".txt";

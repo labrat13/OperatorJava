@@ -476,6 +476,19 @@ public class Utility
         
         return result;
     }
+
+    /** NT-Remove ending dot's from file title string
+     * @param title file title string
+     * @return Fumction returns title without ending dot's
+     */
+    public static String RemoveEndingDots(String title)
+    {
+        String s = title;
+        while(s.endsWith("."))
+            s = s.substring(0, s.length() - 1);
+            
+        return s;
+    }
     
 
 
