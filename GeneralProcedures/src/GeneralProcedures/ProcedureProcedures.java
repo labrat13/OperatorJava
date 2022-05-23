@@ -834,7 +834,7 @@ public class ProcedureProcedures
             engine.get_OperatorConsole().PrintEmptyLine();
             engine.get_OperatorConsole().PrintTextLine("5. Вес Команды", EnumDialogConsoleColor.Сообщение);
             // - вывести текущее значение
-            stmp = String.format("Текущий вес: \"%s\"", proc.get_Path());
+            stmp = String.format("Текущий вес: \"%s\"", proc.get_Ves());
             engine.get_OperatorConsole().PrintTextLine(stmp, EnumDialogConsoleColor.Сообщение);
             // - запросить изменение
             // Если пользователь ответит Да, надо запросить новое значение.
@@ -903,7 +903,7 @@ public class ProcedureProcedures
             engine.get_ECM().UpdateProcedure(proc);
 
             // 6. вывести сообщение о результате операции: успешно
-            engine.get_OperatorConsole().PrintTextLine(String.format("Команда %s успешно изменена", args), EnumDialogConsoleColor.Успех);
+            engine.get_OperatorConsole().PrintTextLine(String.format("Команда %s успешно изменена", procedureTitle), EnumDialogConsoleColor.Успех);
         }
         catch (Exception ex)
         {
@@ -975,7 +975,7 @@ public class ProcedureProcedures
      * @param engine Engine object.
      * @param outResult Result string shell object.
      * @param oldTitle Current procedure title string.
-     * @return Function returns EnumProcedureResult.Success if success, or other values.
+     * @return Function returns EnumProcedureResult.Success if success; EnumProcedureResult.CancelledByUser if cancelled.
      * @throws Exception Error occured.
      */
     private static EnumProcedureResult readProcedureTitleForNew(Engine engine, InOutArgument outResult, String oldTitle) throws Exception
@@ -1024,12 +1024,18 @@ public class ProcedureProcedures
         return EnumProcedureResult.Success;
     }
     
-    /** NT-Read Procedure Title value from User, for change or rename Procedure.
-     * @param engine Engine object.
-     * @param outResult Result title string shell object.
-     * @param proc Change procedure object.
-     * @return Function returns EnumProcedureResult.Success if success, or other values.
-     * @throws Exception Error occured.
+    /**
+     * NT-Read Procedure Title value from User, for change or rename Procedure.
+     * 
+     * @param engine
+     *            Engine object.
+     * @param outResult
+     *            Result title string shell object.
+     * @param proc
+     *            Change procedure object.
+     * @return Function returns EnumProcedureResult.Success if success; EnumProcedureResult.CancelledByUser if cancelled.
+     * @throws Exception
+     *             Error occured.
      */
     private static EnumProcedureResult readProcedureTitleForExisting(
             Engine engine,
@@ -1038,56 +1044,60 @@ public class ProcedureProcedures
     {
         // вывести справку по созданию названия для команды.
         printHelpProcedureTitleProp(engine);
-        //temp string with old title
+        // temp string with old title
         String str = new String(proc.get_Title());
         // 2 проверить что в БД нет Процедуры с таким названием, без учета регистра символов, кроме текущей.
         boolean notUnicalProcedure = false;
         while (true)
         {
-            // если название команды - пустая строка, вывести сообщение и перейти к приему нового названия команды
-            if (OperatorEngine.Utility.StringIsNullOrEmpty(str))
-                engine.get_OperatorConsole().PrintTextLine("Пустая строка недопустима для названия Команды!", EnumDialogConsoleColor.Предупреждение);
-            else
+            // 1 введите новое название
+            // Раз есть такие Процедуры, пользователь должен сменить название Процедуры прямо тут же
+            // или же завершить диалог Отменой создания команды
+            // no empty answer's allowed by arg4! str cannot be empty here.
+            str = engine.get_OperatorConsole().PrintQuestionAnswer(EnumSpeakDialogResult.Отмена, "Введите новое название Команды:", false, true);
+
+            // 2 если пустое - пустая строка недопустима и перейти на новый цикл
+            // // если название команды - пустая строка, вывести сообщение и перейти к приему нового названия команды
+            // if (OperatorEngine.Utility.StringIsNullOrEmpty(str))
+            // {
+            // engine.get_OperatorConsole().PrintTextLine("Пустая строка недопустима для названия Команды!", EnumDialogConsoleColor.Предупреждение);
+            // continue;
+            // }
+            
+            // 3 если отмена - выйти с отменой
+            if (Dialogs.этоОтмена(str))
+                return EnumProcedureResult.CancelledByUser;
+
+            // 4 проверить уникальность процедуры
+            // если процедура уникальна, то выйти с названием процедуры
+            // иначе - сообщить что команда уже существует и перейти на новый цикл.
+
+            // проверить что в БД нет Процедуры с таким названием, без учета регистра символов
+            // кроме текущей Процедуры - она же есть.
+            LinkedList<Procedure> lip = engine.get_ECM().get_ProcedureCollection().getByTitle(str);
+            // удалить текущий объект Процедуры из этого списка
+            if (lip.contains(proc))
             {
-                // проверить что в БД нет Процедуры с таким названием, без учета регистра символов
-                // кроме текущей Процедуры - она же есть.
-                LinkedList<Procedure> lip = engine.get_ECM().get_ProcedureCollection().getByTitle(str);
-                //удалить текущий объект из этого списка 
-                //TODO: это требует переопределить Procedure.equals() а пока проверим отладочными сообщениями на консоль, удалить их после отладки. 
-                if(lip.contains(proc))
-                {
-                    lip.remove(proc);
-                    engine.get_OperatorConsole().PrintTextLine("Отладка: Объект процедуры удаляется из списка", EnumDialogConsoleColor.Предупреждение);
-                    if(lip.contains(proc))
-                        engine.get_OperatorConsole().PrintTextLine("Отладка: Объект процедуры не был удален", EnumDialogConsoleColor.Предупреждение);
-                    else
-                        engine.get_OperatorConsole().PrintTextLine("Отладка: Объект процедуры был удален", EnumDialogConsoleColor.Предупреждение);
-                }
-                notUnicalProcedure = (lip.size() > 0);// временный флаг для упрощения проверок позже
-                if (notUnicalProcedure)
-                {
-                    // тут вывести пользователю найденные команды с тем же названием
-                    engine.get_OperatorConsole().PrintTextLine("Команды с таким названием уже существуют:", EnumDialogConsoleColor.Предупреждение);
-                    for (Procedure pp : lip)
-                    {
-                        engine.get_OperatorConsole().PrintProcedureShortLine(pp);
-                    }
-                    engine.get_OperatorConsole().PrintTextLine("Дубликаты Команд недопустимы!", EnumDialogConsoleColor.Предупреждение);
-                    lip.clear();// очистить временный список, поскольку он в цикле
-                }
+                lip.remove(proc);
             }
-            if (str.isEmpty() || (notUnicalProcedure == true))
+            notUnicalProcedure = (lip.size() > 0);// временный флаг для упрощения проверок позже
+            if (notUnicalProcedure)
             {
-                // Раз есть такие Процедуры, пользователь должен сменить название Процедуры прямо тут же
-                // или же завершить диалог Отменой создания команды
-                str = engine.get_OperatorConsole().PrintQuestionAnswer(EnumSpeakDialogResult.Отмена, "Введите новое название Команды:", false, true);
-                if (Dialogs.этоОтмена(str))
-                    return EnumProcedureResult.CancelledByUser;
+                // тут вывести пользователю найденные команды с тем же названием
+                engine.get_OperatorConsole().PrintTextLine("Команды с таким названием уже существуют:", EnumDialogConsoleColor.Предупреждение);
+                for (Procedure pp : lip)
+                {
+                    engine.get_OperatorConsole().PrintProcedureShortLine(pp);
+                }
+                engine.get_OperatorConsole().PrintTextLine("Дубликаты Команд недопустимы!", EnumDialogConsoleColor.Предупреждение);
+                lip.clear();// очистить временный список, поскольку он в цикле
+                continue;
             }
-            else break;// end while loop
+            else break;//break while loop
+
         }// while loop
-        // Тут мы окажемся, если название Процедуры уникальное
-        //return
+         // Тут мы окажемся, если название Процедуры уникальное
+         // return
         outResult.setValue(str);
         return EnumProcedureResult.Success;
     }
