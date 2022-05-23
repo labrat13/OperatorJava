@@ -355,6 +355,15 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         return result;
     }
 
+    /**
+     * NT-Remove all Places
+     * @throws Exception Error in process
+     */
+    public void RemoveAllPlaces() throws Exception
+    {
+        this.TableClear(TablePlaces, m_Timeout);
+    }
+    
     // === Procedures table function ===================
 
     /**
@@ -481,6 +490,15 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         return result;
     }
 
+    /**
+     * NT-Remove all Procedures
+     * @throws Exception Error in process
+     */
+    public void RemoveAllProcedures() throws Exception
+    {
+        this.TableClear(TableProcs, m_Timeout);
+    }
+    
     // === Setting table function ====================================
     /**
      * NT- Получить все записи таблицы настроек Оператора
@@ -489,7 +507,7 @@ public class OperatorDbAdapter extends SqliteDbAdapter
      * @throws SQLException
      *             Ошибка при использовании БД.
      */
-    public LinkedList<SettingItem> GetAllSettings() throws SQLException
+     public LinkedList<SettingItem> GetAllSettings() throws SQLException
     {
         // SELECT * FROM `setting` WHERE (`id` = 1);
 
@@ -605,6 +623,15 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         return result;
     }
 
+    /**
+     * NT-Remove all Settings
+     * @throws Exception Error in process
+     */
+    public void RemoveAllSettings() throws Exception
+    {
+        this.TableClear(TableSetting, m_Timeout);
+    }
+    
     // === ============================================================
 
 }

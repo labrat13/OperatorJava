@@ -365,6 +365,44 @@ public class ElementCacheManager
         return;
     }
 
+    /**
+     * NT-Удалить все Процедуры из БД Оператора и обновить кеш процедур.
+     * БД открывается, если еще не открыта, затем закрывается.
+     * Если выброшено исключение, транзакция откатывается и исключение перевыбрасывается.
+     * 
+     * @throws Exception
+     *             Ошибка при использовании БД.
+     */
+    public void RemoveAllProceduresFromDatabase() throws Exception
+    {
+        try
+        {
+            // sure database is opened
+            this.m_db.Open();
+            // remove procedures
+            this.m_db.RemoveAllProcedures();
+            // reload cache
+            this.reloadProcedures();
+            // TODO: если тут возникнет исключение, то в кеше будут неправильные данные - в нем же нельзя откатить транзакцию.
+            // А хорошо бы иметь возможность полностью откатить изменения и в кеше тоже.
+            // commit changes
+            this.m_db.TransactionCommit();
+        }
+        catch (Exception e)
+        {
+            // cancel adding and rethrow exception
+            this.m_db.TransactionRollback();
+            throw new Exception(e.toString());
+        }
+        finally
+        {
+            // close db connection
+            this.m_db.Close();
+        }
+
+        return;
+    }
+    
     // ==== Place function ==============================
     /**
      * NT-Добавить новое место и обновить кеш мест.

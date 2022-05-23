@@ -246,6 +246,16 @@ public class LibraryManager extends LibraryManagerBase
         p.set_Namespace(NamespaceConstants.NsService_Command);
         result.add(p);
         
+        p = new Procedure();
+        p.set_Title("Удалить все команды");
+        p.set_Description("Удалить все Команды из БазаДанныхОператора.");
+        p.set_Path("GeneralProcedures.ProcedureProcedures.CommandDeleteAllProcedures()");
+        p.set_Regex("удалить все команды");
+        p.set_Ves(0.5);
+        p.set_Storage(this.m_LibraryTitle);
+        p.set_Namespace(NamespaceConstants.NsService_Command);
+        result.add(p);
+
         //*** Add Procedures from UnsortedProcedures class ***
         
         p = new Procedure();

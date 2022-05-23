@@ -58,6 +58,9 @@ public class ProcedureProcedures
     // - Если вы протестировали Процедуру, и она правильно работает, пометьте ее ImplementationState.Ready, чтобы Оператор не выводил ненужные более
     // предупреждения.
 
+    
+
+    
     /**
      * NT- Обработчик процедуры Создать команду НазваниеКоманды.
      * 
@@ -814,6 +817,79 @@ public class ProcedureProcedures
         return result;
     }
 
+    /**
+     * NT- Обработчик процедуры Удалить все команды
+     * 
+     * 
+     * @param engine
+     *            Ссылка на объект Движка Оператор для доступа к консоли, логу, БД итп.
+     * @param manager
+     *            Ссылка на объект Менеджера Библиотеки Процедур для доступа к инициализированным ресурсам библиотеки.
+     * @param query
+     *            Текст исходного запроса пользователя для возможной дополнительной обработки.
+     * @param args
+     *            Массив аргументов Процедуры, соответствующий запросу.
+     * @return Функция возвращает результат как одно из значений EnumProcedureResult:
+     *         EnumProcedureResult.Success если Процедура выполнена успешно;
+     *         EnumProcedureResult.WrongArguments если аргументы не подходят для запуска Процедуры;
+     *         EnumProcedureResult.Error если произошла ошибка при выполнении Процедуры;
+     *         EnumProcedureResult.CancelledByUser если выполнение Процедуры прервано Пользователем;
+     *         EnumProcedureResult.Exit если после выполнения Процедуры требуется завершить работу Оператор;
+     *         EnumProcedureResult.ExitAndLogoff если после выполнения Процедуры требуется завершить сеанс пользователя;
+     *         EnumProcedureResult.ExitAndHybernate если после выполнения Процедуры требуется перевести компьютер в спящий режим;
+     *         EnumProcedureResult.ExitAndSleep если после выполнения Процедуры требуется перевести компьютер в спящий режим;
+     *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
+     *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
+     * @throws Exception
+     *             Ошибка при исполнении Процедуры.
+     */
+    @OperatorProcedure(State = ImplementationState.NotTested,
+            Title = "Удалить все команды",
+            Description = "Удалить все Команды из БазаДанныхОператора.")
+    public static EnumProcedureResult CommandDeleteAllProcedures(
+            Engine engine,
+            LibraryManagerBase manager,
+            UserQuery query,
+            ArgumentCollection args) throws Exception
+    {
+
+        // содержимое списка аргументов
+        // args[0].name = "команда" - название аргумента в строке регекса команды
+        // args[0].value = "Скачать файл ХХХ" - значение аргумента - название создаваемого места
+        // args[0].type = "" - тип аргумента - сейчас не указывается, так как мне лень думать
+
+        EnumProcedureResult result = EnumProcedureResult.Success;
+        // название текущей процедуры для лога итп.
+        String currentProcedureTitle = "GeneralProcedures.ProcedureProcedures.CommandDeleteAllProcedures";
+        // выброшенное тут исключение будет заменено на Reflection исключение и его текст потеряется.
+        // Поэтому надо здесь его перехватить, вывести в лог и на консоль, и погасить, вернув EnumProcedureResult.Error.
+        try
+        {
+            //1. Запросить от пользователя подтверждение о удалении всех команд из БД. Да - Нет и Отмена.
+            //если пользователь ответил Да - удалить все команды из БД
+            //если пользователь ответил Нет или Отмена - прервать операцию. 
+            engine.get_OperatorConsole().PrintEmptyLine();          
+            engine.get_OperatorConsole().PrintTextLine("1. Подтвердите удаление всех команд из БазаДанныхОператора", EnumDialogConsoleColor.Сообщение);
+            EnumSpeakDialogResult esdr = engine.get_OperatorConsole().PrintДаНетОтмена("Желаете удалить все команды?");
+            if (esdr.isНет() || esdr.isОтмена())
+                return EnumProcedureResult.CancelledByUser;
+            // выполнить удаление всех Команд из БД Оператора
+            engine.get_ECM().RemoveAllProceduresFromDatabase();          
+            // вывести сообщение о результате операции: успешно
+            engine.get_OperatorConsole().PrintTextLine("Удаление всех Команд завершено успешно", EnumDialogConsoleColor.Успех);
+        }
+        catch (Exception ex)
+        {
+            engine.PrintExceptionMessageToConsoleAndLog("Ошибка в процедуре " + currentProcedureTitle + "()", ex);
+            result = EnumProcedureResult.Error;
+        }
+
+        // вернуть флаг продолжения работы
+        return result;
+    }
+    
+    
+    
     // *** Вспомогательные процедуры ***
 
     /**
