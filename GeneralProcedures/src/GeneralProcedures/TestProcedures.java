@@ -172,9 +172,9 @@ public class TestProcedures
 // // Поэтому надо здесь его перехватить, вывести в лог и на консоль, и погасить, вернув EnumProcedureResult.Error.
 // try
 // {
-//     // TODO: вывести это тестовое сообщение о начале процедуры - в лог!
-//     engine.get_OperatorConsole().PrintTextLine("Начата процедура " + currentProcedureTitle + "()", EnumDialogConsoleColor.Сообщение);
-//     engine.get_OperatorConsole().PrintEmptyLine();
+//  String str = String.format("Начата процедура %s(\"%s\")", currentProcedureTitle, args.getByIndex(0).get_ArgumentValue());
+//  // DONE: вывести это тестовое сообщение о начале процедуры - в лог!
+//  engine.AddMessageToConsoleAndLog(str, EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.SubsystemEvent_Procedure, EnumLogMsgState.OK);
 //     
 //     //TODO: код алгоритма добавить здесь
 //     

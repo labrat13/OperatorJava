@@ -112,7 +112,6 @@ public class ProcedureProcedures
 
             String str = String.format("Начата процедура %s(\"%s\")", currentProcedureTitle, args.getByIndex(0).get_ArgumentValue());
             // DONE: вывести это тестовое сообщение о начале процедуры - в лог!
-            // engine.get_OperatorConsole().PrintTextLine(str, EnumDialogConsoleColor.Сообщение); заменено на:
             engine.AddMessageToConsoleAndLog(str, EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.SubsystemEvent_Procedure, EnumLogMsgState.OK);
 
             Procedure proc = new Procedure();// новый пустой объект для заполнения
@@ -255,7 +254,7 @@ public class ProcedureProcedures
     }
 
     /**
-     * NT- Обработчик процедуры вывода пользователю списка Команд.
+     * NT- Обработчик процедуры Показать команды
      * 
      * 
      * @param engine
@@ -340,8 +339,8 @@ public class ProcedureProcedures
      *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
      */
     @OperatorProcedure(State = ImplementationState.NotTested,
-            Title = "Процедура удаления команды",
-            Description = "Удалить указанную команду Оператора.")
+            Title = "Удалить команду НазваниеКоманды",
+            Description = "Удалить указанную команду из БазаДанныхОператор.")
     public static EnumProcedureResult CommandDeleteProcedure(
             Engine engine,
             LibraryManagerBase manager,
@@ -499,7 +498,7 @@ public class ProcedureProcedures
      *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
      */
     @OperatorProcedure(State = ImplementationState.NotTested,
-            Title = "Процедура изменения команды",
+            Title = "Изменить команду НазваниеКоманды",
             Description = "Изменить указанную команду Оператора.")
     public static EnumProcedureResult CommandChangeProcedure(
             Engine engine,
