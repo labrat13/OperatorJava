@@ -7,6 +7,7 @@ package Utility;
 
 import OperatorEngine.Place;
 import OperatorEngine.Procedure;
+import Settings.SettingItem;
 
 /** 
  * RT-Класс-контейнер для объектов, передаваемых в функции и обратно.
@@ -95,6 +96,16 @@ public class InOutArgument
     {
         return (Place) this.m_value;   
     }
+    
+    /**
+     * Get value as SettingItem
+     * @return Function returns value as SettingItem
+     */
+    public SettingItem getValueSettingItem()
+    {
+        return (SettingItem) this.m_value;   
+    }
+    
     /**
      * Return string representation of object.
      * @see java.lang.Object#toString()

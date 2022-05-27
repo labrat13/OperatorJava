@@ -177,6 +177,28 @@ public class SettingItemCollection
 
         return result;
     }
+    
+    /**
+     * NT-Get settings item's by title
+     * 
+     * @param title
+     *            Setting item title as key
+     * @return Returns SettingsItem list; returns empty list, if title not exists in
+     *         collection.
+     */
+    public LinkedList<SettingItem> getByTitle(String title)
+    {
+        LinkedList<Item> its = this.m_items.getItems(title, false);
+        
+        //convert types
+        LinkedList<SettingItem> result = new LinkedList<SettingItem>();
+        if(its != null)
+        {
+            for(Item it : its)
+                result.add((SettingItem) it);
+        }
+        return result;
+    }
 
     /**
      * NT-Get only first setting item by title

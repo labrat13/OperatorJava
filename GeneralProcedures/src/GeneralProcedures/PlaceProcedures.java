@@ -5,16 +5,23 @@
  */
 package GeneralProcedures;
 
+import java.util.LinkedList;
+
 import Lexicon.EnumDialogConsoleColor;
+import Lexicon.EnumSpeakDialogResult;
 import LogSubsystem.EnumLogMsgClass;
 import LogSubsystem.EnumLogMsgState;
 import OperatorEngine.ArgumentCollection;
 import OperatorEngine.Engine;
 import OperatorEngine.EnumProcedureResult;
+import OperatorEngine.FuncArgument;
+import OperatorEngine.Place;
+import OperatorEngine.Procedure;
 import OperatorEngine.UserQuery;
 import ProcedureSubsystem.ImplementationState;
 import ProcedureSubsystem.LibraryManagerBase;
 import ProcedureSubsystem.OperatorProcedure;
+import Utility.InOutArgument;
 
 /**
  * Класс тестовых Процедур для Оператор.
@@ -269,7 +276,7 @@ public class PlaceProcedures
      *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
      *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
      */
-    @OperatorProcedure(State = ImplementationState.NotRealized,   // TODO: заменить на актуальное
+    @OperatorProcedure(State = ImplementationState.NotTested,   // TODO: заменить на актуальное
             Title = "Удалить место НазваниеМеста",  
             Description = "Удалить указанное Место из БазаДанныхОператор") 
     public static EnumProcedureResult CommandDeletePlace(
@@ -288,14 +295,77 @@ public class PlaceProcedures
         // Поэтому надо здесь его перехватить, вывести в лог и на консоль, и погасить, вернув EnumProcedureResult.Error.
         try
         {
-         // вывести в лог тестовое сообщение о начале процедуры
-            String str = String.format("Начата процедура %s(\"%s\")", currentProcedureTitle, args.getByIndex(0).get_ArgumentValue()); 
+            // 1. Извлечь из аргумента название Места
+            String placeTitle;
+            FuncArgument arg = args.getByIndex(0);
+            placeTitle = arg.get_ArgumentQueryValue().trim();// берем сырой текст аргумента из запроса
+
+            // DONE: вывести это тестовое сообщение о начале процедуры - в лог!
+            String str = String.format("Начата процедура %s(\"%s\")", currentProcedureTitle, placeTitle);
             engine.AddMessageToConsoleAndLog(str, EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.SubsystemEvent_Procedure, EnumLogMsgState.OK);
 
-            // TODO: код алгоритма добавить здесь
+            // 1. Извлечь из аргумента название команды
+            engine.get_OperatorConsole().PrintTextLine(String.format("Название удаляемого Места: \"%s\"", placeTitle), EnumDialogConsoleColor.Сообщение);
 
-            // TODO: вывести сообщение о результате операции: успешно
-            engine.get_OperatorConsole().PrintTextLine("Команда успешно завершена.", EnumDialogConsoleColor.Успех);
+            // TODO: проверить признак того, что вместо названия команды движком было подставлено название зарегистрированного места
+            if (arg.get_АвтоподстановкаМеста() == true)
+            {
+                ; // TODO: обработать тут случай автоподстановки места вместо названия команды
+                  // если он возникнет
+            }
+
+            // 2. извлечь из БД список команд с таким названием и показать пользователю.
+            // без учета регистра символов
+            // DONE: весь этот пункт 2 надо превратить в отдельную функцию выбора процедуры по ее названию, чтобы использовать ее во многих местах этого класса.
+
+            Place place = null;
+
+            InOutArgument outResult = new InOutArgument();// оболочка для строки-результата, передаваемого как аргумент.
+            EnumProcedureResult epr = selectPlace(engine, placeTitle, outResult);
+            if (epr == EnumProcedureResult.CancelledByUser)
+                return epr;
+            // если Место не найдено, selectPlace возвращает Error, а текущая процедура должна вернуть Success,
+            // так как не ее проблема, что нечего удалять.
+            else if (epr == EnumProcedureResult.Error)
+                return EnumProcedureResult.Success;
+            else
+            {
+                // set Place object
+                place = outResult.getValuePlace();
+            }
+            // Тут в объекте place уже должна быть выбранное Место.
+
+            // 3. выбранную пользователем Место - проверить, что оно может быть удалено
+            // - она может быть удалена, если она находится в БД. Сейчас БиблиотекиПроцедур не позволяют удалять или редактировать свои Процедуры и Места.
+            // - надо добавить в объект Процедуры и Места (Item) флаг ReadOnly, для БД он сброшен, для Библиотек Процедур он установлен.
+            // - Флаг не должен храниться в БД, только в памяти.
+            // - TODO: решено позже добавить в объект Item ссылку на объект Хранилища, унифицированный для БД и БиблиотекаПроцедур,
+            // и из него запрашивать возможность удаления и изменения итемов. А пока только НазваниеХранилища для этого есть.
+            if (place.isItemCanRemoved() == false)
+            {
+                // Если указанное Место не может быть удалено, вывести сообщение об этом и завершить текущую Процедуру успешно.
+                String st2 = String.format("Выбранное Место \"%s\" не может быть удалено из его хранилища \"%s\"", placeTitle, place.get_Storage());
+                engine.get_OperatorConsole().PrintTextLine(st2, EnumDialogConsoleColor.Предупреждение);
+                return EnumProcedureResult.Success;
+            }
+            // else
+
+            // 4. Показать пользователю свойства выбранного Места и запросить подтверждение удаления.
+            engine.get_OperatorConsole().PrintEmptyLine();
+            engine.get_OperatorConsole().PrintTextLine("Подтвердите удаление Места", EnumDialogConsoleColor.Сообщение);
+            engine.get_OperatorConsole().PrintPlaceForm(place);
+            // и запросить подтверждение пользователя, что он желает удалить Место.
+            // Если пользователь ответит Да, надо удалить Место.
+            // Если пользователь ответит Нет или Отмена, отменить операцию.
+            EnumSpeakDialogResult sdr = engine.get_OperatorConsole().PrintДаНетОтмена("Желаете удалить Место?");
+            if (sdr.isНет() || sdr.isОтмена())
+                return EnumProcedureResult.CancelledByUser;
+            // 5. Удалить команду.
+            engine.get_ECM().RemovePlace(place);
+
+            // 6. вывести сообщение о результате операции: успешно
+            String msg6 = String.format("Место \"%s\" успешно удалено.", placeTitle);
+            engine.get_OperatorConsole().PrintTextLine(msg6, EnumDialogConsoleColor.Успех);
         }
         catch (Exception ex)
         {
@@ -393,7 +463,7 @@ public class PlaceProcedures
      *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
      *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
      */
-    @OperatorProcedure(State = ImplementationState.NotRealized,   // TODO: заменить на актуальное
+    @OperatorProcedure(State = ImplementationState.NotTested,   // TODO: заменить на актуальное
             Title = "Удалить все места",   
             Description = "Удалить все Места из БазаДанныхОператора.")
     public static EnumProcedureResult CommandDeleteAllPlaces(
@@ -412,14 +482,18 @@ public class PlaceProcedures
         // Поэтому надо здесь его перехватить, вывести в лог и на консоль, и погасить, вернув EnumProcedureResult.Error.
         try
         {
-         // вывести в лог тестовое сообщение о начале процедуры
-            String str = String.format("Начата процедура %s(\"%s\")", currentProcedureTitle, args.getByIndex(0).get_ArgumentValue()); 
-            engine.AddMessageToConsoleAndLog(str, EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.SubsystemEvent_Procedure, EnumLogMsgState.OK);
-
-            // TODO: код алгоритма добавить здесь
-
-            // TODO: вывести сообщение о результате операции: успешно
-            engine.get_OperatorConsole().PrintTextLine("Команда успешно завершена.", EnumDialogConsoleColor.Успех);
+            //1. Запросить от пользователя подтверждение о удалении всех Мест из БД. Да - Нет и Отмена.
+            //если пользователь ответил Да - удалить все Места из БД
+            //если пользователь ответил Нет или Отмена - прервать операцию. 
+            engine.get_OperatorConsole().PrintEmptyLine();          
+            engine.get_OperatorConsole().PrintTextLine("1. Подтвердите удаление всех мест из БазаДанныхОператора", EnumDialogConsoleColor.Сообщение);
+            EnumSpeakDialogResult esdr = engine.get_OperatorConsole().PrintДаНетОтмена("Желаете удалить все Места?");
+            if (esdr.isНет() || esdr.isОтмена())
+                return EnumProcedureResult.CancelledByUser;
+            // выполнить удаление всех Мест из БД Оператора
+            engine.get_ECM().RemoveAllPlacesFromDatabase();          
+            // вывести сообщение о результате операции: успешно
+            engine.get_OperatorConsole().PrintTextLine("Удаление всех Мест завершено успешно", EnumDialogConsoleColor.Успех);
         }
         catch (Exception ex)
         {
@@ -431,7 +505,66 @@ public class PlaceProcedures
         return result;
     }
     
-    
+    // *** Вспомогательные процедуры ***
+
+    /**
+     * NT-Select Place by Title.
+     * 
+     * @param engine
+     *            Engine object.
+     * @param title
+     *            Place title.
+     * @param outResult
+     *            Result Place in shell object.
+     * @return Function returns EnumProcedureResult.Success if success, Error if procedure not found, CancelledByUser if cancelled.
+     * @throws Exception
+     *             Error occured.
+     */
+    private static EnumProcedureResult selectPlace(
+            Engine engine,
+            String title,
+            InOutArgument outResult) throws Exception
+    {
+        Place p = null;
+        LinkedList<Place> lip = engine.get_ECM().get_PlaceCollection().getByTitle(title);
+        int lipSize = lip.size();
+        if (lipSize == 0)
+        {
+            // тут вывести сообщение, что указанное Место не найдено и завершить процедуру успешно.
+            String stmp = String.format("Указанное Место \"%s\" не найдено.", title);
+            engine.get_OperatorConsole().PrintTextLine(stmp, EnumDialogConsoleColor.Предупреждение);
+            return EnumProcedureResult.Error;
+        }
+        else if (lipSize == 1)
+        {
+            p = lip.get(0);
+        }
+        else // if(lipSize > 1)
+        {
+            // тут вывести пользователю найденные Места с тем же названием
+            engine.get_OperatorConsole().PrintTextLine("Существующие Места с таким названием:", EnumDialogConsoleColor.Предупреждение);
+            // Если в списке более одного Места, то пользователь должен выбрать одно из них для удаления.
+            // для этого в списке Мест нужно показать уникальный ИД Места, источник-хранилище, категорию, название и описание.
+            // И флаг, возможно ли удаление данного Места - это определяется Хранилищем.
+            // Для выбора из нескольких Мест надо запросить у пользователя ИД Места, но проблема в том, что ид сейчас есть только у объектов из БД.
+            // - можно вывести порядковый номер в этом списке и запросить у пользователя его.
+            engine.get_OperatorConsole().PrintPlaceFormNumberedList(lip);
+            // запросить у пользователя порядковый номер элемента списка
+            int lip_index = engine.get_OperatorConsole().InputListIndex(lipSize);
+            // обработать указанный пользователем индекс
+            if (lip_index < 1)
+            {
+                // Если пользователь отказался выбрать элемент списка, вывести сообщение об этом и завершить текущую Процедуру Отменено пользователем.
+                engine.get_OperatorConsole().PrintTextLine("Операция отменена, поскольку пользователь не смог выбрать Место из списка.", EnumDialogConsoleColor.Сообщение);
+                return EnumProcedureResult.CancelledByUser;
+            }
+            else p = lip.get(lip_index);// выбранный пользователем объект команды.
+        }
+
+        // return
+        outResult.setValue(p);
+        return EnumProcedureResult.Success;
+    }
     
     //*** End of file ***
 }

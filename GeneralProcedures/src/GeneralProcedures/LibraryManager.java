@@ -339,6 +339,26 @@ public class LibraryManager extends LibraryManagerBase
         p.set_Namespace(NamespaceConstants.NsService_Place);
         result.add(p);
         
+        p = new Procedure();
+        p.set_Title("Удалить место НазваниеМеста");
+        p.set_Description("Удалить указанное Место из БазаДанныхОператор.");
+        p.set_Path("GeneralProcedures.PlaceProcedures.CommandDeletePlace()");
+        p.set_Regex("удалить место %place");
+        p.set_Ves(0.5);
+        p.set_Storage(this.m_LibraryTitle);
+        p.set_Namespace(NamespaceConstants.NsService_Place);
+        result.add(p);
+        
+        p = new Procedure();
+        p.set_Title("Удалить все места");
+        p.set_Description("Удалить все Места из БазаДанныхОператора.");
+        p.set_Path("GeneralProcedures.PlaceProcedures.CommandDeleteAllPlaces()");
+        p.set_Regex("удалить все места");
+        p.set_Ves(0.5);
+        p.set_Storage(this.m_LibraryTitle);
+        p.set_Namespace(NamespaceConstants.NsService_Place);
+        result.add(p);
+        
         //*** Add Procedures from SettingProcedures class ***
         
         p = new Procedure();
@@ -350,6 +370,27 @@ public class LibraryManager extends LibraryManagerBase
         p.set_Storage(this.m_LibraryTitle);
         p.set_Namespace(NamespaceConstants.NsService_Setting);
         result.add(p);
+        
+        p = new Procedure();
+        p.set_Title("Удалить настройку НазваниеНастройки");
+        p.set_Description("Удалить указанную Настройку из БазаДанныхОператора.");
+        p.set_Path("GeneralProcedures.SettingProcedures.CommandDeleteSetting()");
+        p.set_Regex("удалить настройку %setting");
+        p.set_Ves(0.5);
+        p.set_Storage(this.m_LibraryTitle);
+        p.set_Namespace(NamespaceConstants.NsService_Setting);
+        result.add(p);
+        
+        p = new Procedure();
+        p.set_Title("Удалить все настройки");
+        p.set_Description("Удалить все Настройки из БазаДанныхОператора.");
+        p.set_Path("GeneralProcedures.SettingProcedures.CommandDeleteAllSettings()");
+        p.set_Regex("удалить все настройки");
+        p.set_Ves(0.5);
+        p.set_Storage(this.m_LibraryTitle);
+        p.set_Namespace(NamespaceConstants.NsService_Setting);
+        result.add(p);
+        
         
         // вернуть выходной массив
         return result.toArray(new Procedure[result.size()]);

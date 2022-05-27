@@ -460,7 +460,7 @@ public class ProcedureProcedures
             engine.get_ECM().RemoveProcedure(proc);
 
             // 6. вывести сообщение о результате операции: успешно
-            String msg6 = String.format("Команда \"%s\" успешно удалена", procedureTitle);
+            String msg6 = String.format("Команда \"%s\" успешно удалена.", procedureTitle);
             engine.get_OperatorConsole().PrintTextLine(msg6, EnumDialogConsoleColor.Успех);
         }
         catch (Exception ex)

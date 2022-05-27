@@ -5,16 +5,23 @@
  */
 package GeneralProcedures;
 
+import java.util.LinkedList;
+
 import Lexicon.EnumDialogConsoleColor;
+import Lexicon.EnumSpeakDialogResult;
 import LogSubsystem.EnumLogMsgClass;
 import LogSubsystem.EnumLogMsgState;
 import OperatorEngine.ArgumentCollection;
 import OperatorEngine.Engine;
 import OperatorEngine.EnumProcedureResult;
+import OperatorEngine.FuncArgument;
+import OperatorEngine.Procedure;
 import OperatorEngine.UserQuery;
 import ProcedureSubsystem.ImplementationState;
 import ProcedureSubsystem.LibraryManagerBase;
 import ProcedureSubsystem.OperatorProcedure;
+import Settings.SettingItem;
+import Utility.InOutArgument;
 
 /**
  * Класс тестовых Процедур для Оператор.
@@ -267,7 +274,7 @@ public static EnumProcedureResult CommandListSettings(
 *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
 *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
 */
-@OperatorProcedure(State = ImplementationState.NotRealized,   // TODO: заменить на актуальное
+@OperatorProcedure(State = ImplementationState.NotTested,   // TODO: заменить на актуальное
        Title = "Удалить настройку НазваниеНастройки",   
        Description = "Удалить указанную Настройку из БазаДанныхОператора") 
 public static EnumProcedureResult CommandDeleteSetting(
@@ -285,14 +292,77 @@ public static EnumProcedureResult CommandDeleteSetting(
    // Поэтому надо здесь его перехватить, вывести в лог и на консоль, и погасить, вернув EnumProcedureResult.Error.
    try
    {
-    // вывести в лог тестовое сообщение о начале процедуры
-       String str = String.format("Начата процедура %s(\"%s\")", currentProcedureTitle, args.getByIndex(0).get_ArgumentValue()); 
+       // 1. Извлечь из аргумента название Настройки
+       String settingTitle;
+       FuncArgument arg = args.getByIndex(0);
+       settingTitle = arg.get_ArgumentQueryValue().trim();// берем сырой текст аргумента из запроса
+
+       // DONE: вывести это тестовое сообщение о начале процедуры - в лог!
+       String str = String.format("Начата процедура %s(\"%s\")", currentProcedureTitle, settingTitle);
        engine.AddMessageToConsoleAndLog(str, EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.SubsystemEvent_Procedure, EnumLogMsgState.OK);
 
-       // TODO: код алгоритма добавить здесь
+       // 1. Извлечь из аргумента название Настройки
+       engine.get_OperatorConsole().PrintTextLine(String.format("Название удаляемой Настройки: \"%s\"", settingTitle), EnumDialogConsoleColor.Сообщение);
 
-       // TODO: вывести сообщение о результате операции: успешно
-       engine.get_OperatorConsole().PrintTextLine("Команда успешно завершена.", EnumDialogConsoleColor.Успех);
+       // TODO: проверить признак того, что вместо названия Настройки движком было подставлено название зарегистрированного места
+       if (arg.get_АвтоподстановкаМеста() == true)
+       {
+           ; // TODO: обработать тут случай автоподстановки места вместо названия Настройки
+             // если он возникнет
+       }
+
+       // 2. извлечь из БД список Настроек с таким названием и показать пользователю.
+       // без учета регистра символов
+       // DONE: весь этот пункт 2 надо превратить в отдельную функцию выбора Настройки по ее названию, чтобы использовать ее во многих местах этого класса.
+
+       SettingItem sett = null;
+
+       InOutArgument outResult = new InOutArgument();// оболочка для строки-результата, передаваемого как аргумент.
+       EnumProcedureResult epr = selectSetting(engine, settingTitle, outResult);
+       if (epr == EnumProcedureResult.CancelledByUser)
+           return epr;
+       // если Настройка не найдена, selectSetting возвращает Error, а эта процедура должна вернуть Success,
+       // так как не ее проблема, что нечего удалять.
+       else if (epr == EnumProcedureResult.Error)
+           return EnumProcedureResult.Success;
+       else
+       {
+           // set SettingItem object
+           sett = outResult.getValueSettingItem();
+       }
+       // Тут в объекте sett уже должна быть выбранная Настройка.
+
+       // 3. выбранную пользователем Настройку - проверить, что она может быть удалена
+       // - она может быть удалена, если она находится в БД. Сейчас БиблиотекиПроцедур не позволяют удалять или редактировать свои Процедуры и Места.
+       // - надо добавить в объект Процедуры и Места (Item) флаг ReadOnly, для БД он сброшен, для Библиотек Процедур он установлен.
+       // - Флаг не должен храниться в БД, только в памяти.
+       // - TODO: решено позже добавить в объект Item ссылку на объект Хранилища, унифицированный для БД и БиблиотекаПроцедур,
+       // и из него запрашивать возможность удаления и изменения итемов.
+       if (sett.isItemCanRemoved() == false)
+       {
+           // Если указанная Настройка не может быть удалена, вывести сообщение об этом и завершить текущую Процедуру успешно.
+           String st2 = String.format("Выбранная настройка \"%s\" не может быть удалена из ее хранилища \"%s\"", settingTitle, sett.get_Storage());
+           engine.get_OperatorConsole().PrintTextLine(st2, EnumDialogConsoleColor.Предупреждение);
+           return EnumProcedureResult.Success;
+       }
+       // else
+
+       // 4. Показать пользователю свойства выбранной Настройки и запросить подтверждение удаления.
+       engine.get_OperatorConsole().PrintEmptyLine();
+       engine.get_OperatorConsole().PrintTextLine("Подтвердите удаление Настройки", EnumDialogConsoleColor.Сообщение);
+       engine.get_OperatorConsole().PrintSettingForm(sett);
+       // и запросить подтверждение пользователя, что он желает удалить Настройку.
+       // Если пользователь ответит Да, надо удалить Настройку.
+       // Если пользователь ответит Нет или Отмена, отменить операцию.
+       EnumSpeakDialogResult sdr = engine.get_OperatorConsole().PrintДаНетОтмена("Желаете удалить Настройку?");
+       if (sdr.isНет() || sdr.isОтмена())
+           return EnumProcedureResult.CancelledByUser;
+       // 5. Удалить команду.
+       engine.get_ECM().RemoveSetting(sett);
+
+       // 6. вывести сообщение о результате операции: успешно
+       String msg6 = String.format("Настройка \"%s\" успешно удалена.", settingTitle);
+       engine.get_OperatorConsole().PrintTextLine(msg6, EnumDialogConsoleColor.Успех);
    }
    catch (Exception ex)
    {
@@ -390,7 +460,7 @@ public static EnumProcedureResult CommandChangeSetting(
 *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
 *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
 */
-@OperatorProcedure(State = ImplementationState.NotRealized,   // TODO: заменить на актуальное
+@OperatorProcedure(State = ImplementationState.NotTested,   // TODO: заменить на актуальное
        Title = "Удалить все настройки",   
        Description = "Удалить все Настройки из БазаДанныхОператора") 
 public static EnumProcedureResult CommandDeleteAllSettings(
@@ -408,14 +478,18 @@ public static EnumProcedureResult CommandDeleteAllSettings(
    // Поэтому надо здесь его перехватить, вывести в лог и на консоль, и погасить, вернув EnumProcedureResult.Error.
    try
    {
-    // вывести в лог тестовое сообщение о начале процедуры
-       String str = String.format("Начата процедура %s(\"%s\")", currentProcedureTitle, args.getByIndex(0).get_ArgumentValue()); 
-       engine.AddMessageToConsoleAndLog(str, EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.SubsystemEvent_Procedure, EnumLogMsgState.OK);
-
-       // TODO: код алгоритма добавить здесь
-
-       // TODO: вывести сообщение о результате операции: успешно
-       engine.get_OperatorConsole().PrintTextLine("Команда успешно завершена.", EnumDialogConsoleColor.Успех);
+       //1. Запросить от пользователя подтверждение о удалении всех Настроек из БД. Да - Нет и Отмена.
+       //если пользователь ответил Да - удалить все Настройки из БД
+       //если пользователь ответил Нет или Отмена - прервать операцию. 
+       engine.get_OperatorConsole().PrintEmptyLine();          
+       engine.get_OperatorConsole().PrintTextLine("1. Подтвердите удаление всех Настроек из БазаДанныхОператора", EnumDialogConsoleColor.Сообщение);
+       EnumSpeakDialogResult esdr = engine.get_OperatorConsole().PrintДаНетОтмена("Желаете удалить все настройки?");
+       if (esdr.isНет() || esdr.isОтмена())
+           return EnumProcedureResult.CancelledByUser;
+       // выполнить удаление всех Настроек из БД Оператора
+       engine.get_ECM().RemoveAllSettingsFromDatabase();          
+       // вывести сообщение о результате операции: успешно
+       engine.get_OperatorConsole().PrintTextLine("Удаление всех Настроек завершено успешно", EnumDialogConsoleColor.Успех);
    }
    catch (Exception ex)
    {
@@ -428,7 +502,66 @@ public static EnumProcedureResult CommandDeleteAllSettings(
 }
 
 
+// *** Вспомогательные процедуры ***
 
+/**
+ * NT-Select Procedure by Title.
+ * 
+ * @param engine
+ *            Engine object.
+ * @param title
+ *            Setting title.
+ * @param outResult
+ *            Result SettingItem in shell object.
+ * @return Function returns EnumProcedureResult.Success if success, Error if procedure not found, CancelledByUser if cancelled.
+ * @throws Exception
+ *             Error occured.
+ */
+private static EnumProcedureResult selectSetting(
+        Engine engine,
+        String title,
+        InOutArgument outResult) throws Exception
+{
+    SettingItem p = null;
+    LinkedList<SettingItem> lip = engine.get_ECM().get_SettingCollection().getByTitle(title);
+    int lipSize = lip.size();
+    if (lipSize == 0)
+    {
+        // тут вывести сообщение, что указанная Настройка не найдена и завершить процедуру успешно.
+        String stmp = String.format("Указанная Настройка \"%s\" не найдена.", title);
+        engine.get_OperatorConsole().PrintTextLine(stmp, EnumDialogConsoleColor.Предупреждение);
+        return EnumProcedureResult.Error;
+    }
+    else if (lipSize == 1)
+    {
+        p = lip.get(0);
+    }
+    else // if(lipSize > 1)
+    {
+        // тут вывести пользователю найденные Настройки с тем же названием
+        engine.get_OperatorConsole().PrintTextLine("Существующие Настройки с таким названием:", EnumDialogConsoleColor.Предупреждение);
+        // Если в списке более одной Настройки, то пользователь должен выбрать одну из них для удаления.
+        // для этого в списке Команд нужно показать уникальный ИД Настройки, источник-хранилище, категорию, название и описание.
+        // И флаг, возможно ли удаление данной Настройки - это определяется Хранилищем.
+        // Для выбора из нескольких Настроек надо запросить у пользователя ИД Настройки, но проблема в том, что ид сейчас есть только у объектов из БД.
+        // - можно вывести порядковый номер в этом списке и запросить у пользователя его.
+        engine.get_OperatorConsole().PrintSettingFormNumberedList(lip);
+        // запросить у пользователя порядковый номер элемента списка
+        int lip_index = engine.get_OperatorConsole().InputListIndex(lipSize);
+        // обработать указанный пользователем индекс
+        if (lip_index < 1)
+        {
+            // Если пользователь отказался выбрать элемент списка, вывести сообщение об этом и завершить текущую Процедуру Отменено пользователем.
+            engine.get_OperatorConsole().PrintTextLine("Операция отменена, поскольку пользователь не смог выбрать Настройку из списка.", EnumDialogConsoleColor.Сообщение);
+            return EnumProcedureResult.CancelledByUser;
+        }
+        else p = lip.get(lip_index);// выбранный пользователем объект команды.
+    }
+
+    // return
+    outResult.setValue(p);
+    return EnumProcedureResult.Success;
+}
     
     //*** End of file ***
 }
