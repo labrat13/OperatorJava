@@ -205,7 +205,7 @@ public class PlaceProcedures
      *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
      *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
      */
-    @OperatorProcedure(State = ImplementationState.NotRealized,   // TODO: заменить на актуальное
+    @OperatorProcedure(State = ImplementationState.NotTested,   // TODO: заменить на актуальное
             Title = "Показать места",   
             Description = "Вывести на экран список Мест Оператор")  
     public static EnumProcedureResult CommandListPlaces(
@@ -224,14 +224,16 @@ public class PlaceProcedures
         // Поэтому надо здесь его перехватить, вывести в лог и на консоль, и погасить, вернув EnumProcedureResult.Error.
         try
         {
-         // вывести в лог тестовое сообщение о начале процедуры
-            String str = String.format("Начата процедура %s(\"%s\")", currentProcedureTitle, args.getByIndex(0).get_ArgumentValue()); 
+            // вывести это тестовое сообщение о начале процедуры на консоль и в лог
+            String str = String.format("Начата процедура %s()", currentProcedureTitle);
             engine.AddMessageToConsoleAndLog(str, EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.SubsystemEvent_Procedure, EnumLogMsgState.OK);
-
-            // TODO: код алгоритма добавить здесь
-
-            // TODO: вывести сообщение о результате операции: успешно
-            engine.get_OperatorConsole().PrintTextLine("Команда успешно завершена.", EnumDialogConsoleColor.Успех);
+            engine.get_OperatorConsole().PrintEmptyLine();
+            engine.get_OperatorConsole().PrintTextLine("Список всех Мест Оператора:", EnumDialogConsoleColor.Сообщение);
+            engine.get_OperatorConsole().PrintEmptyLine();
+            engine.get_OperatorConsole().PrintListOfPlaces();
+            engine.get_OperatorConsole().PrintEmptyLine();
+            // вывести сообщение о результате операции: успешно
+            engine.get_OperatorConsole().PrintTextLine("Выведен список Мест", EnumDialogConsoleColor.Успех);
         }
         catch (Exception ex)
         {

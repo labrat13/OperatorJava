@@ -920,7 +920,16 @@ public class ElementCacheManager
     {
         return this.m_places.getPlacesAsList();
     }
-
+    /**
+     * NT-Получить список всех Настроек для перечисления.
+     * 
+     * @return Функция возвращает список всех Настроек для перечисления.
+     */
+    public LinkedList<SettingItem> getSettingsAsList()
+    {
+        return this.m_settings.getAllItems();
+    }
+    
     /** NT-Получить первое же значение настройки.
      * @param title Название настройки.
      * @return Функция возвращает значение настройки либо null, если настройка не найдена.

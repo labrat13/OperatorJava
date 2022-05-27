@@ -14,6 +14,7 @@ import OperatorEngine.Item;
 import OperatorEngine.Place;
 import OperatorEngine.Procedure;
 import OperatorEngine.Utility;
+import Settings.SettingItem;
 import Utility.ItemDictionaryByNamespace;
 
 /**
@@ -421,7 +422,7 @@ public class DialogConsole
     // должен работать с консолью напрямую!
 
     /**
-     * NT-Вывести на консоль короткое описание места в одну строку
+     * NT-Вывести на консоль короткое описание Места в одну строку
      * 
      * @param place
      *            Место
@@ -435,7 +436,7 @@ public class DialogConsole
     }
 
     /**
-     * NT-вывести на консоль свойства места подробно, как форму
+     * NT-вывести на консоль свойства Места подробно, как форму
      * 
      * @param p
      *            Место
@@ -463,7 +464,7 @@ public class DialogConsole
     }
 
     /**
-     * NT-Вывести на экран список существующих мест - только названия и описания мест.
+     * NT-Вывести на экран список существующих Мест - только названия и описания мест.
      */
     public void PrintListOfPlaces()
     {
@@ -498,6 +499,28 @@ public class DialogConsole
         return;
     }
 
+    /**
+     * NT-Вывести на консоль нумерованный список Мест в виде многострочной формы с разделителями.
+     * @param list Список Мест.
+     */
+    public void PrintPlaceFormNumberedList(LinkedList<Place> list)
+    {
+        String tmp;
+        Place p;
+        for(int i = 0; i < list.size(); i++)
+        {
+            p = list.get(i);
+            tmp = String.format("№%d Место \"%s\":", i, p.get_Title());
+            this.PrintTextLine(tmp,  EnumDialogConsoleColor.Сообщение);
+            //
+            this.PrintPlaceForm(p);
+            //тут возможно нужен разделитель?
+        }
+        
+        return;
+    }
+    
+    //*** Процедуры ***
     /**
      * NT-Вывести на экран список существующих Процедур - только названия и описания процедур.
      */
@@ -574,6 +597,7 @@ public class DialogConsole
         this.PrintTextLines(sar, EnumDialogConsoleColor.Сообщение);
 
     }
+    
     /**
      * NT-Вывести на консоль нумерованный список процедур в виде многострочной формы с разделителями.
      * @param list Список Процедур.
@@ -589,6 +613,103 @@ public class DialogConsole
             this.PrintTextLine(tmp,  EnumDialogConsoleColor.Сообщение);
             //
             this.PrintProcedureForm(p);
+            //тут возможно нужен разделитель?
+        }
+        
+        return;
+    }
+
+    //*** Настройки ***
+    /**
+     * NT-Вывести на экран список существующих Настроек - только названия и описания настроек.
+     */
+    public void PrintListOfSettings()
+    {
+        this.SureConsoleCursorStart();
+        // получить список процедур
+        LinkedList<SettingItem> settings = this.m_Engine.get_ECM().getSettingsAsList();
+
+        // сортировать список мест по алфавиту и неймспейсам.
+        // вывести на экран одни только названия и описания процедур
+        // TODO: Удобство - если строк много, вывести порциями по 20 штук с
+        // перерывом на Enter
+
+        // write namespace sorted items
+        ItemDictionaryByNamespace itbn = new ItemDictionaryByNamespace();
+        itbn.addSettingItems(settings);
+        String[] keys = itbn.getKeys(true);
+        for (String group : keys)
+        {
+            // this.WriteGroupHeader(writer, group);
+            this.PrintTextLine("[" + group + "]", EnumDialogConsoleColor.Сообщение);
+            // write procedure lines
+            LinkedList<Item> items = itbn.getItems(group, true);
+            for (Item it : items)
+            {
+                SettingItem p = (SettingItem) it;
+                String shortline = "   " + p.GetShortInfo();
+                this.PrintTextLine(shortline, EnumDialogConsoleColor.Сообщение);
+            }
+            this.PrintEmptyLine();
+        }
+
+        return;
+    }
+    
+    /**
+     * NT-Вывести на консоль короткое описание Настройки в одну строку
+     * 
+     * @param p
+     *            Объект Настройки.
+     */
+    public void PrintSettingShortLine(SettingItem p)
+    {
+        this.SureConsoleCursorStart();
+        this.PrintTextLine(p.getSingleLineProperties(), EnumDialogConsoleColor.Сообщение);
+
+        return;
+    }
+    
+    /**
+     * NT-вывести на консоль свойства Настройки подробно, как форму
+     * 
+     * @param p
+     *            Объект Настройки.
+     */
+    public void PrintSettingForm(SettingItem p)
+    {
+        this.SureConsoleCursorStart();
+        // тут надо вывести описание свойств Настройки в виде
+        // многострочной формы или списка свойств.
+        String[] sar = new String[8];
+        sar[0] = String.format("Свойства Настройки \"%s\":", p.get_Title());
+        sar[1] = String.format("Название:  %s", p.get_Title());
+        sar[2] = String.format("Категория: %s", p.get_Namespace());
+        sar[3] = String.format("Описание:  %s", p.get_Description());
+        sar[4] = String.format("Значение:     %s", p.get_Path());
+        sar[5] = String.format("ID:        %d", p.get_TableId());
+        sar[6] = String.format("ТолькоЧтение: %s", Utility.BoolToДаНет(!p.isItemCanChanged())); 
+        sar[7] = "";// пустая строка-разделитель
+        // print array of lines
+        this.PrintTextLines(sar, EnumDialogConsoleColor.Сообщение);
+
+    }
+    
+    /**
+     * NT-Вывести на консоль нумерованный список Настроек в виде многострочной формы с разделителями.
+     * @param list Список Настроек.
+     */
+    public void PrintSettingFormNumberedList(LinkedList<SettingItem> list)
+    {
+        String tmp;
+        SettingItem p;
+        for(int i = 0; i < list.size(); i++)
+        {
+            p = list.get(i);
+            tmp = String.format("№%d Настройка \"%s\":", i, p.get_Title());
+            this.PrintTextLine(tmp,  EnumDialogConsoleColor.Сообщение);
+            //
+            this.PrintSettingForm(p);
             //тут возможно нужен разделитель?
         }
         
