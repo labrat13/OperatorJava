@@ -23,6 +23,7 @@ import OperatorEngine.Procedure;
 import OperatorEngine.UserQuery;
 import OperatorEngine.Utility;
 import OperatorEngine.Version;
+import Settings.SettingItem;
 
 /**
  * NT- Базовый класс для менеджеров бибилиотек Процедур.
@@ -247,6 +248,27 @@ public class LibraryManagerBase
         throw new Exception("Function must be overridden");
     }
 
+    /**
+     * NT- Get Setting collection from this library.
+     * This function must be overriden in child class.
+     * 
+     * @return Function returns array of SettingItem, defined in this library.
+     * @throws Exception
+     *             Error in processing.
+     */
+    public SettingItem[] getLibrarySettings() throws Exception
+    {
+        // if (this.m_Initialized == false)
+        // {
+        //
+        // }
+        // else
+        // {
+        //
+        // }
+        throw new Exception("Function must be overridden");
+    }
+    
     // *** Override this in child classes ***
     /**
      * NT-Initialize Library Data. This function must be overrided in child classes.

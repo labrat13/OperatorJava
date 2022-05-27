@@ -593,6 +593,44 @@ public class ElementCacheManager
 
     }
 
+    /**
+     * NT-Удалить все Места из БД Оператора и обновить кеш процедур.
+     * БД открывается, если еще не открыта, затем закрывается.
+     * Если выброшено исключение, транзакция откатывается и исключение перевыбрасывается.
+     * 
+     * @throws Exception
+     *             Ошибка при использовании БД.
+     */
+    public void RemoveAllPlacesFromDatabase() throws Exception
+    {
+        try
+        {
+            // sure database is opened
+            this.m_db.Open();
+            // remove places
+            this.m_db.RemoveAllPlaces();
+            // reload cache
+            this.reloadPlaces();
+            // TODO: если тут возникнет исключение, то в кеше будут неправильные данные - в нем же нельзя откатить транзакцию.
+            // А хорошо бы иметь возможность полностью откатить изменения и в кеше тоже.
+            // commit changes
+            this.m_db.TransactionCommit();
+        }
+        catch (Exception e)
+        {
+            // cancel adding and rethrow exception
+            this.m_db.TransactionRollback();
+            throw new Exception(e.toString());
+        }
+        finally
+        {
+            // close db connection
+            this.m_db.Close();
+        }
+
+        return;
+    }
+    
     // ==== Setting function ==============================
     /**
      * NT-Добавить новую настройку и обновить кеш настроек.
@@ -779,6 +817,44 @@ public class ElementCacheManager
 
     }
 
+    /**
+     * NT-Удалить все Места из БД Оператора и обновить кеш процедур.
+     * БД открывается, если еще не открыта, затем закрывается.
+     * Если выброшено исключение, транзакция откатывается и исключение перевыбрасывается.
+     * 
+     * @throws Exception
+     *             Ошибка при использовании БД.
+     */
+    public void RemoveAllSettingsFromDatabase() throws Exception
+    {
+        try
+        {
+            // sure database is opened
+            this.m_db.Open();
+            // remove settings
+            this.m_db.RemoveAllSettings();
+            // reload cache
+            this.reloadSettings();
+            // TODO: если тут возникнет исключение, то в кеше будут неправильные данные - в нем же нельзя откатить транзакцию.
+            // А хорошо бы иметь возможность полностью откатить изменения и в кеше тоже.
+            // commit changes
+            this.m_db.TransactionCommit();
+        }
+        catch (Exception e)
+        {
+            // cancel adding and rethrow exception
+            this.m_db.TransactionRollback();
+            throw new Exception(e.toString());
+        }
+        finally
+        {
+            // close db connection
+            this.m_db.Close();
+        }
+
+        return;
+    }
+    
     // ========= Reloading functions =========================
     /**
      * NT-Перезагрузить кеш-коллекции мест данными из источника.
@@ -834,7 +910,7 @@ public class ElementCacheManager
         LinkedList<Procedure> llp2 = this.m_PEM.GetAllProcedures();
         this.m_procedures.Fill(llp2);
         // 3. постобработка Процедур?
-        // - TODO: проверить что постобработка объектов мест выполнена.
+        // - TODO: проверить что постобработка объектов выполнена.
         // 4. Сортировка коллекции Процедур по весу - already done in Fill() function.
 
         // clean up
@@ -862,10 +938,17 @@ public class ElementCacheManager
         // 1. добавить из БД
         LinkedList<SettingItem> llp = this.m_db.GetAllSettings();
         this.m_settings.addItems(llp);
-
+        // 2. Добавить из PEM (из Библиотек Процедур)
+        LinkedList<SettingItem> llp2 = this.m_PEM.GetAllSettings();
+        this.m_settings.addItems(llp2);
+        // 3. постобработка Настроек?
+        // - TODO: проверить что постобработка объектов выполнена.
+        
         // clean up
         llp.clear();
+        llp2.clear();
         llp = null;
+        llp2 = null;
 
         return;
     }

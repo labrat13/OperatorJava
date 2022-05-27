@@ -14,6 +14,7 @@ import OperatorEngine.Procedure;
 import ProcedureSubsystem.ImplementationState;
 import ProcedureSubsystem.LibraryManagerBase;
 import ProcedureSubsystem.OperatorProcedure;
+import Settings.SettingItem;
 
 /**
  * Класс менеджера библиотеки Процедур.
@@ -102,7 +103,45 @@ public class LibraryManager extends LibraryManagerBase
         // TODO: Добавить код завершения ресурсов библиотеки процедур здесь.
         return;
     }
-
+    /**
+     * NT- Get Setting collection from this library.
+     * This function must be overriden in child class.
+     * 
+     * @return Function returns array of SettingItem, defined in this library.
+     * @throws Exception
+     *             Error in processing.
+     */
+    @Override
+    public SettingItem[] getLibrarySettings() throws Exception
+    {
+      LinkedList<SettingItem> result = new LinkedList<SettingItem>();
+      //Это шаблон, образец, не трогать его!
+      //TODO: Описать правила заполнения полей объекта, привести ссылки на форматы, документацию.
+      
+      SettingItem s;
+    //заполнить вручную поля
+      s = new SettingItem();
+      //Уникальный идентификатор элемента или первичный ключ таблицы. 0 по умолчанию, здесь можно не указывать.
+      //s.set_TableId(0);
+      //Краткое однострочное название сущности Настройки.
+      s.set_Title("НазваниеНастройки");
+      //Краткое однострочное описание Настройки, не обязателен.
+      s.set_Description("Описание Настройки");
+      //установить категорию для Настройки.
+      s.set_Namespace(NamespaceConstants.NsDefault);
+      //Значение настройки как String Integer Boolean
+      //s.set_Path("Значение Настройки"); хранится в поле Item.Path как строка.
+      s.setValue("Значение Настройки");   
+      //указать название источника как название текущей библиотеки.
+      s.set_Storage(this.m_LibraryTitle);
+      //добавить объект Настройки в выходной массив
+      result.add(s);
+      
+      
+      // вернуть выходной массив
+      return result.toArray(new SettingItem[result.size()]);
+    }
+    
     /**
      * NT- Get Places collection from this library.
      * This function must be overriden in child class.
@@ -134,7 +173,7 @@ public class LibraryManager extends LibraryManagerBase
          //Перечисление типов сущности по моей методике.
          //TODO: добавить сюда ссылку на документацию по методике классов Мест.
          p.set_PlaceTypeExpression("Приложение::ТекстовыйРедактор<Файл::ТекстовыйФайл>;");
-         //добавить название источника как название текущей библиотеки.
+         //указать название источника как название текущей библиотеки.
          p.set_Storage(this.m_LibraryTitle);
          //установить неймспейс для Места.
          p.set_Namespace(NamespaceConstants.NsDefault);
@@ -288,6 +327,29 @@ public class LibraryManager extends LibraryManagerBase
         p.set_Namespace(NamespaceConstants.NsDefault);
         result.add(p);
         
+        //*** Add Procedures from PlaceProcedures class ***
+        
+        p = new Procedure();
+        p.set_Title("Показать места");
+        p.set_Description("Вывести на экран список доступных Мест.");
+        p.set_Path("GeneralProcedures.PlaceProcedures.CommandListPlaces()");
+        p.set_Regex("показать места");
+        p.set_Ves(0.5);
+        p.set_Storage(this.m_LibraryTitle);
+        p.set_Namespace(NamespaceConstants.NsService_Place);
+        result.add(p);
+        
+        //*** Add Procedures from SettingProcedures class ***
+        
+        p = new Procedure();
+        p.set_Title("Показать настройки");
+        p.set_Description("Вывести на экран список доступных Настроек.");
+        p.set_Path("GeneralProcedures.SettingProcedures.CommandListSettings()");
+        p.set_Regex("показать настройки");
+        p.set_Ves(0.5);
+        p.set_Storage(this.m_LibraryTitle);
+        p.set_Namespace(NamespaceConstants.NsService_Setting);
+        result.add(p);
         
         // вернуть выходной массив
         return result.toArray(new Procedure[result.size()]);

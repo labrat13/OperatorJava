@@ -27,6 +27,7 @@ import OperatorEngine.Place;
 import OperatorEngine.Procedure;
 import OperatorEngine.UserQuery;
 import OperatorEngine.Utility;
+import Settings.SettingItem;
 
 /**
  * NR-Менеджер подсистемы исполнения Процедур
@@ -229,7 +230,7 @@ public class ProcedureExecutionManager
             catch (Exception ex)
             {
                 // тут вывести сообщение о ошибке библиотеки на консоль и в лог
-                String msg = String.format("Error on getAllPlaces() for library \"%s\" (path=\"%s\")", en.getKey(), en.getValue().m_LibraryPath);
+                String msg = String.format("Error on GetAllPlaces() for library \"%s\" (path=\"%s\")", en.getKey(), en.getValue().m_LibraryPath);
                 this.m_Engine.PrintExceptionMessageToConsoleAndLog(msg, ex);
             }
         }
@@ -240,7 +241,7 @@ public class ProcedureExecutionManager
     /**
      * NT-Получить все объекты Процедур
      * 
-     * @return Функция возвращает список объектовПроцедур.
+     * @return Функция возвращает список объектов Процедур.
      * @throws Exception
      *             Ошибка .
      */
@@ -265,7 +266,7 @@ public class ProcedureExecutionManager
             catch (Exception ex)
             {
                 // тут вывести сообщение о ошибке библиотеки на консоль и в лог
-                String msg = String.format("Error on getAllProcedures() for library \"%s\" (path=\"%s\")", en.getKey(), en.getValue().m_LibraryPath);
+                String msg = String.format("Error on GetAllProcedures() for library \"%s\" (path=\"%s\")", en.getKey(), en.getValue().m_LibraryPath);
                 this.m_Engine.PrintExceptionMessageToConsoleAndLog(msg, ex);
             }
         }
@@ -273,6 +274,42 @@ public class ProcedureExecutionManager
         return result;
     }
 
+    /**
+     * NT-Получить все объекты Настроек
+     * 
+     * @return Функция возвращает список объектов Настроек.
+     * @throws Exception
+     *             Ошибка .
+     */
+    public LinkedList<SettingItem> GetAllSettings() throws Exception
+    {
+        LinkedList<SettingItem> result = new LinkedList<SettingItem>();
+        Set<Entry<String, LibraryManagerBase>> values = this.m_Libraries.entrySet();
+
+        for (Entry<String, LibraryManagerBase> en : values)
+        {
+            try
+            {
+                LibraryManagerBase lmb = en.getValue();
+                if (lmb.get_Initialized() == true)
+                {
+                    SettingItem[] par = lmb.getLibrarySettings();
+                    // add to result list
+                    for (SettingItem p : par)
+                        result.add(p);
+                }
+            }
+            catch (Exception ex)
+            {
+                // тут вывести сообщение о ошибке библиотеки на консоль и в лог
+                String msg = String.format("Error on GetAllSettings() for library \"%s\" (path=\"%s\")", en.getKey(), en.getValue().m_LibraryPath);
+                this.m_Engine.PrintExceptionMessageToConsoleAndLog(msg, ex);
+            }
+        }
+
+        return result;
+    }
+    
     /**
      * NT- Запустить процедуру на исполнение
      * 
