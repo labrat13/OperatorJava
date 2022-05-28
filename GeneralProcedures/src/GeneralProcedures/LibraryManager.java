@@ -330,6 +330,16 @@ public class LibraryManager extends LibraryManagerBase
         //*** Add Procedures from PlaceProcedures class ***
         
         p = new Procedure();
+        p.set_Title("Создать место НазваниеМеста");
+        p.set_Description("Создать Место в БазаДанныхОператора.");
+        p.set_Path("GeneralProcedures.PlaceProcedures.CommandCreatePlace()");
+        p.set_Regex("создать место %place");
+        p.set_Ves(0.5);
+        p.set_Storage(this.m_LibraryTitle);
+        p.set_Namespace(NamespaceConstants.NsService_Place);
+        result.add(p);
+        
+        p = new Procedure();
         p.set_Title("Показать места");
         p.set_Description("Вывести на экран список доступных Мест.");
         p.set_Path("GeneralProcedures.PlaceProcedures.CommandListPlaces()");

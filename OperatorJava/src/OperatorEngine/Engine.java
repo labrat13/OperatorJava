@@ -1434,7 +1434,7 @@ public class Engine
         for (FuncArgument f : args.get_Arguments())
         {
             String name = f.get_ArgumentValue();
-            if (this.m_ECM.get_PlaceCollection().ContainsPlace(name))
+            if (this.m_ECM.get_PlaceCollection().ContainsPlaceBySynonim(name))
             {
                 // извлечем место
                 Place p = this.m_ECM.get_PlaceCollection().GetPlace(name);

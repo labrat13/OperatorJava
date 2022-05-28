@@ -117,5 +117,24 @@ public class EntityTypesCollection
 
         return;
     }
-
+    /**
+     * Check expression parsing
+     * @param exp Выражение описания классов сущности
+     * @return Возвращает true, если выражение распарсено, false в противном случае.
+     */
+    public static boolean TryParsingExpression(String exp)
+    {
+        boolean result = true;
+        try 
+        {
+            EntityTypesCollection t = new EntityTypesCollection();
+            t.ParseExpression(exp);
+        }
+        catch(Exception ex)
+        {
+            result = false;
+        }
+        
+        return result;
+    }
 }// end class

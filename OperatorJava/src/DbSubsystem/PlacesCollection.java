@@ -169,17 +169,17 @@ public class PlacesCollection
     }
 
     /**
-     * NT-Определить, есть ли такое имя в коллекции. Это для упрощения
+     * NT-Определить, есть ли такой синоним в коллекции. Это для упрощения
      * вызывающего кода
      * 
-     * @param name
-     *            Проверяемое имя
+     * @param synonim
+     *            Проверяемый синоним Места.
      * @return Возвращает True если имя есть в коллекции, иначе возвращает
      *         False.
      */
-    public boolean ContainsPlace(String name)
+    public boolean ContainsPlaceBySynonim(String synonim)
     {
-        return this.m_places.containsKey(name);
+        return this.m_places.containsKey(synonim);
     }
 
     /**
@@ -217,17 +217,19 @@ public class PlacesCollection
         return false;
     }
 
+
+    
     /**
-     * NT-Получить объект места по названию (тексту аргумента).
+     * NT-Получить объект места по синониму (тексту аргумента).
      * 
-     * @param text
-     *            Название места
+     * @param synonim
+     *            Синоним места
      * @return Возвращает объект Места или null если место отсутствует в
      *         коллекции.
      */
-    public Place GetPlace(String text)
+    public Place GetPlace(String synonim)
     {
-        String t = text.trim();
+        String t = synonim.trim();
         if (this.m_places.containsKey(t))
         {
             return this.m_places.get(t);

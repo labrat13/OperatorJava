@@ -109,8 +109,13 @@ public class ProcedureProcedures
         // Поэтому надо здесь его перехватить, вывести в лог и на консоль, и погасить, вернув EnumProcedureResult.Error.
         try
         {
-
-            String str = String.format("Начата процедура %s(\"%s\")", currentProcedureTitle, args.getByIndex(0).get_ArgumentValue());
+            // 1. Извлечь из аргумента название команды
+            String procedureTitle;
+            FuncArgument arg = args.getByIndex(0);
+            procedureTitle = arg.get_ArgumentQueryValue().trim();// берем сырой текст аргумента из запроса
+            
+            
+            String str = String.format("Начата процедура %s(\"%s\")", currentProcedureTitle, procedureTitle);
             // DONE: вывести это тестовое сообщение о начале процедуры - в лог!
             engine.AddMessageToConsoleAndLog(str, EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.SubsystemEvent_Procedure, EnumLogMsgState.OK);
 
@@ -121,9 +126,7 @@ public class ProcedureProcedures
             engine.get_OperatorConsole().PrintTextLine("1. Название Команды", EnumDialogConsoleColor.Сообщение);
 
             // извлечь название процедуры из аргумента
-            FuncArgument arg = args.getByIndex(0);
-            str = arg.get_ArgumentQueryValue().trim();// берем сырой текст аргумента из запроса
-            engine.get_OperatorConsole().PrintTextLine(String.format("Название новой Команды: \"%s\"", str), EnumDialogConsoleColor.Сообщение);
+            engine.get_OperatorConsole().PrintTextLine(String.format("Название новой Команды: \"%s\"", procedureTitle), EnumDialogConsoleColor.Сообщение);
 
             // TODO: проверить признак того, что вместо названия процедуры движком было подставлено название зарегистрированного места
             if (arg.get_АвтоподстановкаМеста() == true)
@@ -137,7 +140,7 @@ public class ProcedureProcedures
             EnumProcedureResult epr; // temp var reference
 
             outResult = new InOutArgument();// оболочка для строки-результата, передаваемого как аргумент.
-            epr = readProcedureTitleForNew(engine, outResult, str);
+            epr = readProcedureTitleForNew(engine, outResult, procedureTitle);
             if (epr == EnumProcedureResult.CancelledByUser)
                 return epr;
             else
@@ -223,6 +226,8 @@ public class ProcedureProcedures
             }
 
             // 7. Вывести свойства Процедуры и запросить подтверждение создания процедуры.
+            // сначала добавить название хранилища в объект Процедуры - согласно концепту Библиотек Процедур Оператора.
+            proc.set_Storage(Procedure.StorageKeyForDatabaseItem);
             // Вроде все свойства должны быть заполнены, теперь надо вывести все их в форме
             engine.get_OperatorConsole().PrintEmptyLine();
             engine.get_OperatorConsole().PrintTextLine("7. Подтвердите создание Команды", EnumDialogConsoleColor.Сообщение);// пункт плана
@@ -235,9 +240,6 @@ public class ProcedureProcedures
                 return EnumProcedureResult.CancelledByUser;
 
             // 8. заполнить объект Процедуры и создать новую процедуру в БД
-            // сначала добавить название хранилища в объект Процедуры - согласно концепту Библиотек Процедур Оператора.
-            proc.set_Storage(Procedure.StorageKeyForDatabaseItem);
-            // engine.DbInsertProcedure(proc); заменено на:
             engine.get_ECM().AddProcedure(proc);
 
             // 9. вывести сообщение о результате операции: успешно
@@ -376,46 +378,8 @@ public class ProcedureProcedures
 
             // 2. извлечь из БД список команд с таким названием и показать пользователю.
             // без учета регистра символов
-            // DONE: весь этот пункт 2 надо превратить в отдельную функцию выбора процедуры по ее названию, чтобы использовать ее во многих местах этого класса.
-
             Procedure proc = null;
-            // LinkedList<Procedure> lip = engine.get_ECM().get_ProcedureCollection().getByTitle(procedureTitle);
-            // int lipSize = lip.size();
-            // if (lipSize == 0)
-            // {
-            // // тут вывести сообщение, что указанная команда не найдена и завершить процедуру успешно.
-            // String st1 = String.format("Удаляемая команда \"%s\" не найдена", procedureTitle);
-            // engine.get_OperatorConsole().PrintTextLine(st1, EnumDialogConsoleColor.Предупреждение);
-            // return EnumProcedureResult.Success;
-            // }
-            // else if (lipSize == 1)
-            // {
-            // proc = lip.get(0);
-            // }
-            // else // if(lipSize > 1)
-            // {
-            // // тут вывести пользователю найденные команды с тем же названием
-            // engine.get_OperatorConsole().PrintTextLine("Существующие команды с таким названием:", EnumDialogConsoleColor.Предупреждение);
-            // // Если в списке более одной команды, то пользователь должен выбрать одну из них для удаления.
-            // // для этого в списке Команд нужно показать уникальный ИД команды, источник-хранилище, категорию, название и описание.
-            // // И флаг, возможно ли удаление данной команды - это определяется Хранилищем.
-            // // Для выбора из нескольких Команд надо запросить у пользователя ИД команды, но проблема в том, что ид сейчас есть только у объектов из БД.
-            // // - можно вывести порядковый номер в этом списке и запросить у пользователя его.
-            // engine.get_OperatorConsole().PrintProcedureFormNumberedList(lip);
-            // // запросить у пользователя порядковый номер элемента списка
-            // int lip_index = engine.get_OperatorConsole().InputListIndex(lipSize);
-            // // обработать указанный пользователем индекс
-            // if (lip_index < 1)
-            // {
-            // // Если пользователь отказался выбрать элемент списка, вывести сообщение об этом и завершить текущую Процедуру Отменено пользователем.
-            // engine.get_OperatorConsole().PrintTextLine("Операция отменена, поскольку пользователь не смог выбрать Команду из списка.",
-            // EnumDialogConsoleColor.Сообщение);
-            // return EnumProcedureResult.CancelledByUser;
-            // }
-            // else proc = lip.get(lip_index);// выбранный пользователем объект команды.
-            // }
 
-            // заменено на:
             InOutArgument outResult = new InOutArgument();// оболочка для строки-результата, передаваемого как аргумент.
             EnumProcedureResult epr = selectProcedure(engine, procedureTitle, outResult);
             if (epr == EnumProcedureResult.CancelledByUser)
@@ -541,42 +505,7 @@ public class ProcedureProcedures
             // без учета регистра символов
 
             Procedure proc = null;
-            // LinkedList<Procedure> lip = engine.get_ECM().get_ProcedureCollection().getByTitle(procedureTitle);
-            // int lipSize = lip.size();
-            // if (lipSize == 0)
-            // {
-            // // тут вывести сообщение, что указанная команда не найдена и завершить процедуру успешно.
-            // stmp = String.format("Изменяемая команда \"%s\" не найдена", procedureTitle);
-            // engine.get_OperatorConsole().PrintTextLine(stmp, EnumDialogConsoleColor.Предупреждение);
-            // return EnumProcedureResult.Success;
-            // }
-            // else if (lipSize == 1)
-            // {
-            // proc = lip.get(0);
-            // }
-            // else // if(lipSize > 1)
-            // {
-            // // тут вывести пользователю найденные команды с тем же названием
-            // engine.get_OperatorConsole().PrintTextLine("Существующие команды с таким названием:", EnumDialogConsoleColor.Предупреждение);
-            // // Если в списке более одной команды, то пользователь должен выбрать одну из них для удаления.
-            // // для этого в списке Команд нужно показать уникальный ИД команды, источник-хранилище, категорию, название и описание.
-            // // И флаг, возможно ли удаление данной команды - это определяется Хранилищем.
-            // // Для выбора из нескольких Команд надо запросить у пользователя ИД команды, но проблема в том, что ид сейчас есть только у объектов из БД.
-            // // - можно вывести порядковый номер в этом списке и запросить у пользователя его.
-            // engine.get_OperatorConsole().PrintProcedureFormNumberedList(lip);
-            // // запросить у пользователя порядковый номер элемента списка
-            // int lip_index = engine.get_OperatorConsole().InputListIndex(lipSize);
-            // // обработать указанный пользователем индекс
-            // if (lip_index < 1)
-            // {
-            // // Если пользователь отказался выбрать элемент списка, вывести сообщение об этом и завершить текущую Процедуру Отменено пользователем.
-            // engine.get_OperatorConsole().PrintTextLine("Операция отменена, поскольку пользователь не смог выбрать Команду из списка.",
-            // EnumDialogConsoleColor.Сообщение);
-            // return EnumProcedureResult.CancelledByUser;
-            // }
-            // else proc = lip.get(lip_index);// выбранный пользователем объект команды.
-            // }
-            // заменено на:
+
             outResult = new InOutArgument();// оболочка для строки-результата, передаваемого как аргумент.
             epr = selectProcedure(engine, procedureTitle, outResult);
             if (epr == EnumProcedureResult.CancelledByUser)
