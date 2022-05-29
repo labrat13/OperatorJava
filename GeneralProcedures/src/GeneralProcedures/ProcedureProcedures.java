@@ -473,11 +473,10 @@ public class ProcedureProcedures
 
         EnumProcedureResult result = EnumProcedureResult.Success;
         // название текущей процедуры для лога итп.
-        // TODO: указать здесь полный путь как название процедуры для вывода на экран.
+        // указать здесь полный путь как название процедуры для вывода на экран.
         String currentProcedureTitle = "GeneralProcedures.ProcedureProcedures.CommandChangeProcedure";
         // выброшенное тут исключение будет заменено на Reflection исключение и его текст потеряется.
         // Поэтому надо здесь его перехватить, вывести в лог и на консоль, и погасить, вернув EnumProcedureResult.Error.
-
         String stmp; // temp string
         EnumSpeakDialogResult esdr; // temp dialog result
         InOutArgument outResult; // temp in-out argument object
@@ -967,19 +966,11 @@ public class ProcedureProcedures
         boolean notUnicalProcedure = false;
         while (true)
         {
-            // 1 введите новое название
+            // 1 введите новое название, пустые строки не принимаюся.
             // Раз есть такие Процедуры, пользователь должен сменить название Процедуры прямо тут же
             // или же завершить диалог Отменой создания команды
             // no empty answer's allowed by arg4! str cannot be empty here.
             str = engine.get_OperatorConsole().PrintQuestionAnswer(EnumSpeakDialogResult.Отмена, "Введите новое название Команды:", false, true);
-
-            // 2 если пустое - пустая строка недопустима и перейти на новый цикл
-            // // если название команды - пустая строка, вывести сообщение и перейти к приему нового названия команды
-            // if (OperatorEngine.Utility.StringIsNullOrEmpty(str))
-            // {
-            // engine.get_OperatorConsole().PrintTextLine("Пустая строка недопустима для названия Команды!", EnumDialogConsoleColor.Предупреждение);
-            // continue;
-            // }
 
             // 3 если отмена - выйти с отменой
             if (Dialogs.этоОтмена(str))

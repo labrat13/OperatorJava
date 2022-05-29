@@ -340,6 +340,26 @@ public class LibraryManager extends LibraryManagerBase
         result.add(p);
         
         p = new Procedure();
+        p.set_Title("Изменить место НазваниеМеста");
+        p.set_Description("Изменить Место в БазаДанныхОператора.");
+        p.set_Path("GeneralProcedures.PlaceProcedures.CommandChangePlace()");
+        p.set_Regex("изменить место %place");
+        p.set_Ves(0.5);
+        p.set_Storage(this.m_LibraryTitle);
+        p.set_Namespace(NamespaceConstants.NsService_Place);
+        result.add(p);
+        
+        p = new Procedure();
+        p.set_Title("Редактировать место НазваниеМеста");
+        p.set_Description("Синоним для Изменить Место в БазаДанныхОператора.");
+        p.set_Path("GeneralProcedures.PlaceProcedures.CommandChangePlace()");
+        p.set_Regex("редактировать место %place");
+        p.set_Ves(0.5);
+        p.set_Storage(this.m_LibraryTitle);
+        p.set_Namespace(NamespaceConstants.NsService_Place);
+        result.add(p);
+        
+        p = new Procedure();
         p.set_Title("Показать места");
         p.set_Description("Вывести на экран список доступных Мест.");
         p.set_Path("GeneralProcedures.PlaceProcedures.CommandListPlaces()");

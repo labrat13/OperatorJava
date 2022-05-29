@@ -1,7 +1,7 @@
 /**
  * @author Селяков Павел
- * Created: 3 мая 2022 г. 12:50:00
- * State: 3 мая 2022 г. 12:50:00 - initial
+ *         Created: 3 мая 2022 г. 12:50:00
+ *         State: 3 мая 2022 г. 12:50:00 - initial
  */
 package GeneralProcedures;
 
@@ -32,20 +32,21 @@ import Utility.InOutArgument;
  *
  */
 @OperatorProcedure(State = ImplementationState.NotTested,
-    Title = "PlaceProcedures",
-    Description = "Класс содержит Процедуры для операций с Местами.")
+        Title = "PlaceProcedures",
+        Description = "Класс содержит Процедуры для операций с Местами.")
 public class PlaceProcedures
 {
-    //#region Константы
+
+    // #region Константы
     /**
      * Массив строк вопросов для ввода падежных форм
      */
-    private final static String[] ВопросыПадежныхФорм = { "И.п. Это что?", "Р.п. Владелец чего?", "Д.п. Дали чему?", "В.п. Обвинили что?", "Тв.п. Творимый чем?", "Пр.п. Рассказ о чем?" };
-    
-    //#endregion
+    private final static String[] ВопросыПадежныхФорм = { "И.п. Это что?",
+            "Р.п. Владелец чего?", "Д.п. Дали чему?", "В.п. Обвинили что?",
+            "Тв.п. Творимый чем?", "Пр.п. Рассказ о чем?" };
 
-    
-    
+    // #endregion
+
     // Для всех операций с Процедурами и Местами из кода Процедур использовать класс ElementCacheManager, а не БД итп.
     // Пример: engine.get_ECM().AddPlace(p);
 
@@ -62,81 +63,80 @@ public class PlaceProcedures
     // Процедура не проверена.
     // - Если вы протестировали Процедуру, и она правильно работает, пометьте ее ImplementationState.Ready, чтобы Оператор не выводил ненужные более
     // предупреждения.
-    
-  //Заготовка функции обработчика Процедуры - скопируйте в нужный класс и выполните тодо.
 
-//    /**
-//     * NR-Обработчик процедуры Шаблон обработчика процедуры.
-//     * 
-//     * 
-//     * @param engine
-//     *            Ссылка на объект Движка Оператор для доступа к консоли, логу, БД итп.
-//     * @param manager
-//     *            Ссылка на объект Менеджера Библиотеки Процедур для доступа к инициализированным ресурсам библиотеки.
-//     * @param query
-//     *            Текст исходного запроса пользователя для возможной дополнительной обработки.
-//     * @param args
-//     *            Массив аргументов Процедуры, соответствующий запросу.
-//     * @return Функция возвращает результат как одно из значений EnumProcedureResult:
-//     *         EnumProcedureResult.Success если Процедура выполнена успешно;
-//     *         EnumProcedureResult.WrongArguments если аргументы не подходят для запуска Процедуры;
-//     *         EnumProcedureResult.Error если произошла ошибка при выполнении Процедуры;
-//     *         EnumProcedureResult.CancelledByUser если выполнение Процедуры прервано Пользователем;
-//     *         EnumProcedureResult.Exit если после выполнения Процедуры требуется завершить работу Оператор;
-//     *         EnumProcedureResult.ExitAndLogoff если после выполнения Процедуры требуется завершить сеанс пользователя;
-//     *         EnumProcedureResult.ExitAndHybernate если после выполнения Процедуры требуется перевести компьютер в спящий режим;
-//     *         EnumProcedureResult.ExitAndSleep если после выполнения Процедуры требуется перевести компьютер в спящий режим;
-//     *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
-//     *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
-//     */
-//    @OperatorProcedure(State = ImplementationState.NotRealized,   // TODO: заменить на актуальное
-//            Title = "Название команды",   // TODO: заменить название команды на актуальное
-//            Description = "Однострочное описание команды.")      // TODO: заменить описание команды на актуальное
-//    public static EnumProcedureResult НазваниеШаблона(
-//            Engine engine,
-//            LibraryManagerBase manager,
-//            UserQuery query,
-//            ArgumentCollection args)
-//    {
-//        /*
-//         * 07042022 - Добавлена возможность внутри Процедуры изменять текст запроса,
-//         * чтобы применить новый текст запроса к дальнейшему поиску Процедур.
-//         * Изменение запроса не перезапускает поиск Процедур (в текущей версии Оператора).
-//         * Поэтому изменять запрос следует только в хорошо продуманных случаях.
-//         * 
-//         * Пример вызова функции переопределения запроса, с выводом в лог старого и нового значений.
-//         * Example: query.ChangeQuery(engine, "New query text");
-//         */
-//
-//        // TODO: Не забудьте добавить эту Процедуру в LibraryManager.getLibraryProcedures() функцию, чтобы она была добавлена в Оператор.
-//
-//        EnumProcedureResult result = EnumProcedureResult.Success;
-//        // название текущей процедуры для лога итп.
-//        // TODO: указать здесь полный путь как название процедуры для вывода на экран.
-//        String currentProcedureTitle = "НазваниеБиблиотеки.НазваниеКласса.НазваниеФункции";
-//        // выброшенное тут исключение будет заменено на Reflection исключение и его текст потеряется.
-//        // Поэтому надо здесь его перехватить, вывести в лог и на консоль, и погасить, вернув EnumProcedureResult.Error.
-//        try
-//        {
-//         // вывести в лог тестовое сообщение о начале процедуры
-//            String str = String.format("Начата процедура %s(\"%s\")", currentProcedureTitle, args.getByIndex(0).get_ArgumentValue()); 
-//            engine.AddMessageToConsoleAndLog(str, EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.SubsystemEvent_Procedure, EnumLogMsgState.OK);
-//
-//            // TODO: код алгоритма добавить здесь
-//
-//            // TODO: вывести сообщение о результате операции: успешно
-//            engine.get_OperatorConsole().PrintTextLine("Команда успешно завершена.", EnumDialogConsoleColor.Успех);
-//        }
-//        catch (Exception ex)
-//        {
-//            engine.PrintExceptionMessageToConsoleAndLog("Ошибка в процедуре " + currentProcedureTitle + "()", ex);
-//            result = EnumProcedureResult.Error;
-//        }
-//
-//        // вернуть флаг продолжения работы
-//        return result;
-//    }
+    // Заготовка функции обработчика Процедуры - скопируйте в нужный класс и выполните тодо.
 
+    // /**
+    // * NR-Обработчик процедуры Шаблон обработчика процедуры.
+    // *
+    // *
+    // * @param engine
+    // * Ссылка на объект Движка Оператор для доступа к консоли, логу, БД итп.
+    // * @param manager
+    // * Ссылка на объект Менеджера Библиотеки Процедур для доступа к инициализированным ресурсам библиотеки.
+    // * @param query
+    // * Текст исходного запроса пользователя для возможной дополнительной обработки.
+    // * @param args
+    // * Массив аргументов Процедуры, соответствующий запросу.
+    // * @return Функция возвращает результат как одно из значений EnumProcedureResult:
+    // * EnumProcedureResult.Success если Процедура выполнена успешно;
+    // * EnumProcedureResult.WrongArguments если аргументы не подходят для запуска Процедуры;
+    // * EnumProcedureResult.Error если произошла ошибка при выполнении Процедуры;
+    // * EnumProcedureResult.CancelledByUser если выполнение Процедуры прервано Пользователем;
+    // * EnumProcedureResult.Exit если после выполнения Процедуры требуется завершить работу Оператор;
+    // * EnumProcedureResult.ExitAndLogoff если после выполнения Процедуры требуется завершить сеанс пользователя;
+    // * EnumProcedureResult.ExitAndHybernate если после выполнения Процедуры требуется перевести компьютер в спящий режим;
+    // * EnumProcedureResult.ExitAndSleep если после выполнения Процедуры требуется перевести компьютер в спящий режим;
+    // * EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
+    // * EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
+    // */
+    // @OperatorProcedure(State = ImplementationState.NotRealized, // TODO: заменить на актуальное
+    // Title = "Название команды", // TODO: заменить название команды на актуальное
+    // Description = "Однострочное описание команды.") // TODO: заменить описание команды на актуальное
+    // public static EnumProcedureResult НазваниеШаблона(
+    // Engine engine,
+    // LibraryManagerBase manager,
+    // UserQuery query,
+    // ArgumentCollection args)
+    // {
+    // /*
+    // * 07042022 - Добавлена возможность внутри Процедуры изменять текст запроса,
+    // * чтобы применить новый текст запроса к дальнейшему поиску Процедур.
+    // * Изменение запроса не перезапускает поиск Процедур (в текущей версии Оператора).
+    // * Поэтому изменять запрос следует только в хорошо продуманных случаях.
+    // *
+    // * Пример вызова функции переопределения запроса, с выводом в лог старого и нового значений.
+    // * Example: query.ChangeQuery(engine, "New query text");
+    // */
+    //
+    // // TODO: Не забудьте добавить эту Процедуру в LibraryManager.getLibraryProcedures() функцию, чтобы она была добавлена в Оператор.
+    //
+    // EnumProcedureResult result = EnumProcedureResult.Success;
+    // // название текущей процедуры для лога итп.
+    // // TODO: указать здесь полный путь как название процедуры для вывода на экран.
+    // String currentProcedureTitle = "НазваниеБиблиотеки.НазваниеКласса.НазваниеФункции";
+    // // выброшенное тут исключение будет заменено на Reflection исключение и его текст потеряется.
+    // // Поэтому надо здесь его перехватить, вывести в лог и на консоль, и погасить, вернув EnumProcedureResult.Error.
+    // try
+    // {
+    // // вывести в лог тестовое сообщение о начале процедуры
+    // String str = String.format("Начата процедура %s(\"%s\")", currentProcedureTitle, args.getByIndex(0).get_ArgumentValue());
+    // engine.AddMessageToConsoleAndLog(str, EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.SubsystemEvent_Procedure, EnumLogMsgState.OK);
+    //
+    // // TODO: код алгоритма добавить здесь
+    //
+    // // TODO: вывести сообщение о результате операции: успешно
+    // engine.get_OperatorConsole().PrintTextLine("Команда успешно завершена.", EnumDialogConsoleColor.Успех);
+    // }
+    // catch (Exception ex)
+    // {
+    // engine.PrintExceptionMessageToConsoleAndLog("Ошибка в процедуре " + currentProcedureTitle + "()", ex);
+    // result = EnumProcedureResult.Error;
+    // }
+    //
+    // // вернуть флаг продолжения работы
+    // return result;
+    // }
 
     /**
      * NT-Обработчик процедуры Создать место НазваниеМеста.
@@ -162,8 +162,8 @@ public class PlaceProcedures
      *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
      *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
      */
-    @OperatorProcedure(State = ImplementationState.NotTested,   // TODO: заменить на актуальное
-            Title = "Создать место НазваниеМеста",   
+    @OperatorProcedure(State = ImplementationState.Ready,
+            Title = "Создать место НазваниеМеста",
             Description = "Создать Место в БазаДанныхОператора.")
     public static EnumProcedureResult CommandCreatePlace(
             Engine engine,
@@ -182,40 +182,40 @@ public class PlaceProcedures
             String placeTitle;
             FuncArgument arg = args.getByIndex(0);
             placeTitle = arg.get_ArgumentQueryValue().trim();// берем сырой текст аргумента из запроса
-            
-            // вывести это тестовое сообщение о начале процедуры в лог            
+
+            // вывести это тестовое сообщение о начале процедуры в лог
             String str = String.format("Начата процедура %s(\"%s\")", currentProcedureTitle, placeTitle);
             engine.AddMessageToConsoleAndLog(str, EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.SubsystemEvent_Procedure, EnumLogMsgState.OK);
 
             Place place = new Place();// новый пустой объект для заполнения
 
-            //1 извлечь из аргументов название Места, если оно есть
+            // 1 извлечь из аргументов название Места, если оно есть
 
-            //ПроблемаАвтоподстановкиМест. Если место уже существует, движок подставляет его в этот запрос в качестве аргумента.
-            //Поэтому надо проверять поле типа аргумента. Если оно пустое, то аргумент из командной строки пришел как слово.
-            //(Поэтому нельзя типы аргументов при разборе строки назначать, если это не подставленное Место)
-            //А если тип есть, то это было место подставленное движком. Тогда ArgumentName = название аргумента из регекса, ArgumentValue=ПутьМеста           
+            // ПроблемаАвтоподстановкиМест. Если место уже существует, движок подставляет его в этот запрос в качестве аргумента.
+            // Поэтому надо проверять поле типа аргумента. Если оно пустое, то аргумент из командной строки пришел как слово.
+            // (Поэтому нельзя типы аргументов при разборе строки назначать, если это не подставленное Место)
+            // А если тип есть, то это было место подставленное движком. Тогда ArgumentName = название аргумента из регекса, ArgumentValue=ПутьМеста
             engine.get_OperatorConsole().PrintEmptyLine();
             engine.get_OperatorConsole().PrintTextLine("1. Название Места", EnumDialogConsoleColor.Сообщение);
-            
-            //извлечь название места из аргумента
+
+            // извлечь название места из аргумента
             engine.get_OperatorConsole().PrintTextLine(String.format("Название нового Места: \"%s\"", placeTitle), EnumDialogConsoleColor.Сообщение);
 
             // проверить признак того, что место уже существует и было подставлено в запрос при разборе запроса движком.
             if (arg.get_АвтоподстановкаМеста() == true)
             {
-               //обработать тут случай автоподстановки места вместо названия команды, если он возникнет
+                // обработать тут случай автоподстановки места вместо названия команды, если он возникнет
                 engine.get_OperatorConsole().PrintTextLine("Место с таким названием уже существует:", EnumDialogConsoleColor.Предупреждение);
                 engine.get_OperatorConsole().PrintPlaceShortLine(arg.get_AssociatedPlace());
                 return EnumProcedureResult.Error;
             }
-            
-            //2 проверить что в БД нет Места с таким названием, без учета регистра символов
-            //эта процедура обычно не вызывается без названия места
-            //а неуникальное название места - оригинальное место подставляется движком, и выпиливается вышележащей проверкой
-            //Но! иногда в БД есть Места, синонимы которых отличаются от значения свойства Название Места.
-            //Вот они-то и попадают в такой оборот, как здесь.
-            //Это места, названия которые совпадают с аргументом процедуры, но не с синонимами Места. Редкий случай.
+
+            // 2 проверить что в БД нет Места с таким названием, без учета регистра символов
+            // эта процедура обычно не вызывается без названия места
+            // а неуникальное название места - оригинальное место подставляется движком, и выпиливается вышележащей проверкой
+            // Но! иногда в БД есть Места, синонимы которых отличаются от значения свойства Название Места.
+            // Вот они-то и попадают в такой оборот, как здесь.
+            // Это места, названия которые совпадают с аргументом процедуры, но не с синонимами Места. Редкий случай.
             InOutArgument outResult;  // temp var reference
             EnumProcedureResult epr; // temp var reference
 
@@ -230,8 +230,8 @@ public class PlaceProcedures
                 place.set_Title(str);
             }
 
-            //3 ввести синонимы названия Места
-            //именно сейчас. Так как если они не уникальные, то, возможно, придется сменить также и название места.
+            // 3 ввести синонимы названия Места
+            // именно сейчас. Так как если они не уникальные, то, возможно, придется сменить также и название места.
             engine.get_OperatorConsole().PrintEmptyLine();
             engine.get_OperatorConsole().PrintTextLine("2. Словоформы Места", EnumDialogConsoleColor.Сообщение);
             outResult = new InOutArgument();// оболочка для строки-результата, передаваемого как аргумент.
@@ -242,17 +242,17 @@ public class PlaceProcedures
             {
                 // set regex value
                 str = outResult.getValueString();
-                place.set_Synonim(str);//TODO: проверить что строка правильно парсится на синонимы
+                place.set_Synonim(str);
             }
-       
-          //4 Ввести описание места одной строкой. Нажатие Enter завершит ввод описания.
-          //Поэтому описание места должно быть коротким и емким.
+
+            // 4 Ввести описание места одной строкой. Нажатие Enter завершит ввод описания.
+            // Поэтому описание места должно быть коротким и емким.
             engine.get_OperatorConsole().PrintEmptyLine();
             engine.get_OperatorConsole().PrintTextLine("3. Описание Места", EnumDialogConsoleColor.Сообщение);
 
             outResult = new InOutArgument();// оболочка для строки-результата, передаваемого как аргумент.
             epr = readPlaceDescription(engine, outResult);
-            //Если пользователь введет Отмена, завершить диалог Отменой создания места
+            // Если пользователь введет Отмена, завершить диалог Отменой создания места
             if (epr == EnumProcedureResult.CancelledByUser)
                 return epr;
             else
@@ -261,9 +261,9 @@ public class PlaceProcedures
                 str = outResult.getValueString();
                 place.set_Description(str);
             }
-            
-            //6 Ввести путь к Месту, веб-путь к Сущности, файловый путь к файлу.
-            //Если пользователь введет Отмена, завершить диалог Отменой создания места
+
+            // 6 Ввести путь к Месту, веб-путь к Сущности, файловый путь к файлу.
+            // Если пользователь введет Отмена, завершить диалог Отменой создания места
             engine.get_OperatorConsole().PrintEmptyLine();
             engine.get_OperatorConsole().PrintTextLine("4. Адрес Места", EnumDialogConsoleColor.Сообщение);
 
@@ -277,10 +277,10 @@ public class PlaceProcedures
                 str = outResult.getValueString();
                 place.set_Path(str);
             }
-            
-            //7 Ввести строку описания класса Сущности. Она имеет специальный формат.
-            //пользователю потребуется дополнительно справочник по этим классам.
-            //Если пользователь введет Отмена, завершить диалог Отменой создания места
+
+            // 7 Ввести строку описания класса Сущности. Она имеет специальный формат.
+            // пользователю потребуется дополнительно справочник по этим классам.
+            // Если пользователь введет Отмена, завершить диалог Отменой создания места
             engine.get_OperatorConsole().PrintEmptyLine();
             engine.get_OperatorConsole().PrintTextLine("5. Класс Места", EnumDialogConsoleColor.Сообщение);
 
@@ -312,27 +312,27 @@ public class PlaceProcedures
 
             // 7. Вывести свойства Места и запросить подтверждение создания Места.
             // Вроде все свойства должны быть заполнены, теперь надо вывести все их в форме
-            
-            //сначала добавить название хранилища в объект Места - согласно концепту Библиотек Процедур Оператора.
+
+            // сначала добавить название хранилища в объект Места - согласно концепту Библиотек Процедур Оператора.
             place.set_Storage(Procedure.StorageKeyForDatabaseItem);
 
             engine.get_OperatorConsole().PrintEmptyLine();
             engine.get_OperatorConsole().PrintTextLine("7. Подтвердите создание Места", EnumDialogConsoleColor.Сообщение);// пункт плана
             engine.get_OperatorConsole().PrintPlaceForm(place);
-            //и запросить подтверждение пользователя, что он желает создать Место
-            //Если пользователь ответит Да, надо создать место.
-            //Если пользователь ответит Нет или Отмена, отменить операцию.
+            // и запросить подтверждение пользователя, что он желает создать Место
+            // Если пользователь ответит Да, надо создать место.
+            // Если пользователь ответит Нет или Отмена, отменить операцию.
             EnumSpeakDialogResult sdr = engine.get_OperatorConsole().PrintДаНетОтмена("Желаете создать новое Место?");
             if (sdr.isНет() || sdr.isОтмена())
                 return EnumProcedureResult.CancelledByUser;
-            
+
             // 8. заполнить объект Места и создать новое Место в БД
             engine.get_ECM().AddPlace(place);
 
             // 9. вывести сообщение о результате операции: успешно
             engine.get_OperatorConsole().PrintTextLine(String.format("Место \"%s\" создано успешно", place.get_Title()), EnumDialogConsoleColor.Успех);
-            
-            //вернуть флаг успеха - уже установлен в начале функции, поэтому не будем здесь.
+
+            // вернуть флаг успеха - уже установлен в начале функции, поэтому не будем здесь.
         }
         catch (Exception ex)
         {
@@ -343,7 +343,6 @@ public class PlaceProcedures
         // вернуть флаг продолжения работы
         return result;
     }
-    
 
     /**
      * NT-Обработчик процедуры Показать Места.
@@ -369,9 +368,9 @@ public class PlaceProcedures
      *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
      *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
      */
-    @OperatorProcedure(State = ImplementationState.NotTested,   // TODO: заменить на актуальное
-            Title = "Показать места",   
-            Description = "Вывести на экран список Мест Оператор")  
+    @OperatorProcedure(State = ImplementationState.Ready,   // заменить на актуальное
+            Title = "Показать места",
+            Description = "Вывести на экран список Мест Оператор")
     public static EnumProcedureResult CommandListPlaces(
             Engine engine,
             LibraryManagerBase manager,
@@ -405,7 +404,7 @@ public class PlaceProcedures
         // вернуть флаг продолжения работы
         return result;
     }
-    
+
     /**
      * NT-Обработчик процедуры Удалить место НазваниеМеста.
      * 
@@ -430,9 +429,9 @@ public class PlaceProcedures
      *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
      *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
      */
-    @OperatorProcedure(State = ImplementationState.NotTested,   // TODO: заменить на актуальное
-            Title = "Удалить место НазваниеМеста",  
-            Description = "Удалить указанное Место из БазаДанныхОператор") 
+    @OperatorProcedure(State = ImplementationState.Ready,   // заменить на актуальное
+            Title = "Удалить место НазваниеМеста",
+            Description = "Удалить указанное Место из БазаДанныхОператор")
     public static EnumProcedureResult CommandDeletePlace(
             Engine engine,
             LibraryManagerBase manager,
@@ -451,24 +450,16 @@ public class PlaceProcedures
             FuncArgument arg = args.getByIndex(0);
             placeTitle = arg.get_ArgumentQueryValue().trim();// берем сырой текст аргумента из запроса
 
-            //вывести это тестовое сообщение о начале процедуры в лог
+            // вывести это тестовое сообщение о начале процедуры в лог
             String str = String.format("Начата процедура %s(\"%s\")", currentProcedureTitle, placeTitle);
             engine.AddMessageToConsoleAndLog(str, EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.SubsystemEvent_Procedure, EnumLogMsgState.OK);
 
             // 1. Извлечь из аргумента название команды
             engine.get_OperatorConsole().PrintTextLine(String.format("Название удаляемого Места: \"%s\"", placeTitle), EnumDialogConsoleColor.Сообщение);
 
-            //проверить признак того, что вместо названия команды движком было подставлено название зарегистрированного места
-            if (arg.get_АвтоподстановкаМеста() == true)
-            {
-                ; // TODO: обработать тут случай автоподстановки места вместо названия команды
-                  // если он возникнет
-            }
-
             // 2. извлечь из БД список команд с таким названием и показать пользователю.
             // без учета регистра символов
             // DONE: весь этот пункт 2 надо превратить в отдельную функцию выбора процедуры по ее названию, чтобы использовать ее во многих местах этого класса.
-
             Place place = null;
 
             InOutArgument outResult = new InOutArgument();// оболочка для строки-результата, передаваемого как аргумент.
@@ -527,9 +518,9 @@ public class PlaceProcedures
         // вернуть флаг продолжения работы
         return result;
     }
-    
+
     /**
-     * NR-Обработчик процедуры Изменить место НазваниеМеста.
+     * NT-Обработчик процедуры Изменить место НазваниеМеста.
      * 
      * 
      * @param engine
@@ -552,33 +543,269 @@ public class PlaceProcedures
      *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
      *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
      */
-    @OperatorProcedure(State = ImplementationState.NotRealized,   // TODO: заменить на актуальное
-            Title = "Изменить место НазваниеМеста",   // TODO: заменить название команды на актуальное
-            Description = "Изменить указанное Место Оператора")      // TODO: заменить описание команды на актуальное
+    @OperatorProcedure(State = ImplementationState.NotTested,   // TODO: заменить на актуальное
+            Title = "Изменить место НазваниеМеста",
+            Description = "Изменить указанное Место Оператора")
     public static EnumProcedureResult CommandChangePlace(
             Engine engine,
             LibraryManagerBase manager,
             UserQuery query,
             ArgumentCollection args)
     {
-
-        // TODO: Не забудьте добавить эту Процедуру в LibraryManager.getLibraryProcedures() функцию, чтобы она была добавлена в Оператор.
-
         EnumProcedureResult result = EnumProcedureResult.Success;
         // название текущей процедуры для лога итп.
         String currentProcedureTitle = "GeneralProcedures.PlaceProcedures.CommandChangePlace";
+
+        String stmp; // temp string
+        EnumSpeakDialogResult esdr; // temp dialog result
+        InOutArgument outResult; // temp in-out argument object
+        EnumProcedureResult epr; // temp procedure result
         // выброшенное тут исключение будет заменено на Reflection исключение и его текст потеряется.
         // Поэтому надо здесь его перехватить, вывести в лог и на консоль, и погасить, вернув EnumProcedureResult.Error.
         try
         {
-         // вывести в лог тестовое сообщение о начале процедуры
-            String str = String.format("Начата процедура %s(\"%s\")", currentProcedureTitle, args.getByIndex(0).get_ArgumentValue()); 
+            // вывести в лог тестовое сообщение о начале процедуры
+            String str = String.format("Начата процедура %s(\"%s\")", currentProcedureTitle, args.getByIndex(0).get_ArgumentValue());
             engine.AddMessageToConsoleAndLog(str, EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.SubsystemEvent_Procedure, EnumLogMsgState.OK);
 
-            // TODO: код алгоритма добавить здесь
+            // 1. Извлечь из аргумента название Места
+            String placeTitle;
+            FuncArgument arg = args.getByIndex(0);
+            placeTitle = arg.get_ArgumentQueryValue().trim();// берем сырой текст аргумента из запроса
+            engine.get_OperatorConsole().PrintTextLine(String.format("Название изменяемого Места: \"%s\"", placeTitle), EnumDialogConsoleColor.Сообщение);
+            // 2. извлечь из БД список Мест с таким названием и показать пользователю.
+            // без учета регистра символов
+            Place place = null;
 
-            // TODO: вывести сообщение о результате операции: успешно
-            engine.get_OperatorConsole().PrintTextLine("Команда успешно завершена.", EnumDialogConsoleColor.Успех);
+            outResult = new InOutArgument();// оболочка для строки-результата, передаваемого как аргумент.
+            epr = selectPlace(engine, placeTitle, outResult);
+            if (epr == EnumProcedureResult.CancelledByUser)
+                return epr;
+            // если Место не найдено, selectPlace возвращает Error, а эта процедура должна вернуть Success,
+            // так как не ее проблема, что нечего изменять.
+            else if (epr == EnumProcedureResult.Error)
+                return EnumProcedureResult.Success;
+            else
+            {
+                // set Procedure object
+                place = outResult.getValuePlace();
+            }
+
+            // Тут в объекте place уже должна быть выбранное Место.
+
+            // 3. выбранную пользователем Место - проверить, что оно может быть изменено.
+            // - она может быть изменена, если она находится в БД. Сейчас БиблиотекиПроцедур не позволяют удалять или редактировать свои Процедуры и Места.
+            // - надо добавить в объект Процедуры и Места (Item) флаг ReadOnly, для БД он сброшен, для Библиотек Процедур он установлен.
+            // Флаг не хранится в БД, только в памяти.
+            // - TODO: решено позже добавить в объект Item ссылку на объект Хранилища, унифицированный для БД и БиблиотекаПроцедур,
+            // и из него запрашивать возможность удаления и изменения итемов.
+            if (place.isItemCanChanged() == false)
+            {
+                // Если указанное Место не может быть изменено, вывести сообщение об этом и завершить текущую Процедуру успешно.
+                stmp = String.format("Выбранное Место \"%s\" не может быть изменено.", placeTitle);
+                engine.get_OperatorConsole().PrintTextLine(stmp, EnumDialogConsoleColor.Предупреждение);
+                return EnumProcedureResult.Success;
+            }
+            // else
+
+            // 4. По каждому свойству Места:
+            // - показывать текущее значение свойства и спрашивать, желает ли пользователь его изменить. (Да-Нет-Отмена-Пропустить)
+            // Если не желает, перейти к следующему свойству.
+            // Если желает, вывести справку, запросить новое значение, проверить его формат и вписать в объект Места.
+            // Если отменил, то отменить операцию.
+
+            // 4.1 Название Места
+            // - вывести заголовок
+            engine.get_OperatorConsole().PrintEmptyLine();
+            engine.get_OperatorConsole().PrintTextLine("1. Название Места", EnumDialogConsoleColor.Сообщение);
+            // - вывести текущее значение
+            stmp = String.format("Текущее название: \"%s\"", place.get_Title());
+            engine.get_OperatorConsole().PrintTextLine(stmp, EnumDialogConsoleColor.Сообщение);
+            // - запросить изменение
+            // Если пользователь ответит Да, надо запросить новое значение.
+            // Если пользователь ответит Нет, надо пропустить это поле.
+            // Если пользователь ответит Отмена, прервать операцию.
+            esdr = engine.get_OperatorConsole().PrintДаНетОтмена("Желаете изменить название Места?");
+            if (esdr.isОтмена())
+                return EnumProcedureResult.CancelledByUser;
+            else if (esdr.isДа())
+            {
+                outResult = new InOutArgument();// оболочка для строки-результата, передаваемого как аргумент.
+                epr = readPlaceTitleForExisting(engine, outResult, place);
+                if (epr == EnumProcedureResult.CancelledByUser)
+                    return epr;
+                else
+                {
+                    // set regex value
+                    stmp = outResult.getValueString();
+                    place.set_Title(stmp);
+                }
+            }
+            // else Нет - перейти к следующему свойству Места.
+
+            // 4.2 Синонимы Места
+            // - вывести заголовок
+            engine.get_OperatorConsole().PrintEmptyLine();
+            engine.get_OperatorConsole().PrintTextLine("2. Словоформы Места", EnumDialogConsoleColor.Сообщение);
+            // - вывести текущее значение
+            stmp = String.format("Текущие словоформы: \"%s\"", place.get_Description());
+            engine.get_OperatorConsole().PrintTextLine(stmp, EnumDialogConsoleColor.Сообщение);
+            // - запросить изменение
+            // Если пользователь ответит Да, надо запросить новое значение.
+            // Если пользователь ответит Нет, надо пропустить это поле.
+            // Если пользователь ответит Отмена, прервать операцию.
+            esdr = engine.get_OperatorConsole().PrintДаНетОтмена("Желаете изменить словоформы Места?");
+            if (esdr.isОтмена())
+                return EnumProcedureResult.CancelledByUser;
+            else if (esdr.isДа())
+            {
+                outResult = new InOutArgument();// оболочка для строки-результата, передаваемого как аргумент.
+                epr = readPlaceSynonims(engine, outResult, placeTitle, place);
+                if (epr == EnumProcedureResult.CancelledByUser)
+                    return epr;
+                else
+                {
+                    // set regex value
+                    stmp = outResult.getValueString();
+                    place.set_Synonim(stmp);
+                }
+            }
+            // else Нет - перейти к следующему свойству Места.
+
+            // 4.2 Описание Места
+            // - вывести заголовок
+            engine.get_OperatorConsole().PrintEmptyLine();
+            engine.get_OperatorConsole().PrintTextLine("3. Описание Места", EnumDialogConsoleColor.Сообщение);
+            // - вывести текущее значение
+            stmp = String.format("Текущее описание: \"%s\"", place.get_Description());
+            engine.get_OperatorConsole().PrintTextLine(stmp, EnumDialogConsoleColor.Сообщение);
+            // - запросить изменение
+            // Если пользователь ответит Да, надо запросить новое значение.
+            // Если пользователь ответит Нет, надо пропустить это поле.
+            // Если пользователь ответит Отмена, прервать операцию.
+            esdr = engine.get_OperatorConsole().PrintДаНетОтмена("Желаете изменить описание Места?");
+            if (esdr.isОтмена())
+                return EnumProcedureResult.CancelledByUser;
+            else if (esdr.isДа())
+            {
+                outResult = new InOutArgument();// оболочка для строки-результата, передаваемого как аргумент.
+                epr = readPlaceDescription(engine, outResult);
+                if (epr == EnumProcedureResult.CancelledByUser)
+                    return epr;
+                else
+                {
+                    // set regex value
+                    stmp = outResult.getValueString();
+                    place.set_Description(stmp);
+                }
+            }
+            // else Нет - перейти к следующему свойству Места.
+
+            // 4.4 Адрес Места
+            // Ввести путь к Месту, веб-путь к Сущности, файловый путь к файлу.
+            // - вывести заголовок
+            engine.get_OperatorConsole().PrintEmptyLine();
+            engine.get_OperatorConsole().PrintTextLine("4. Адрес Места", EnumDialogConsoleColor.Сообщение);
+            // - вывести текущее значение
+            stmp = String.format("Текущий адрес: \"%s\"", place.get_Path());
+            engine.get_OperatorConsole().PrintTextLine(stmp, EnumDialogConsoleColor.Сообщение);
+            // - запросить изменение
+            // Если пользователь ответит Да, надо запросить новое значение.
+            // Если пользователь ответит Нет, надо пропустить это поле.
+            // Если пользователь ответит Отмена, прервать операцию.
+            esdr = engine.get_OperatorConsole().PrintДаНетОтмена("Желаете изменить адрес Места?");
+            if (esdr.isОтмена())
+                return EnumProcedureResult.CancelledByUser;
+            else if (esdr.isДа())
+            {
+                outResult = new InOutArgument();// оболочка для строки-результата, передаваемого как аргумент.
+                epr = readPlaceAdres(engine, outResult);
+                if (epr == EnumProcedureResult.CancelledByUser)
+                    return epr;
+                else
+                {
+                    // set namespace value
+                    stmp = outResult.getValueString();
+                    place.set_Path(stmp);
+                }
+            }
+            // else Нет - перейти к следующему свойству Места.
+
+            // 4.6 Ввести строку описания класса Сущности. Она имеет специальный формат.
+            // - вывести заголовок
+            engine.get_OperatorConsole().PrintEmptyLine();
+            engine.get_OperatorConsole().PrintTextLine("5. Класс Места", EnumDialogConsoleColor.Сообщение);
+            // - вывести текущее значение
+            stmp = String.format("Текущий класс: \"%s\"", place.get_PlaceTypeExpression());
+            engine.get_OperatorConsole().PrintTextLine(stmp, EnumDialogConsoleColor.Сообщение);
+            // - запросить изменение
+            // Если пользователь ответит Да, надо запросить новое значение.
+            // Если пользователь ответит Нет, надо пропустить это поле.
+            // Если пользователь ответит Отмена, прервать операцию.
+            esdr = engine.get_OperatorConsole().PrintДаНетОтмена("Желаете изменить класс Места?");
+            if (esdr.isОтмена())
+                return EnumProcedureResult.CancelledByUser;
+            else if (esdr.isДа())
+            {
+                outResult = new InOutArgument();// оболочка для строки-результата, передаваемого как аргумент.
+                epr = readPlaceClass(engine, outResult);
+                if (epr == EnumProcedureResult.CancelledByUser)
+                    return epr;
+                else
+                {
+                    // set namespace value
+                    stmp = outResult.getValueString();
+                    place.set_PlaceTypeExpression(stmp.trim());
+                }
+            }
+            // else Нет - перейти к следующему свойству Места.
+
+            // 4.6 Категория Места
+            // - вывести заголовок
+            engine.get_OperatorConsole().PrintEmptyLine();
+            engine.get_OperatorConsole().PrintTextLine("6. Категория для Места", EnumDialogConsoleColor.Сообщение);
+            // - вывести текущее значение
+            stmp = String.format("Текущая категория: \"%s\"", place.get_Namespace());
+            engine.get_OperatorConsole().PrintTextLine(stmp, EnumDialogConsoleColor.Сообщение);
+            // - запросить изменение
+            // Если пользователь ответит Да, надо запросить новое значение.
+            // Если пользователь ответит Нет, надо пропустить это поле.
+            // Если пользователь ответит Отмена, прервать операцию.
+            esdr = engine.get_OperatorConsole().PrintДаНетОтмена("Желаете изменить категорию Места?");
+            if (esdr.isОтмена())
+                return EnumProcedureResult.CancelledByUser;
+            else if (esdr.isДа())
+            {
+                outResult = new InOutArgument();// оболочка для строки-результата, передаваемого как аргумент.
+                epr = readPlaceCategory(engine, outResult);
+                if (epr == EnumProcedureResult.CancelledByUser)
+                    return epr;
+                else
+                {
+                    // set namespace value
+                    stmp = outResult.getValueString();
+                    place.set_Namespace(stmp.trim());
+                }
+            }
+            // else Нет - перейти к следующему свойству Места.
+
+            // 5. Вывести общий набор свойств Места и запросить пользователя, желает ли он сохранить эти данные.(Да-Нет-Отмена)
+            // - если пользователь ответил да, изменить процедуру через ECM функцию.
+            // - при любом другом ответе пользователя отменить операцию.
+            engine.get_OperatorConsole().PrintEmptyLine();
+            engine.get_OperatorConsole().PrintTextLine("Подтвердите изменение Места", EnumDialogConsoleColor.Сообщение);
+            engine.get_OperatorConsole().PrintPlaceForm(place);
+            // и запросить подтверждение пользователя, что он желает изменить Место.
+            // Если пользователь ответит Да, надо изменить Место.
+            // Если пользователь ответит Нет или Отмена, отменить операцию.
+            esdr = engine.get_OperatorConsole().PrintДаНетОтмена("Желаете изменить Место?");
+            if (esdr.isНет() || esdr.isОтмена())
+                return EnumProcedureResult.CancelledByUser;
+            // записать команду
+            engine.get_ECM().UpdatePlace(place);
+
+            // 6. вывести сообщение о результате операции: успешно
+            engine.get_OperatorConsole().PrintTextLine(String.format("Место %s успешно изменено", placeTitle), EnumDialogConsoleColor.Успех);
         }
         catch (Exception ex)
         {
@@ -589,7 +816,7 @@ public class PlaceProcedures
         // вернуть флаг продолжения работы
         return result;
     }
-    
+
     /**
      * NT-Обработчик процедуры Удалить все места.
      * 
@@ -614,8 +841,8 @@ public class PlaceProcedures
      *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
      *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
      */
-    @OperatorProcedure(State = ImplementationState.NotTested,   // TODO: заменить на актуальное
-            Title = "Удалить все места",   
+    @OperatorProcedure(State = ImplementationState.Ready,   // заменить на актуальное
+            Title = "Удалить все места",
             Description = "Удалить все Места из БазаДанныхОператора.")
     public static EnumProcedureResult CommandDeleteAllPlaces(
             Engine engine,
@@ -630,16 +857,16 @@ public class PlaceProcedures
         // Поэтому надо здесь его перехватить, вывести в лог и на консоль, и погасить, вернув EnumProcedureResult.Error.
         try
         {
-            //1. Запросить от пользователя подтверждение о удалении всех Мест из БД. Да - Нет и Отмена.
-            //если пользователь ответил Да - удалить все Места из БД
-            //если пользователь ответил Нет или Отмена - прервать операцию. 
-            engine.get_OperatorConsole().PrintEmptyLine();          
+            // 1. Запросить от пользователя подтверждение о удалении всех Мест из БД. Да - Нет и Отмена.
+            // если пользователь ответил Да - удалить все Места из БД
+            // если пользователь ответил Нет или Отмена - прервать операцию.
+            engine.get_OperatorConsole().PrintEmptyLine();
             engine.get_OperatorConsole().PrintTextLine("1. Подтвердите удаление всех мест из БазаДанныхОператора", EnumDialogConsoleColor.Сообщение);
             EnumSpeakDialogResult esdr = engine.get_OperatorConsole().PrintДаНетОтмена("Желаете удалить все Места?");
             if (esdr.isНет() || esdr.isОтмена())
                 return EnumProcedureResult.CancelledByUser;
             // выполнить удаление всех Мест из БД Оператора
-            engine.get_ECM().RemoveAllPlacesFromDatabase();          
+            engine.get_ECM().RemoveAllPlacesFromDatabase();
             // вывести сообщение о результате операции: успешно
             engine.get_OperatorConsole().PrintTextLine("Удаление всех Мест завершено успешно", EnumDialogConsoleColor.Успех);
         }
@@ -652,10 +879,9 @@ public class PlaceProcedures
         // вернуть флаг продолжения работы
         return result;
     }
-    
+
     // *** Вспомогательные процедуры ***
 
-    
     /**
      * NT-Select Place by Title.
      * 
@@ -714,8 +940,6 @@ public class PlaceProcedures
         outResult.setValue(p);
         return EnumProcedureResult.Success;
     }
-    
-    
 
     /**
      * NT-Read Place Title value from User, for newly create Place.
@@ -775,12 +999,81 @@ public class PlaceProcedures
             else break;// end while loop
         }// while loop
          // Тут мы окажемся, если название Места уникальное
-        // return
-       outResult.setValue(str);
-       return EnumProcedureResult.Success;
+         // return
+        outResult.setValue(str);
+        return EnumProcedureResult.Success;
     }
 
-    
+    /**
+     * NT-Read Place Title value from User, for change or rename Place.
+     * 
+     * @param engine
+     *            Engine object.
+     * @param outResult
+     *            Result title string shell object.
+     * @param place
+     *            Change Place object.
+     * @return Function returns EnumProcedureResult.Success if success; EnumProcedureResult.CancelledByUser if cancelled.
+     * @throws Exception
+     *             Error occured.
+     */
+    private static EnumProcedureResult readPlaceTitleForExisting(
+            Engine engine,
+            InOutArgument outResult,
+            Place place) throws Exception
+    {
+        // вывести справку по созданию названия для Места.
+        printHelpPlaceTitleProp(engine);
+        // temp string with old title
+        String str = new String(place.get_Title());
+        // 2 проверить что в БД нет Места с таким названием, без учета регистра символов, кроме текущей.
+        boolean notUnicalPlace = false;
+        while (true)
+        {
+            // 1 введите новое название, пустые строки не принимаются.
+            // Раз есть такие Места, пользователь должен сменить название Места прямо тут же
+            // или же завершить диалог Отменой создания Места
+            // no empty answer's allowed by arg4! str cannot be empty here.
+            str = engine.get_OperatorConsole().PrintQuestionAnswer(EnumSpeakDialogResult.Отмена, "Введите новое название Места:", false, true);
+
+            // 3 если отмена - выйти с отменой
+            if (Dialogs.этоОтмена(str))
+                return EnumProcedureResult.CancelledByUser;
+
+            // 4 проверить уникальность названия Места
+            // если Место уникальное, то выйти с названием Места
+            // иначе - сообщить что Место уже существует и перейти на новый цикл.
+
+            // проверить что в БД нет Места с таким названием, без учета регистра символов
+            // кроме текущего Места - оно же есть.
+            LinkedList<Place> lip = engine.get_ECM().get_PlaceCollection().getByTitle(str);
+            // удалить текущий объект Места из этого списка
+            if (lip.contains(place))
+            {
+                lip.remove(place);
+            }
+            notUnicalPlace = (lip.size() > 0);// временный флаг для упрощения проверок позже
+            if (notUnicalPlace)
+            {
+                // тут вывести пользователю найденные Места с тем же названием
+                engine.get_OperatorConsole().PrintTextLine("Места с таким названием уже существуют:", EnumDialogConsoleColor.Предупреждение);
+                for (Place pp : lip)
+                {
+                    engine.get_OperatorConsole().PrintPlaceShortLine(pp);
+                }
+                engine.get_OperatorConsole().PrintTextLine("Дубликаты Мест недопустимы!", EnumDialogConsoleColor.Предупреждение);
+                lip.clear();// очистить временный список, поскольку он в цикле
+                continue;
+            }
+            else break;// break while loop
+
+        }// while loop
+         // Тут мы окажемся, если название Места уникальное
+         // return
+        outResult.setValue(str);
+        return EnumProcedureResult.Success;
+    }
+
     /**
      * NT-Read Place Description value from User
      * 
@@ -808,7 +1101,6 @@ public class PlaceProcedures
         return EnumProcedureResult.Success;
     }
 
-    
     /**
      * NT-Read Place class value from User
      * 
@@ -828,23 +1120,22 @@ public class PlaceProcedures
         printHelpPlaceClassProp(engine);
         //
         String str = null;
-        while(true)
+        while (true)
         {
             // - запросить новое значение
             str = engine.get_OperatorConsole().PrintQuestionAnswer(EnumSpeakDialogResult.Отмена, "Введите выражение класса для Места:", true, true);
             if (Dialogs.этоОтмена(str))
                 return EnumProcedureResult.CancelledByUser;
-    
-          //Проверить что введенное выражение не имеет ошибок, его можно распарсить в дерево классов
-          //если это не так, предложить повторить ввод выражения.
-          //Если пользователь введет Отмена, завершить диалог Отменой создания места
-            if(EntityTypesCollection.TryParsingExpression(str) == false)
+
+            // Проверить что введенное выражение не имеет ошибок, его можно распарсить в дерево классов
+            // если это не так, предложить повторить ввод выражения.
+            // Если пользователь введет Отмена, завершить диалог Отменой создания места
+            if (EntityTypesCollection.TryParsingExpression(str) == false)
             {
                 engine.get_OperatorConsole().PrintTextLine("Неправильное выражение, введите правильное выражение класса для этого Места.", EnumDialogConsoleColor.Предупреждение);
                 continue;
             }
-            else
-                break;
+            else break;
         }
         // return
         outResult.setValue(str);
@@ -906,77 +1197,84 @@ public class PlaceProcedures
         String stmp = engine.get_OperatorConsole().PrintQuestionAnswer(EnumSpeakDialogResult.Отмена, "Введите адрес Места:", true, true);
         if (Dialogs.этоОтмена(stmp))
             return EnumProcedureResult.CancelledByUser;
-        //TODO: как убедиться, что указанный путь правильный и указанный объект существует?
+        // TODO: как убедиться, что указанный путь правильный и указанный объект существует?
         // return
         outResult.setValue(stmp);
         return EnumProcedureResult.Success;
     }
 
-   
-/** 
- * NT-Вводить словоформы Места по отдельности
- * @param engine Объект Движка
- * @return Возвращает строку словоформ или пустую строку при ошибке или отмене.
- * @throws Exception Ошибка.
- */
-private static String ВводитьСловоформыПоОтдельности(Engine engine) throws Exception
-{
-    String result = "";//тут собирается строка словоформ, после сбора всех словоформ.
-    LinkedList<String> synoList = new LinkedList<String>();//тут собираются введенные словоформы
-    
-    while(true)
+    /**
+     * NT-Вводить словоформы Места по отдельности
+     * 
+     * @param engine
+     *            Объект Движка
+     * @return Возвращает строку словоформ или пустую строку при ошибке или отмене.
+     * @throws Exception
+     *             Ошибка.
+     */
+    private static String ВводитьСловоформыПоОтдельности(Engine engine)
+            throws Exception
     {
-    //начинаем опрос
-    engine.get_OperatorConsole().SureConsoleCursorStart();
-    engine.get_OperatorConsole().PrintTextLine("Введите словоформы по одной согласно падежу:", EnumDialogConsoleColor.Сообщение);
-    //запрос падежных форм по очереди
-    for (String quest : PlaceProcedures.ВопросыПадежныхФорм)
-    {
-        engine.get_OperatorConsole().SureConsoleCursorStart();
-        String wordform = engine.get_OperatorConsole().PrintQuestionAnswer(EnumSpeakDialogResult.Отмена, quest, false, true);
-        if (Dialogs.этоОтмена(wordform))
-            break;//на выход, пользователю надоело вводить словоформы.
-        else
-            synoList.add(wordform);
-    }
-    //собираем строку словоформ и показываем ее пользователю
-    result = String.join(", ", synoList);
-    engine.get_OperatorConsole().SureConsoleCursorStart();
-    engine.get_OperatorConsole().PrintTextLine("Строка словоформ: " + result, EnumDialogConsoleColor.Сообщение);
-    
-    //переход на следующий синоним места?
-    EnumSpeakDialogResult sdr = engine.get_OperatorConsole().PrintДаНетОтмена("Желаете ввести словоформы еще одного синонима места?");
-    if (sdr.isДа())
-        continue;//снова собираем словоформы для нового синонима места
-    else if (sdr.isНет())
-        break;//выходим со строкой словоформ
-    else
+        String result = "";// тут собирается строка словоформ, после сбора всех словоформ.
+        LinkedList<String> synoList = new LinkedList<String>();// тут собираются введенные словоформы
+
+        while (true)
         {
-            result = "";//выходим с флагом отмены процедуры
-            break;
+            // начинаем опрос
+            engine.get_OperatorConsole().SureConsoleCursorStart();
+            engine.get_OperatorConsole().PrintTextLine("Введите словоформы по одной согласно падежу:", EnumDialogConsoleColor.Сообщение);
+            // запрос падежных форм по очереди
+            for (String quest : PlaceProcedures.ВопросыПадежныхФорм)
+            {
+                engine.get_OperatorConsole().SureConsoleCursorStart();
+                String wordform = engine.get_OperatorConsole().PrintQuestionAnswer(EnumSpeakDialogResult.Отмена, quest, false, true);
+                if (Dialogs.этоОтмена(wordform))
+                    break;// на выход, пользователю надоело вводить словоформы.
+                else synoList.add(wordform);
+            }
+            // собираем строку словоформ и показываем ее пользователю
+            result = String.join(", ", synoList);
+            engine.get_OperatorConsole().SureConsoleCursorStart();
+            engine.get_OperatorConsole().PrintTextLine("Строка словоформ: " + result, EnumDialogConsoleColor.Сообщение);
+
+            // переход на следующий синоним места?
+            EnumSpeakDialogResult sdr = engine.get_OperatorConsole().PrintДаНетОтмена("Желаете ввести словоформы еще одного синонима места?");
+            if (sdr.isДа())
+                continue;// снова собираем словоформы для нового синонима места
+            else if (sdr.isНет())
+                break;// выходим со строкой словоформ
+            else
+            {
+                result = "";// выходим с флагом отмены процедуры
+                break;
+            }
         }
+
+        // выходим с последней собранной строкой, если она была собрана. Или с флагом отмены, если строка не была собрана
+        // то есть, выходим с строкой, собранной из последнего полного комплекта ответов синонима, если они вообще были.
+        return result;
     }
-    
-    //выходим с последней собранной строкой, если она была собрана. Или с флагом отмены, если строка не была собрана
-    //то есть, выходим с строкой, собранной из последнего полного комплекта ответов синонима, если они вообще были.
-    return result;
-}
-    
+
     /**
      * NT-принять от пользователя синонимы и словоформы места
      * 
      * @param engine
      *            Объект движка
-     * @param outResult Класс-оболочка для результата
-     * @param placeTitle Название Места
-     * @param place Place Объект Места для исключения из сравнения.
+     * @param outResult
+     *            Класс-оболочка для результата
+     * @param placeTitle
+     *            Название Места
+     * @param place
+     *            Place Объект Места для исключения из сравнения.
      * @return Function returns EnumProcedureResult.Success if success, or other values.
-     * @throws Exception Ошибка.
+     * @throws Exception
+     *             Ошибка.
      */
     private static EnumProcedureResult readPlaceSynonims(
             Engine engine,
             InOutArgument outResult,
-            String placeTitle, Place place) throws Exception
+            String placeTitle,
+            Place place) throws Exception
     {
         String syno = null;
 
@@ -1016,18 +1314,18 @@ private static String ВводитьСловоформыПоОтдельност
                 engine.get_OperatorConsole().PrintTextLine("Ошибка! Строка словоформ имеет неправильный формат.", EnumDialogConsoleColor.Предупреждение);
                 continue;
             }
-          //4 проверить уникальность синонимов названия Места - они должны быть уникальными для всех Мест.
-          //если один из синонимов не уникален, то надо предложить пользователю изменить название Места прямо тут же
-          //Если пользователь введет Отмена, завершить диалог Отменой создания места
-            //пока что это делается при загрузке Места из БД, а надо вот прямо сейчас. 
-            //Иначе в БД будут добавлены эти неуникальные синонимы, и загрузка Мест из БД будет давать исключения.
-            else if(checkPlaceSynonimUnicality(engine, syno, place) == false)
+            // 4 проверить уникальность синонимов названия Места - они должны быть уникальными для всех Мест.
+            // если один из синонимов не уникален, то надо предложить пользователю изменить название Места прямо тут же
+            // Если пользователь введет Отмена, завершить диалог Отменой создания места
+            // пока что это делается при загрузке Места из БД, а надо вот прямо сейчас.
+            // Иначе в БД будут добавлены эти неуникальные синонимы, и загрузка Мест из БД будет давать исключения.
+            else if (checkPlaceSynonimUnicality(engine, syno, place) == false)
             {
                 engine.get_OperatorConsole().SureConsoleCursorStart();
                 engine.get_OperatorConsole().PrintTextLine("Ошибка! Некоторые словоформы Места не уникальны!", EnumDialogConsoleColor.Предупреждение);
                 continue;
             }
-            
+
             else break;
 
         }
@@ -1036,11 +1334,15 @@ private static String ВводитьСловоформыПоОтдельност
         return EnumProcedureResult.Success;
     }
 
-
-    /** NT-проверить уникальность синонимов Места
-     * @param engine Ссылка на движок.
-     * @param syno Строка синонимов места.
-     * @param place Объект Места для исключения из сравнения. 
+    /**
+     * NT-проверить уникальность синонимов Места
+     * 
+     * @param engine
+     *            Ссылка на движок.
+     * @param syno
+     *            Строка синонимов места.
+     * @param place
+     *            Объект Места для исключения из сравнения.
      * @return Функция возвращает True, если все синонимы уникальные, False в противном случае.
      */
     private static boolean checkPlaceSynonimUnicality(
@@ -1049,28 +1351,28 @@ private static String ВводитьСловоформыПоОтдельност
             Place place)
     {
         boolean result = true;
-        //1. получить список синонимов
+        // 1. получить список синонимов
         LinkedList<String> sy = OperatorEngine.Utility.SplitCommaDelimitedString2(syno);
-        //2. для каждого синонима получить список или 1 объект места.
-        for(String s : sy)
+        // 2. для каждого синонима получить список или 1 объект места.
+        for (String s : sy)
         {
             Place p = engine.get_ECM().get_PlaceCollection().GetPlace(s);
-        //3. если места нет (= null), или место = place, то перейти к следующему синониму
-            if((p == null) || (p == place)) continue;
-        //   иначе установить флаг результата - false и вывести на экран найденное Место.
+            // 3. если места нет (= null), или место = place, то перейти к следующему синониму
+            if ((p == null) || (p == place))
+                continue;
+            // иначе установить флаг результата - false и вывести на экран найденное Место.
             else
             {
                 result = false;
                 String msg = String.format("Неуникальный синоним \"%s\" Места \"%s\"", s, place.getSingleLineProperties());
                 engine.get_OperatorConsole().PrintTextLine(msg, EnumDialogConsoleColor.Предупреждение);
             }
-        //4. Если синонимы закончились, то вернуть true.
-        //   а если флаг установлен, вернуть false.   
+            // 4. Если синонимы закончились, то вернуть true.
+            // а если флаг установлен, вернуть false.
         }
-        
+
         return result;
     }
-
 
     /**
      * NT-вывести на консоль справку по свойству Места Категория.
@@ -1089,12 +1391,14 @@ private static String ВводитьСловоформыПоОтдельност
                 "" };
         engine.get_OperatorConsole().PrintTextLines(namespaceDescr, EnumDialogConsoleColor.Сообщение);
         return;
-        
+
     }
-    
-    /** 
+
+    /**
      * NT-вывести на консоль справку по свойству Места Название.
-     * @param engine Ссылка на объект движка Оператор.
+     * 
+     * @param engine
+     *            Ссылка на объект движка Оператор.
      */
     private static void printHelpPlaceTitleProp(Engine engine)
     {
@@ -1109,7 +1413,7 @@ private static String ВводитьСловоформыПоОтдельност
                 "" };
         engine.get_OperatorConsole().PrintTextLines(titleDescr, EnumDialogConsoleColor.Сообщение);
         return;
-        
+
     }
 
     /**
@@ -1128,10 +1432,9 @@ private static String ВводитьСловоформыПоОтдельност
                 " - Для подробной информации о описаниях Мест обратитесь к документации Оператор.",
                 "" };
         engine.get_OperatorConsole().PrintTextLines(descr, EnumDialogConsoleColor.Сообщение);
-        
+
         return;
     }
-
 
     /**
      * NT-вывести на консоль справку по свойству Места Класс.
@@ -1151,7 +1454,7 @@ private static String ВводитьСловоформыПоОтдельност
                 " - Для подробной информации о классах Мест обратитесь к документации Оператор.",
                 "" };
         engine.get_OperatorConsole().PrintTextLines(descr, EnumDialogConsoleColor.Сообщение);
-        
+
         return;
     }
 
@@ -1171,13 +1474,9 @@ private static String ВводитьСловоформыПоОтдельност
                 " - Для подробной информации о адресе Места обратитесь к документации Оператор.",
                 "" };
         engine.get_OperatorConsole().PrintTextLines(adresDescr, EnumDialogConsoleColor.Сообщение);
-        
+
         return;
     }
 
-    
-    
-    
-    
-    //*** End of file ***
+    // *** End of file ***
 }
