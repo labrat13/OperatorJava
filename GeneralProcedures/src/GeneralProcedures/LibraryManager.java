@@ -353,7 +353,7 @@ public class LibraryManager extends LibraryManagerBase
         p.set_Description("Открыть указанное Место");
         p.set_Path("GeneralProcedures.UnsortedProcedures.CommandOpen(place)");
         p.set_Regex("открыть %place");
-        p.set_Ves(0.5);
+        p.set_Ves(0.9);//вес большой, чтобы команда выбиралась последней в списке команд.
         p.set_Storage(this.m_LibraryTitle);
         p.set_Namespace(NamespaceConstants.NsDefault);
         result.add(p);

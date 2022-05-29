@@ -22,7 +22,7 @@ import ProcedureSubsystem.OperatorProcedure;
  * @author Селяков Павел
  *
  */
-@OperatorProcedure(State = ImplementationState.NotRealized, Title = "Power class",
+@OperatorProcedure(State = ImplementationState.NotTested, Title = "Power class",
 Description = "Power procedures class.")
 public class PowerProcedures
 {
