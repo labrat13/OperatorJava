@@ -351,7 +351,7 @@ public class LibraryManager extends LibraryManagerBase
         
         p = new Procedure();
         p.set_Title("Редактировать место НазваниеМеста");
-        p.set_Description("Синоним для Изменить Место в БазаДанныхОператора.");
+        p.set_Description("Синоним для Изменить место НазваниеМеста.");
         p.set_Path("GeneralProcedures.PlaceProcedures.CommandChangePlace()");
         p.set_Regex("редактировать место %place");
         p.set_Ves(0.5);
@@ -396,6 +396,36 @@ public class LibraryManager extends LibraryManagerBase
         p.set_Description("Вывести на экран список доступных Настроек.");
         p.set_Path("GeneralProcedures.SettingProcedures.CommandListSettings()");
         p.set_Regex("показать настройки");
+        p.set_Ves(0.5);
+        p.set_Storage(this.m_LibraryTitle);
+        p.set_Namespace(NamespaceConstants.NsService_Setting);
+        result.add(p);
+        
+        p = new Procedure();
+        p.set_Title("Создать настройку НазваниеНастройки");
+        p.set_Description("Создать Настройку в БазаДанныхОператора.");
+        p.set_Path("GeneralProcedures.SettingProcedures.CommandCreateSetting()");
+        p.set_Regex("создать настройку %setting");
+        p.set_Ves(0.5);
+        p.set_Storage(this.m_LibraryTitle);
+        p.set_Namespace(NamespaceConstants.NsService_Setting);
+        result.add(p);
+        
+        p = new Procedure();
+        p.set_Title("Изменить настройку НазваниеНастройки");
+        p.set_Description("Изменить указанную Настройку Оператора");
+        p.set_Path("GeneralProcedures.SettingProcedures.CommandChangeSetting()");
+        p.set_Regex("изменить настройку %setting");
+        p.set_Ves(0.5);
+        p.set_Storage(this.m_LibraryTitle);
+        p.set_Namespace(NamespaceConstants.NsService_Setting);
+        result.add(p);
+        
+        p = new Procedure();
+        p.set_Title("Редактировать настройку НазваниеНастройки");
+        p.set_Description("Синоним для Изменить настройку НазваниеНастройки");
+        p.set_Path("GeneralProcedures.SettingProcedures.CommandChangeSetting()");
+        p.set_Regex("редактировать настройку %setting");
         p.set_Ves(0.5);
         p.set_Storage(this.m_LibraryTitle);
         p.set_Namespace(NamespaceConstants.NsService_Setting);
