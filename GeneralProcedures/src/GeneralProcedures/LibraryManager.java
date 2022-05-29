@@ -234,6 +234,27 @@ public class LibraryManager extends LibraryManagerBase
         // Добавить Процедуру в выходной массив
         result.add(p);
 
+        //*** Add Procedures from PowerProcedures class ***
+        p = new Procedure();
+        p.set_Title("Выключить компьютер");
+        p.set_Description("Выключить компьютер");
+        p.set_Path("GeneralProcedures.PowerProcedures.DummyShutdown()");//имена аргументов только латинские и цифры.
+        p.set_Regex("выключить компьютер");//простой регекс, имена аргументов только латинские и цифры.
+        p.set_Ves(0.5);
+        p.set_Storage(this.m_LibraryTitle);
+        p.set_Namespace(NamespaceConstants.NsDefault);
+        result.add(p);
+        
+        p = new Procedure();
+        p.set_Title("Перезагрузить компьютер");
+        p.set_Description("Перезагрузить компьютер");
+        p.set_Path("GeneralProcedures.PowerProcedures.DummyReload()");//имена аргументов только латинские и цифры.
+        p.set_Regex("перезагрузить компьютер");//простой регекс, имена аргументов только латинские и цифры.
+        p.set_Ves(0.5);
+        p.set_Storage(this.m_LibraryTitle);
+        p.set_Namespace(NamespaceConstants.NsDefault);
+        result.add(p);
+        
         //*** Add Procedures from ProcedureProcedures class ***
         p = new Procedure();
         p.set_Title("Создать команду НазваниеКоманды");
@@ -326,6 +347,17 @@ public class LibraryManager extends LibraryManagerBase
         p.set_Storage(this.m_LibraryTitle);
         p.set_Namespace(NamespaceConstants.NsDefault);
         result.add(p);
+        
+        p = new Procedure();
+        p.set_Title("Открыть НазваниеМеста");
+        p.set_Description("Открыть указанное Место");
+        p.set_Path("GeneralProcedures.UnsortedProcedures.CommandOpen(place)");
+        p.set_Regex("открыть %place");
+        p.set_Ves(0.5);
+        p.set_Storage(this.m_LibraryTitle);
+        p.set_Namespace(NamespaceConstants.NsDefault);
+        result.add(p);
+        
         
         //*** Add Procedures from PlaceProcedures class ***
         

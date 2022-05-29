@@ -5,9 +5,6 @@
  */
 package GeneralProcedures;
 
-import Lexicon.EnumDialogConsoleColor;
-import LogSubsystem.EnumLogMsgClass;
-import LogSubsystem.EnumLogMsgState;
 import OperatorEngine.ArgumentCollection;
 import OperatorEngine.Engine;
 import OperatorEngine.EnumProcedureResult;
@@ -47,8 +44,12 @@ public class PowerProcedures
     // предупреждения.
 
 
+    //Сейчас выключение и перезагрузку компьютера должна делать функция постобработки команды, чтобы корректно завершать Оператор.
+    //Для этого надо на команды Выключить компьютер и Перезагрузить компьютер прицепить эти процедуры-заглушки, которые просто возвращают код для постобработки.
+    //А постобработка использует команды из ФайлНастроекОператор для вызова процедур компьютера.
+    
     /**
-     * NR-Обработчик процедуры Шаблон обработчика процедуры.
+     * NT-Обработчик процедуры Вернуть флаг выключения.
      * 
      * 
      * @param engine
@@ -71,43 +72,54 @@ public class PowerProcedures
      *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
      *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
      */
-    @OperatorProcedure(State = ImplementationState.NotRealized,   // TODO: заменить на актуальное
-            Title = "Название команды",   // TODO: заменить название команды на актуальное
-            Description = "Однострочное описание команды.")      // TODO: заменить описание команды на актуальное
-    public static EnumProcedureResult НазваниеШаблона(
+    @OperatorProcedure(State = ImplementationState.NotTested,   // TODO: заменить на актуальное
+            Title = "Вернуть флаг выключения",   
+            Description = "Вернуть флаг выключения для постобработки.")    
+    public static EnumProcedureResult DummyShutdown(
             Engine engine,
             LibraryManagerBase manager,
             UserQuery query,
             ArgumentCollection args)
     {
 
-        // TODO: Не забудьте добавить эту Процедуру в LibraryManager.getLibraryProcedures() функцию, чтобы она была добавлена в Оператор.
+        return EnumProcedureResult.ExitAndShutdown;
+    }
+    
+    /**
+     * NT-Обработчик процедуры Вернуть флаг перезагрузки.
+     * 
+     * 
+     * @param engine
+     *            Ссылка на объект Движка Оператор для доступа к консоли, логу, БД итп.
+     * @param manager
+     *            Ссылка на объект Менеджера Библиотеки Процедур для доступа к инициализированным ресурсам библиотеки.
+     * @param query
+     *            Текст исходного запроса пользователя для возможной дополнительной обработки.
+     * @param args
+     *            Массив аргументов Процедуры, соответствующий запросу.
+     * @return Функция возвращает результат как одно из значений EnumProcedureResult:
+     *         EnumProcedureResult.Success если Процедура выполнена успешно;
+     *         EnumProcedureResult.WrongArguments если аргументы не подходят для запуска Процедуры;
+     *         EnumProcedureResult.Error если произошла ошибка при выполнении Процедуры;
+     *         EnumProcedureResult.CancelledByUser если выполнение Процедуры прервано Пользователем;
+     *         EnumProcedureResult.Exit если после выполнения Процедуры требуется завершить работу Оператор;
+     *         EnumProcedureResult.ExitAndLogoff если после выполнения Процедуры требуется завершить сеанс пользователя;
+     *         EnumProcedureResult.ExitAndHybernate если после выполнения Процедуры требуется перевести компьютер в спящий режим;
+     *         EnumProcedureResult.ExitAndSleep если после выполнения Процедуры требуется перевести компьютер в спящий режим;
+     *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
+     *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
+     */
+    @OperatorProcedure(State = ImplementationState.NotTested,   // TODO: заменить на актуальное
+            Title = "Вернуть флаг перезагрузки",   
+            Description = "Вернуть флаг перезагрузки для постобработки.")    
+    public static EnumProcedureResult DummyReload(
+            Engine engine,
+            LibraryManagerBase manager,
+            UserQuery query,
+            ArgumentCollection args)
+    {
 
-        EnumProcedureResult result = EnumProcedureResult.Success;
-        // название текущей процедуры для лога итп.
-        // TODO: указать здесь полный путь как название процедуры для вывода на экран.
-        String currentProcedureTitle = "НазваниеБиблиотеки.НазваниеКласса.НазваниеФункции";
-        // выброшенное тут исключение будет заменено на Reflection исключение и его текст потеряется.
-        // Поэтому надо здесь его перехватить, вывести в лог и на консоль, и погасить, вернув EnumProcedureResult.Error.
-        try
-        {
-            String str = String.format("Начата процедура %s(\"%s\")", currentProcedureTitle, args.getByIndex(0).get_ArgumentValue());
-            // DONE: вывести это тестовое сообщение о начале процедуры - в лог!
-            engine.AddMessageToConsoleAndLog(str, EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.SubsystemEvent_Procedure, EnumLogMsgState.OK);
-
-            // TODO: код алгоритма добавить здесь
-
-            // TODO: вывести сообщение о результате операции: успешно
-            engine.get_OperatorConsole().PrintTextLine("Команда успешно завершена.", EnumDialogConsoleColor.Успех);
-        }
-        catch (Exception ex)
-        {
-            engine.PrintExceptionMessageToConsoleAndLog("Ошибка в процедуре " + currentProcedureTitle + "()", ex);
-            result = EnumProcedureResult.Error;
-        }
-
-        // вернуть флаг продолжения работы
-        return result;
+        return EnumProcedureResult.ExitAndReload;
     }
     
 

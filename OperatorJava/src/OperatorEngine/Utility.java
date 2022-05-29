@@ -517,6 +517,54 @@ public class Utility
             
         return s;
     }
+
+    /** 
+     * NT-проверить, что строка это веб-ссылка
+     * @param addr Проверяемая строка
+     * @return Возвращает True, если строка это веб-ссылка, False в противном случае.
+     */
+    public static boolean isWebUri(String addr)
+    {
+        return (addr.startsWith("http:") 
+                || addr.startsWith("https:") 
+                || addr.startsWith("www.")
+                || addr.startsWith("ftp:")
+                || addr.startsWith("sftp:"));
+    }
+
+    /** 
+     * NT-проверить, что строка это сетевой путь файла
+     * @param addr Проверяемая строка
+     * @return Возвращает True, если строка это веб-ссылка, False в противном случае.
+     */
+    public static boolean isFileUri(String addr)
+    {
+        return (addr.startsWith("file:"));
+    }
+
+    /** 
+     * NT-проверить, что строка это локальный путь файла
+     * @param addr Проверяемая строка
+     * @return Возвращает True, если строка это веб-ссылка, False в противном случае.
+     */
+    public static boolean isLocalFile(String addr)
+    {
+        boolean result = true;
+        if(addr.isEmpty()) return false;
+        //
+        try
+        {
+            //TODO: как тут проверить что путь правильный?
+            File f = new File(addr);   
+            f.exists();
+        }
+        catch(Exception ex)
+        {
+         result = false;   
+        }
+        
+        return result;
+    }
     
 
 

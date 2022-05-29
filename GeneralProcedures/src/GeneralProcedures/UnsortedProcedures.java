@@ -280,8 +280,85 @@ public class UnsortedProcedures
    // вернуть флаг продолжения работы
    return result;
   }
-    //*** End of file ***
+    
+  
+    /**
+     * NR-Обработчик процедуры Шаблон обработчика процедуры.
+     * 
+     * 
+     * @param engine
+     *            Ссылка на объект Движка Оператор для доступа к консоли, логу, БД итп.
+     * @param manager
+     *            Ссылка на объект Менеджера Библиотеки Процедур для доступа к инициализированным ресурсам библиотеки.
+     * @param query
+     *            Текст исходного запроса пользователя для возможной дополнительной обработки.
+     * @param args
+     *            Массив аргументов Процедуры, соответствующий запросу.
+     * @return Функция возвращает результат как одно из значений EnumProcedureResult:
+     *         EnumProcedureResult.Success если Процедура выполнена успешно;
+     *         EnumProcedureResult.WrongArguments если аргументы не подходят для запуска Процедуры;
+     *         EnumProcedureResult.Error если произошла ошибка при выполнении Процедуры;
+     *         EnumProcedureResult.CancelledByUser если выполнение Процедуры прервано Пользователем;
+     *         EnumProcedureResult.Exit если после выполнения Процедуры требуется завершить работу Оператор;
+     *         EnumProcedureResult.ExitAndLogoff если после выполнения Процедуры требуется завершить сеанс пользователя;
+     *         EnumProcedureResult.ExitAndHybernate если после выполнения Процедуры требуется перевести компьютер в спящий режим;
+     *         EnumProcedureResult.ExitAndSleep если после выполнения Процедуры требуется перевести компьютер в спящий режим;
+     *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
+     *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
+     */
+    @OperatorProcedure(State = ImplementationState.NotRealized,   // TODO: заменить на актуальное
+            Title = "Команда Открыть НазваниеМеста",
+            Description = "Команда Открыть место через ShellExecute.")
+    public static EnumProcedureResult CommandOpen(
+            Engine engine,
+            LibraryManagerBase manager,
+            UserQuery query,
+            ArgumentCollection args)
+    {
+        // TODO: Не забудьте добавить эту Процедуру в LibraryManager.getLibraryProcedures() функцию, чтобы она была добавлена в Оператор.
 
+        EnumProcedureResult result = EnumProcedureResult.Success;
+        // название текущей процедуры для лога итп.
+        // TODO: указать здесь полный путь как название процедуры для вывода на экран.
+        String currentProcedureTitle = "GeneralProcedures.UnsortedProcedures.CommandOpen";
+        // выброшенное тут исключение будет заменено на Reflection исключение и его текст потеряется.
+        // Поэтому надо здесь его перехватить, вывести в лог и на консоль, и погасить, вернув EnumProcedureResult.Error.
+        try
+        {
+            String str = String.format("Начата процедура %s(\"%s\")", currentProcedureTitle, args.getByIndex(0).get_ArgumentValue());
+            // вывести это тестовое сообщение о начале процедуры - в лог!
+            engine.AddMessageToConsoleAndLog(str, EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.SubsystemEvent_Procedure, EnumLogMsgState.OK);
+            // получить путь из подставленного места
+            String addr = args.getByIndex(0).get_ArgumentValue();
 
+            // если это веб-ссылка, открыть ее в шелл
+            if (OperatorEngine.Utility.isWebUri(addr))
+                engine.StartShellExecute(addr);
+            // если это сетевой путь файла, открыть его в шелл
+            else if (OperatorEngine.Utility.isFileUri(addr))
+                engine.StartShellExecute(addr);
+            // если это локальный путь файла, превратить его в сетевой и открыть в шелл
+            else if (OperatorEngine.Utility.isLocalFile(addr))
+            {
+                addr = OperatorEngine.Utility.MakeUriFromFilePath(addr);
+                engine.StartShellExecute(addr);
+            }
+            // если это не вышеперечисленное, то исполнить как команду.
+            else engine.StartCommandTerminalExecute(addr);
 
+            // вывести сообщение о результате операции: успешно
+            engine.get_OperatorConsole().PrintTextLine("Команда успешно завершена.", EnumDialogConsoleColor.Успех);
+        }
+        catch (Exception ex)
+        {
+            engine.PrintExceptionMessageToConsoleAndLog("Ошибка в процедуре " + currentProcedureTitle + "()", ex);
+            result = EnumProcedureResult.Error;
+        }
+
+        // вернуть флаг продолжения работы
+        return result;
+    }
+  
+  
+  //*** End of file ***
 }
