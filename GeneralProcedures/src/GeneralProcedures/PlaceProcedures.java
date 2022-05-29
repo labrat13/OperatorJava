@@ -31,7 +31,7 @@ import Utility.InOutArgument;
  * @author Селяков Павел
  *
  */
-@OperatorProcedure(State = ImplementationState.NotRealized,
+@OperatorProcedure(State = ImplementationState.NotTested,
     Title = "PlaceProcedures",
     Description = "Класс содержит Процедуры для операций с Местами.")
 public class PlaceProcedures

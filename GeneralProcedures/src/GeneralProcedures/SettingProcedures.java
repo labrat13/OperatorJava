@@ -29,7 +29,7 @@ import Utility.InOutArgument;
  * @author Селяков Павел
  *
  */
-@OperatorProcedure(State = ImplementationState.NotRealized,
+@OperatorProcedure(State = ImplementationState.NotTested,
      Title = "SettingProcedures",
      Description = "Класс содержит Процедуры для операций с Настройками Оператора.")
 public class SettingProcedures
