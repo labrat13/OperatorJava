@@ -138,13 +138,44 @@ public class OperatorDbAdapter extends SqliteDbAdapter
     protected void ClearCommands() throws SQLException
     {
         // TODO: add code for new command here!
-        CloseAndClearCmd(this.m_cmdAddPlace);
-        CloseAndClearCmd(this.m_cmdUpdatePlace);
-        CloseAndClearCmd(this.m_cmdAddProcedure);
-        CloseAndClearCmd(this.m_cmdUpdateProcedure);
-        CloseAndClearCmd(this.m_cmdAddSetting);
-        CloseAndClearCmd(this.m_cmdUpdateSetting);
-
+        //Эта функция вызывается 4 раза при каждом добавлении или изменении любого Элемента в таблицах.
+        //закрыть и обнулить каждую команду адаптера
+        if(this.m_cmdAddPlace != null)
+        {
+            this.m_cmdAddPlace.close();
+            this.m_cmdAddPlace = null;
+        }
+        //CloseAndClearCmd(this.m_cmdUpdatePlace);
+        if(this.m_cmdUpdatePlace != null)
+        {
+            this.m_cmdUpdatePlace.close();
+            this.m_cmdUpdatePlace = null;
+        }
+        //CloseAndClearCmd(this.m_cmdAddProcedure);
+        if(this.m_cmdAddProcedure != null)
+        {
+            this.m_cmdAddProcedure.close();
+            this.m_cmdAddProcedure = null;
+        }
+        //CloseAndClearCmd(this.m_cmdUpdateProcedure);
+        if(this.m_cmdUpdateProcedure != null)
+        {
+            this.m_cmdUpdateProcedure.close();
+            this.m_cmdUpdateProcedure = null;
+        }
+        //CloseAndClearCmd(this.m_cmdAddSetting);
+        if(this.m_cmdAddSetting != null)
+        {
+            this.m_cmdAddSetting.close();
+            this.m_cmdAddSetting = null;
+        }
+        //CloseAndClearCmd(this.m_cmdUpdateSetting);
+        if(this.m_cmdUpdateSetting != null)
+        {
+            this.m_cmdUpdateSetting.close();
+            this.m_cmdUpdateSetting = null;
+        }
+        
         return;
     }
 

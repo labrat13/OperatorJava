@@ -264,7 +264,7 @@ public class PlacesCollection
      */
     public LinkedList<Place> getByTitle(String placeTitle)
     {
-        // словарь имеет ключ - синоним, так что в словаре по 8 штук одних и тех
+        // словарь имеет ключ - синоним, так что в словаре по 6 штук одних и тех
         // же объектов мест.
         // поэтому создадим еще один словарь - временный для уникализации
         // объектов мест.
@@ -297,29 +297,26 @@ public class PlacesCollection
      */
     public LinkedList<Place> getPlacesAsList()
     {
-        // // словарь имеет ключ - синоним, так что в словаре по 8 штук одних и тех
-        // // же объектов мест.
-        // // поэтому создадим еще один словарь - временный для уникализации
-        // // объектов мест.
-        // LinkedList<Place> result = new LinkedList<Place>();
-        // HashMap<Integer, Place> tdic = new HashMap<Integer, Place>();
-        //
-        // for (Place p : this.m_places.values())
-        // if (Utility.StringEqualsOrdinalIgnoreCase(p.get_Title(), placeTitle))
-        // {
-        // int key = p.hashCode();
-        // if (!tdic.containsKey(key))
-        // tdic.put(key, p);
-        // }
-        // // тут перенесем содержимое словаря в выходной список и уничтожим
-        // // словарь
-        // result.addAll(tdic.values());
-        // tdic.clear();
-        // tdic = null;
-
-        // TODO: check: try simple add entire values
+        // словарь имеет ключ - синоним, так что в словаре по 6 штук одних и тех же объектов мест.
+        // поэтому создадим еще один словарь - временный для уникализации объектов мест.
         LinkedList<Place> result = new LinkedList<Place>();
-        result.addAll(this.m_places.values());
+        HashMap<Integer, Place> tdic = new HashMap<Integer, Place>();
+        for (Place p : this.m_places.values())
+        {
+            if(p != null)
+            {
+                //будем использовать хешкод объекта как уникальный ключ.
+                int key = p.hashCode();
+                if(!tdic.containsKey(key))
+                {
+                    tdic.put(key,  p);   
+                }
+            }
+        }
+        //тут перенесем содержимое словаря в выходной список и уничтожим словарь
+        result.addAll(tdic.values());
+        tdic.clear();
+        tdic = null;
 
         return result;
     }

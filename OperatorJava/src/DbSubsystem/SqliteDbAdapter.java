@@ -8,7 +8,6 @@ package DbSubsystem;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -167,7 +166,9 @@ public class SqliteDbAdapter
             this.m_connection = DriverManager.getConnection(this.m_connectionString);
             this.m_connection.setAutoCommit(false);
         }
-
+        //clear command object ref's
+        this.ClearCommands();
+        
         return;
     }
 
@@ -185,6 +186,7 @@ public class SqliteDbAdapter
         if (!this.m_connection.isClosed())
             this.m_connection.close();
         this.m_connection = null;
+        //clear command object ref's
         this.ClearCommands();
 
         return;
@@ -635,21 +637,6 @@ public class SqliteDbAdapter
     }
 
     // Service functions =========================
-    /**
-     * RT- Close and null SQL command object
-     * 
-     * @param cmd
-     *            SQL command object
-     * @throws SQLException
-     *             Error on database access occured.
-     */
-    protected void CloseAndClearCmd(PreparedStatement cmd) throws SQLException
-    {
-        if (cmd != null)
-            cmd.close();
-        cmd = null;
 
-        return;
-    }
 
 }
