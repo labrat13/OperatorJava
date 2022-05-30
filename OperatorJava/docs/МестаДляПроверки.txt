@@ -1,0 +1,25 @@
+Места для создания:
+
+Блокнот leafpad %f
+Файрфокс home/jsmith/firefox/firefox
+Браузер  home/jsmith/firefox/firefox
+Эклипса eclipse
+Гиткола git-cola --prompt
+
+Документы /home/jsmith/Documents
+Загрузки /home/jsmith/Downloads
+
+Яндекс https://yandex.ru
+Гугл   https://google.ru
+
+
+Команды:
+Открыть НазваниеМеста -  открыть %place - вес 0.9
+{
+- проверить аргумент.
+- если это веб-ссылка, открыть ее через shell execute.
+- если это сетевой путь файла, открыть ее через shell execute.
+- если это локальный путь файла, преобразовать его в сетевой путь файла и открыть через shell execute.
+- если это другое - запустить в терминале как команду.
+}  
+
