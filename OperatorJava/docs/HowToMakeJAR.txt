@@ -1,7 +1,7 @@
 Инструкция по сборке JAR проект OperatorJava.
 
 - Нужно создать RunnableJAR, в него включить (package) все используемые библиотеки. 
-  Для обычного JAR все проходит нормально, но код не находит sqlite драйвер.
+  
 - поместить JAR в каталог   .Operator как OperatorJava.jar
 
 - библиотеку GeneralProcedures создать как обычный, не-runnable JAR и поместить в каталог  .Operator/GeneralProcedures/ как GeneralProcedures.jar
