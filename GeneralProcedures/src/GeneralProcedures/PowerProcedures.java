@@ -14,7 +14,7 @@ import ProcedureSubsystem.LibraryManagerBase;
 import ProcedureSubsystem.OperatorProcedure;
 
 
-//DONE: Класс методов для Процедур должен быть помечен аннотацией OperatorProcedure с ImplementationState = NotTested либо Ready, чтобы его методы можно было
+//Класс методов для Процедур должен быть помечен аннотацией OperatorProcedure с ImplementationState = NotTested либо Ready, чтобы его методы можно было
 //вызывать в качестве процедур.
 //Класс может также содержать любые элементы, необходимые для методов Процедур.
 
@@ -22,7 +22,8 @@ import ProcedureSubsystem.OperatorProcedure;
  * @author Селяков Павел
  *
  */
-@OperatorProcedure(State = ImplementationState.NotTested, Title = "Power class",
+@OperatorProcedure(State = ImplementationState.Ready,
+Title = "Power class",
 Description = "Power procedures class.")
 public class PowerProcedures
 {
@@ -49,7 +50,7 @@ public class PowerProcedures
     //А постобработка использует команды из ФайлНастроекОператор для вызова процедур компьютера.
     
     /**
-     * NT-Обработчик процедуры Вернуть флаг выключения.
+     * RT-Обработчик процедуры Вернуть флаг выключения.
      * 
      * 
      * @param engine
@@ -72,7 +73,7 @@ public class PowerProcedures
      *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
      *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
      */
-    @OperatorProcedure(State = ImplementationState.NotTested,   // TODO: заменить на актуальное
+    @OperatorProcedure(State = ImplementationState.Ready,   //заменить на актуальное
             Title = "Вернуть флаг выключения",   
             Description = "Вернуть флаг выключения для постобработки.")    
     public static EnumProcedureResult DummyShutdown(
@@ -86,7 +87,7 @@ public class PowerProcedures
     }
     
     /**
-     * NT-Обработчик процедуры Вернуть флаг перезагрузки.
+     * RT-Обработчик процедуры Вернуть флаг перезагрузки.
      * 
      * 
      * @param engine
@@ -109,7 +110,7 @@ public class PowerProcedures
      *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
      *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
      */
-    @OperatorProcedure(State = ImplementationState.NotTested,   // TODO: заменить на актуальное
+    @OperatorProcedure(State = ImplementationState.Ready,   //заменить на актуальное
             Title = "Вернуть флаг перезагрузки",   
             Description = "Вернуть флаг перезагрузки для постобработки.")    
     public static EnumProcedureResult DummyReload(

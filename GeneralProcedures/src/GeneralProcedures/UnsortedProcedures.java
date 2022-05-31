@@ -95,8 +95,7 @@ public class UnsortedProcedures
     * Example: query.ChangeQuery(engine, "New query text");
     */
    EnumProcedureResult result = EnumProcedureResult.Success;
-   // название текущей процедуры для лога итп.
-   //DONE: указать здесь полный путь как название процедуры для вывода на экран.    
+   //указать здесь полный путь как название процедуры для вывода на экран.    
    String currentProcedureTitle = "GeneralProcedures.UnsortedProcedures.OpenTerminal";
    // выброшенное тут исключение будет заменено на Reflection исключение и его текст потеряется.
    // Поэтому надо здесь его перехватить, вывести в лог и на консоль, и погасить, вернув EnumProcedureResult.Error.
@@ -167,8 +166,7 @@ public class UnsortedProcedures
   {
 
    EnumProcedureResult result = EnumProcedureResult.Success;
-   // название текущей процедуры для лога итп.
-   //DONE: указать здесь полный путь как название процедуры для вывода на экран.    
+   // название текущей процедуры для лога итп.   
    String currentProcedureTitle = "GeneralProcedures.UnsortedProcedures.CommandCreateNotepadNote";
    // выброшенное тут исключение будет заменено на Reflection исключение и его текст потеряется.
    // Поэтому надо здесь его перехватить, вывести в лог и на консоль, и погасить, вернув EnumProcedureResult.Error.
@@ -283,7 +281,7 @@ public class UnsortedProcedures
     
   
     /**
-     * NR-Обработчик процедуры Шаблон обработчика процедуры.
+     * NT-Обработчик процедуры Открыть НазваниеМеста.
      * 
      * 
      * @param engine
@@ -315,11 +313,9 @@ public class UnsortedProcedures
             UserQuery query,
             ArgumentCollection args)
     {
-        // TODO: Не забудьте добавить эту Процедуру в LibraryManager.getLibraryProcedures() функцию, чтобы она была добавлена в Оператор.
 
         EnumProcedureResult result = EnumProcedureResult.Success;
-        // название текущей процедуры для лога итп.
-        // TODO: указать здесь полный путь как название процедуры для вывода на экран.
+        // указать здесь полный путь как название процедуры для вывода на экран.
         String currentProcedureTitle = "GeneralProcedures.UnsortedProcedures.CommandOpen";
         // выброшенное тут исключение будет заменено на Reflection исключение и его текст потеряется.
         // Поэтому надо здесь его перехватить, вывести в лог и на консоль, и погасить, вернув EnumProcedureResult.Error.
@@ -344,6 +340,7 @@ public class UnsortedProcedures
                 engine.StartShellExecute(addr);
             }
             // если это не вышеперечисленное, то исполнить как команду.
+            //TODO: эта функция все еще не работает как требуется!  
             else engine.StartCommandTerminalExecute(addr);
 
             // вывести сообщение о результате операции: успешно

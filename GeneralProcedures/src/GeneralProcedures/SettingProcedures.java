@@ -30,7 +30,7 @@ import Utility.InOutArgument;
  * @author Селяков Павел
  *
  */
-@OperatorProcedure(State = ImplementationState.NotTested,
+@OperatorProcedure(State = ImplementationState.Ready,
         Title = "SettingProcedures",
         Description = "Класс содержит Процедуры для операций с Настройками Оператора.")
 public class SettingProcedures
@@ -150,7 +150,7 @@ public class SettingProcedures
      *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
      *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
      */
-    @OperatorProcedure(State = ImplementationState.NotTested,   // TODO: заменить на актуальное
+    @OperatorProcedure(State = ImplementationState.Ready,   //заменить на актуальное
             Title = "Создать настройку НазваниеНастройки",
             Description = "Создать Настройку в БазаДанныхОператора.")
     public static EnumProcedureResult CommandCreateSetting(
@@ -159,8 +159,6 @@ public class SettingProcedures
             UserQuery query,
             ArgumentCollection args)
     {
-
-        // TODO: Не забудьте добавить эту Процедуру в LibraryManager.getLibraryProcedures() функцию, чтобы она была добавлена в Оператор.
 
         EnumProcedureResult result = EnumProcedureResult.Success;
         // название текущей процедуры для лога итп.
@@ -187,7 +185,7 @@ public class SettingProcedures
             // извлечь название Настройки из аргумента
             engine.get_OperatorConsole().PrintTextLine(String.format("Название новой Настройки: \"%s\"", settingTitle), EnumDialogConsoleColor.Сообщение);
 
-            // TODO: проверить признак того, что вместо названия Настройки движком было подставлено название зарегистрированного места
+            //проверить признак того, что вместо названия Настройки движком было подставлено название зарегистрированного места
             if (arg.get_АвтоподстановкаМеста() == true)
             {
                 ; // TODO: обработать тут случай автоподстановки места вместо названия команды
@@ -308,7 +306,7 @@ public class SettingProcedures
      *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
      *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
      */
-    @OperatorProcedure(State = ImplementationState.NotTested,   // TODO: заменить на актуальное
+    @OperatorProcedure(State = ImplementationState.Ready,   //заменить на актуальное
             Title = "Показать настройки",
             Description = "Вывести на экран список Настроек Оператора")
     public static EnumProcedureResult CommandListSettings(
@@ -317,7 +315,6 @@ public class SettingProcedures
             UserQuery query,
             ArgumentCollection args)
     {
-        // TODO: Не забудьте добавить эту Процедуру в LibraryManager.getLibraryProcedures() функцию, чтобы она была добавлена в Оператор.
 
         EnumProcedureResult result = EnumProcedureResult.Success;
         // название текущей процедуры для лога итп.
@@ -371,7 +368,7 @@ public class SettingProcedures
      *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
      *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
      */
-    @OperatorProcedure(State = ImplementationState.NotTested,   // TODO: заменить на актуальное
+    @OperatorProcedure(State = ImplementationState.Ready,   //заменить на актуальное
             Title = "Удалить настройку НазваниеНастройки",
             Description = "Удалить указанную Настройку из БазаДанныхОператора")
     public static EnumProcedureResult CommandDeleteSetting(
@@ -380,7 +377,6 @@ public class SettingProcedures
             UserQuery query,
             ArgumentCollection args)
     {
-        // TODO: Не забудьте добавить эту Процедуру в LibraryManager.getLibraryProcedures() функцию, чтобы она была добавлена в Оператор.
 
         EnumProcedureResult result = EnumProcedureResult.Success;
         // название текущей процедуры для лога итп.
@@ -401,7 +397,7 @@ public class SettingProcedures
             // 1. Извлечь из аргумента название Настройки
             engine.get_OperatorConsole().PrintTextLine(String.format("Название удаляемой Настройки: \"%s\"", settingTitle), EnumDialogConsoleColor.Сообщение);
 
-            // TODO: проверить признак того, что вместо названия Настройки движком было подставлено название зарегистрированного места
+            // проверить признак того, что вместо названия Настройки движком было подставлено название зарегистрированного места
             if (arg.get_АвтоподстановкаМеста() == true)
             {
                 ; // TODO: обработать тут случай автоподстановки места вместо названия Настройки
@@ -495,7 +491,7 @@ public class SettingProcedures
      *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
      *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
      */
-    @OperatorProcedure(State = ImplementationState.NotTested,   // TODO: заменить на актуальное
+    @OperatorProcedure(State = ImplementationState.Ready,   // заменить на актуальное
             Title = "Изменить настройку НазваниеНастройки",
             Description = "Изменить указанную Настройку Оператора")
     public static EnumProcedureResult CommandChangeSetting(
@@ -504,7 +500,6 @@ public class SettingProcedures
             UserQuery query,
             ArgumentCollection args)
     {
-        // TODO: Не забудьте добавить эту Процедуру в LibraryManager.getLibraryProcedures() функцию, чтобы она была добавлена в Оператор.
 
         EnumProcedureResult result = EnumProcedureResult.Success;
         // название текущей процедуры для лога итп.
@@ -633,8 +628,6 @@ public class SettingProcedures
             }
             // else Нет - перейти к следующему свойству Команды.
 
-
-
             // 4.4 Адрес Настройки
             // - вывести заголовок
             engine.get_OperatorConsole().PrintEmptyLine();
@@ -663,7 +656,6 @@ public class SettingProcedures
                 }
             }
             // else Нет - перейти к следующему свойству Команды.
-
 
             // 4.6 Категория Настройки
             // - вывести заголовок
@@ -747,7 +739,7 @@ public class SettingProcedures
      *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
      *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
      */
-    @OperatorProcedure(State = ImplementationState.NotTested,   // TODO: заменить на актуальное
+    @OperatorProcedure(State = ImplementationState.Ready,   //заменить на актуальное
             Title = "Удалить все настройки",
             Description = "Удалить все Настройки из БазаДанныхОператора")
     public static EnumProcedureResult CommandDeleteAllSettings(
@@ -756,7 +748,6 @@ public class SettingProcedures
             UserQuery query,
             ArgumentCollection args)
     {
-        // TODO: Не забудьте добавить эту Процедуру в LibraryManager.getLibraryProcedures() функцию, чтобы она была добавлена в Оператор.
 
         EnumProcedureResult result = EnumProcedureResult.Success;
         // название текущей процедуры для лога итп.

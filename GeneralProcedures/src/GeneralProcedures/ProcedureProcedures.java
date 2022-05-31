@@ -35,7 +35,7 @@ import ProcedureSubsystem.LibraryManagerBase;
  *
  */
 
-@OperatorProcedure(State = ImplementationState.NotTested,
+@OperatorProcedure(State = ImplementationState.Ready,
         Title = "Класс операций Процедур.",
         Description = "Класс операций с Процедурами в БазаДанныхОператора.")
 public class ProcedureProcedures
@@ -62,7 +62,7 @@ public class ProcedureProcedures
 
     
     /**
-     * NT- Обработчик процедуры Создать команду НазваниеКоманды.
+     * RT- Обработчик процедуры Создать команду НазваниеКоманды.
      * 
      * 
      * @param engine
@@ -256,7 +256,7 @@ public class ProcedureProcedures
     }
 
     /**
-     * NT- Обработчик процедуры Показать команды
+     * RT- Обработчик процедуры Показать команды
      * 
      * 
      * @param engine
@@ -317,7 +317,7 @@ public class ProcedureProcedures
     }
 
     /**
-     * NT-Обработчик процедуры Удалить команду НазваниеКоманды
+     * RT-Обработчик процедуры Удалить команду НазваниеКоманды
      * 
      * 
      * @param engine
@@ -340,7 +340,7 @@ public class ProcedureProcedures
      *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
      *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
      */
-    @OperatorProcedure(State = ImplementationState.NotTested,
+    @OperatorProcedure(State = ImplementationState.Ready,
             Title = "Удалить команду НазваниеКоманды",
             Description = "Удалить указанную команду из БазаДанныхОператор.")
     public static EnumProcedureResult CommandDeleteProcedure(
@@ -438,7 +438,7 @@ public class ProcedureProcedures
     }
 
     /**
-     * NT-Обработчик процедуры Изменить команду НазваниеКоманды.
+     * RT-Обработчик процедуры Изменить команду НазваниеКоманды.
      * 
      * 
      * @param engine
@@ -461,7 +461,7 @@ public class ProcedureProcedures
      *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
      *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
      */
-    @OperatorProcedure(State = ImplementationState.NotTested,
+    @OperatorProcedure(State = ImplementationState.Ready,
             Title = "Изменить команду НазваниеКоманды",
             Description = "Изменить указанную команду Оператора.")
     public static EnumProcedureResult CommandChangeProcedure(
@@ -745,7 +745,7 @@ public class ProcedureProcedures
     }
 
     /**
-     * NT- Обработчик процедуры Удалить все команды
+     * RT- Обработчик процедуры Удалить все команды
      * 
      * 
      * @param engine
@@ -770,7 +770,7 @@ public class ProcedureProcedures
      * @throws Exception
      *             Ошибка при исполнении Процедуры.
      */
-    @OperatorProcedure(State = ImplementationState.NotTested,
+    @OperatorProcedure(State = ImplementationState.Ready,
             Title = "Удалить все команды",
             Description = "Удалить все Команды из БазаДанныхОператора.")
     public static EnumProcedureResult CommandDeleteAllProcedures(

@@ -551,12 +551,15 @@ public class Utility
     {
         boolean result = true;
         if(addr.isEmpty()) return false;
-        //
+        //если это локальный путь ФС, то он должен начинаться с / или ~
+        if(addr.startsWith("/") || addr.startsWith("~"))
+            return true;
+        //тут конструктор File() подставит текущий (или рабочий?) каталог приложения (.Operator), если addr не содержит путь ФС.
+        //так что оно сможет запускать все файлы, что находятся внутри каталога Оператор, по относительным путям.
         try
         {
-            //TODO: как тут проверить что путь правильный?
             File f = new File(addr);   
-            f.exists();
+            result = f.exists();
         }
         catch(Exception ex)
         {

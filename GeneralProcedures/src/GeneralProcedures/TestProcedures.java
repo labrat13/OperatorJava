@@ -24,7 +24,8 @@ import ProcedureSubsystem.LibraryManagerBase;
  * @author Селяков Павел
  *
  */
-@OperatorProcedure(State = ImplementationState.NotTested, Title = "Test class",
+@OperatorProcedure(State = ImplementationState.NotTested, 
+Title = "Test class",
         Description = "Test procedures engine class.")
 public class TestProcedures
 {

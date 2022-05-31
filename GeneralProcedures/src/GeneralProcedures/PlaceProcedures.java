@@ -31,7 +31,7 @@ import Utility.InOutArgument;
  * @author Селяков Павел
  *
  */
-@OperatorProcedure(State = ImplementationState.NotTested,
+@OperatorProcedure(State = ImplementationState.Ready,
         Title = "PlaceProcedures",
         Description = "Класс содержит Процедуры для операций с Местами.")
 public class PlaceProcedures
@@ -543,7 +543,7 @@ public class PlaceProcedures
      *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
      *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
      */
-    @OperatorProcedure(State = ImplementationState.NotTested,   // TODO: заменить на актуальное
+    @OperatorProcedure(State = ImplementationState.Ready,   // заменить на актуальное
             Title = "Изменить место НазваниеМеста",
             Description = "Изменить указанное Место Оператора")
     public static EnumProcedureResult CommandChangePlace(
