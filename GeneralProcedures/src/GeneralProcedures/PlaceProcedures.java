@@ -587,7 +587,7 @@ public class PlaceProcedures
                 return EnumProcedureResult.Success;
             else
             {
-                // set Procedure object
+                // set Place object
                 place = outResult.getValuePlace();
             }
 
@@ -607,7 +607,9 @@ public class PlaceProcedures
                 return EnumProcedureResult.Success;
             }
             // else
-
+            //создадим копию, чтобы не перезаписывать оригинал из коллекции Мест
+            Place placeNew = new Place(place);
+            
             // 4. По каждому свойству Места:
             // - показывать текущее значение свойства и спрашивать, желает ли пользователь его изменить. (Да-Нет-Отмена-Пропустить)
             // Если не желает, перейти к следующему свойству.
@@ -638,7 +640,7 @@ public class PlaceProcedures
                 {
                     // set regex value
                     stmp = outResult.getValueString();
-                    place.set_Title(stmp);
+                    placeNew.set_Title(stmp);
                 }
             }
             // else Нет - перейти к следующему свойству Места.
@@ -667,7 +669,7 @@ public class PlaceProcedures
                 {
                     // set regex value
                     stmp = outResult.getValueString();
-                    place.set_Synonim(stmp);
+                    placeNew.set_Synonim(stmp);
                 }
             }
             // else Нет - перейти к следующему свойству Места.
@@ -696,7 +698,7 @@ public class PlaceProcedures
                 {
                     // set regex value
                     stmp = outResult.getValueString();
-                    place.set_Description(stmp);
+                    placeNew.set_Description(stmp);
                 }
             }
             // else Нет - перейти к следующему свойству Места.
@@ -726,7 +728,7 @@ public class PlaceProcedures
                 {
                     // set namespace value
                     stmp = outResult.getValueString();
-                    place.set_Path(stmp);
+                    placeNew.set_Path(stmp);
                 }
             }
             // else Нет - перейти к следующему свойству Места.
@@ -755,7 +757,7 @@ public class PlaceProcedures
                 {
                     // set namespace value
                     stmp = outResult.getValueString();
-                    place.set_PlaceTypeExpression(stmp.trim());
+                    placeNew.set_PlaceTypeExpression(stmp.trim());
                 }
             }
             // else Нет - перейти к следующему свойству Места.
@@ -784,7 +786,7 @@ public class PlaceProcedures
                 {
                     // set namespace value
                     stmp = outResult.getValueString();
-                    place.set_Namespace(stmp.trim());
+                    placeNew.set_Namespace(stmp.trim());
                 }
             }
             // else Нет - перейти к следующему свойству Места.
@@ -794,7 +796,7 @@ public class PlaceProcedures
             // - при любом другом ответе пользователя отменить операцию.
             engine.get_OperatorConsole().PrintEmptyLine();
             engine.get_OperatorConsole().PrintTextLine("Подтвердите изменение Места", EnumDialogConsoleColor.Сообщение);
-            engine.get_OperatorConsole().PrintPlaceForm(place);
+            engine.get_OperatorConsole().PrintPlaceForm(placeNew);
             // и запросить подтверждение пользователя, что он желает изменить Место.
             // Если пользователь ответит Да, надо изменить Место.
             // Если пользователь ответит Нет или Отмена, отменить операцию.
@@ -802,7 +804,7 @@ public class PlaceProcedures
             if (esdr.isНет() || esdr.isОтмена())
                 return EnumProcedureResult.CancelledByUser;
             // записать команду
-            engine.get_ECM().UpdatePlace(place);
+            engine.get_ECM().UpdatePlace(placeNew);
 
             // 6. вывести сообщение о результате операции: успешно
             engine.get_OperatorConsole().PrintTextLine(String.format("Место %s успешно изменено", placeTitle), EnumDialogConsoleColor.Успех);

@@ -60,6 +60,7 @@ public class Place extends Item
         this.m_storage = Utility.StringCopy(p.m_storage);
         this.m_entityTypes = null;
         ParseEntityTypeString();// распарсить дерево классов
+        this.m_namespace = Utility.StringCopy(p.m_namespace);
 
         return;
     }

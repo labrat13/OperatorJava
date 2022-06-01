@@ -563,7 +563,8 @@ public class SettingProcedures
                 return EnumProcedureResult.Success;
             }
             // else
-
+            //создадим копию, чтобы не перезаписывать оригинал из коллекции Настроек.
+            SettingItem settNew = new SettingItem(sett);
             // 4. По каждому свойству Настройки:
             // - показывать текущее значение свойства и спрашивать, желает ли пользователь его изменить. (Да-Нет-Отмена-Пропустить)
             // Если не желает, перейти к следующему свойству.
@@ -594,7 +595,7 @@ public class SettingProcedures
                 {
                     // set regex value
                     stmp = outResult.getValueString();
-                    sett.set_Title(stmp);
+                    settNew.set_Title(stmp);
                 }
             }
             // else Нет - перейти к следующему свойству Настройки.
@@ -623,7 +624,7 @@ public class SettingProcedures
                 {
                     // set regex value
                     stmp = outResult.getValueString();
-                    sett.set_Description(stmp);
+                    settNew.set_Description(stmp);
                 }
             }
             // else Нет - перейти к следующему свойству Команды.
@@ -652,7 +653,7 @@ public class SettingProcedures
                 {
                     // set namespace value
                     stmp = outResult.getValueString();
-                    sett.set_Path(stmp);
+                    settNew.set_Path(stmp);
                 }
             }
             // else Нет - перейти к следующему свойству Команды.
@@ -681,7 +682,7 @@ public class SettingProcedures
                 {
                     // set namespace value
                     stmp = outResult.getValueString();
-                    sett.set_Namespace(stmp.trim());
+                    settNew.set_Namespace(stmp.trim());
                 }
             }
             // else Нет - перейти к следующему свойству Настройки.
@@ -691,7 +692,7 @@ public class SettingProcedures
             // - при любом другом ответе пользователя отменить операцию.
             engine.get_OperatorConsole().PrintEmptyLine();
             engine.get_OperatorConsole().PrintTextLine("5. Подтвердите изменение Настройки", EnumDialogConsoleColor.Сообщение);
-            engine.get_OperatorConsole().PrintSettingForm(sett);
+            engine.get_OperatorConsole().PrintSettingForm(settNew);
             // и запросить подтверждение пользователя, что он желает удалить Команду.
             // Если пользователь ответит Да, надо удалить Команду.
             // Если пользователь ответит Нет или Отмена, отменить операцию.
@@ -699,7 +700,7 @@ public class SettingProcedures
             if (esdr.isНет() || esdr.isОтмена())
                 return EnumProcedureResult.CancelledByUser;
             // записать команду
-            engine.get_ECM().UpdateSetting(sett);
+            engine.get_ECM().UpdateSetting(settNew);
 
             // 6. вывести сообщение о результате операции: успешно
             engine.get_OperatorConsole().PrintTextLine(String.format("Настройка %s успешно изменена", settingTitle), EnumDialogConsoleColor.Успех);

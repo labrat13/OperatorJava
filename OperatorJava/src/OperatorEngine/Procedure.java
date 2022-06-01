@@ -36,8 +36,26 @@ public class Procedure extends Item
         this.m_ves = 0.5;
         this.m_regex = "";
     }
+    
+    /**
+     * NT-Конструктор копирования.
+     * @param p Образец копирования.
+     */
+    public Procedure(Procedure p)
+    {
+        this.m_descr = Utility.StringCopy(p.m_descr);
+        this.m_namespace = Utility.StringCopy(p.m_namespace);
+        this.m_path = Utility.StringCopy(p.m_path);
+        this.m_regex = Utility.StringCopy(p.m_regex);
+        this.m_storage = Utility.StringCopy(p.m_storage);
+        this.m_tableid = p.m_tableid;
+        this.m_title = Utility.StringCopy(p.m_title);
+        this.m_ves = p.m_ves;
+    }
+    
     // #region *** Properties ***
 
+    
     /**
      * порядковый номер проверки в очереди проверок для команды - для поддержки
      * очередность проверки выражений

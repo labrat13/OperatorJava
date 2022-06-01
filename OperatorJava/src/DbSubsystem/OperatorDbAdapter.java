@@ -363,7 +363,7 @@ public class OperatorDbAdapter extends SqliteDbAdapter
         // create if not exists
         if (ps == null)
         {
-            String query = String.format("UPDATE \"%s\" SET \"ns\" = ?, \"title\" = ?, \"type\" = ?, \"path\" = ?, \"descr\" = ?, \"syno\" = ?) WHERE(\"id\" = ?);", OperatorDbAdapter.TablePlaces);
+            String query = String.format("UPDATE \"%s\" SET \"ns\" = ?, \"title\" = ?, \"type\" = ?, \"path\" = ?, \"descr\" = ?, \"syno\" = ? WHERE(\"id\" = ?);", OperatorDbAdapter.TablePlaces);
             ps = this.m_connection.prepareStatement(query);
             // set timeout here
             ps.setQueryTimeout(this.m_Timeout);

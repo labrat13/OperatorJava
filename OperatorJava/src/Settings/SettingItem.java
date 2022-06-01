@@ -27,7 +27,21 @@ public class SettingItem extends OperatorEngine.Item
     {
         super();
     }
-
+    
+    /**
+     * NT-Конструктор копирования.
+     * @param p Копируемый объект.
+     */
+    public SettingItem(SettingItem p)
+    {
+        this.m_descr = OperatorEngine.Utility.StringCopy(p.m_descr);
+        this.m_namespace = OperatorEngine.Utility.StringCopy(p.m_namespace);
+        this.m_path = OperatorEngine.Utility.StringCopy(p.m_path);
+        this.m_storage = OperatorEngine.Utility.StringCopy(p.m_storage);
+        this.m_title = OperatorEngine.Utility.StringCopy(p.m_title);
+        this.m_tableid = p.m_tableid;
+    }
+    
     /**
      * NT - Constructor from EnumSettingKey.
      * 

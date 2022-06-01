@@ -535,7 +535,8 @@ public class ProcedureProcedures
                 return EnumProcedureResult.Success;
             }
             // else
-
+            //создадим копию, чтобы не перезаписывать оригинал из коллекции Команд
+            Procedure procNew = new Procedure(proc);
             // 4. По каждому свойству Команды:
             // - показывать текущее значение свойства и спрашивать, желает ли пользователь его изменить. (Да-Нет-Отмена-Пропустить)
             // Если не желает, перейти к следующему свойству.
@@ -566,7 +567,7 @@ public class ProcedureProcedures
                 {
                     // set regex value
                     stmp = outResult.getValueString();
-                    proc.set_Title(stmp);
+                    procNew.set_Title(stmp);
                 }
             }
             // else Нет - перейти к следующему свойству Команды.
@@ -595,7 +596,7 @@ public class ProcedureProcedures
                 {
                     // set regex value
                     stmp = outResult.getValueString();
-                    proc.set_Description(stmp);
+                    procNew.set_Description(stmp);
                 }
             }
             // else Нет - перейти к следующему свойству Команды.
@@ -624,7 +625,7 @@ public class ProcedureProcedures
                 {
                     // set regex value
                     stmp = outResult.getValueString();
-                    proc.set_Regex(stmp);
+                    procNew.set_Regex(stmp);
                 }
             }
             // else Нет - перейти к следующему свойству Команды.
@@ -653,7 +654,7 @@ public class ProcedureProcedures
                 {
                     // set namespace value
                     stmp = outResult.getValueString();
-                    proc.set_Path(stmp);
+                    procNew.set_Path(stmp);
                 }
             }
             // else Нет - перейти к следующему свойству Команды.
@@ -682,7 +683,7 @@ public class ProcedureProcedures
                 {
                     // set ves value
                     Double ves = outResult.getValueDouble();
-                    proc.set_Ves(ves);
+                    procNew.set_Ves(ves);
                 }
             }
             // else Нет - перейти к следующему свойству Команды.
@@ -711,7 +712,7 @@ public class ProcedureProcedures
                 {
                     // set namespace value
                     stmp = outResult.getValueString();
-                    proc.set_Namespace(stmp.trim());
+                    procNew.set_Namespace(stmp.trim());
                 }
             }
             // else Нет - перейти к следующему свойству Команды.
@@ -721,7 +722,7 @@ public class ProcedureProcedures
             // - при любом другом ответе пользователя отменить операцию.
             engine.get_OperatorConsole().PrintEmptyLine();
             engine.get_OperatorConsole().PrintTextLine("Подтвердите изменение Команды", EnumDialogConsoleColor.Сообщение);
-            engine.get_OperatorConsole().PrintProcedureForm(proc);
+            engine.get_OperatorConsole().PrintProcedureForm(procNew);
             // и запросить подтверждение пользователя, что он желает удалить Команду.
             // Если пользователь ответит Да, надо удалить Команду.
             // Если пользователь ответит Нет или Отмена, отменить операцию.
@@ -729,7 +730,7 @@ public class ProcedureProcedures
             if (esdr.isНет() || esdr.isОтмена())
                 return EnumProcedureResult.CancelledByUser;
             // записать команду
-            engine.get_ECM().UpdateProcedure(proc);
+            engine.get_ECM().UpdateProcedure(procNew);
 
             // 6. вывести сообщение о результате операции: успешно
             engine.get_OperatorConsole().PrintTextLine(String.format("Команда %s успешно изменена", procedureTitle), EnumDialogConsoleColor.Успех);

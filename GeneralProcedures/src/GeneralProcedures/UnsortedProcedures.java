@@ -304,7 +304,7 @@ public class UnsortedProcedures
      *         EnumProcedureResult.ExitAndReload если после выполнения Процедуры требуется перезагрузить компьютер;
      *         EnumProcedureResult.ExitAndShutdown если после выполнения Процедуры требуется выключить компьютер;
      */
-    @OperatorProcedure(State = ImplementationState.NotTested,   // TODO: заменить на актуальное
+    @OperatorProcedure(State = ImplementationState.Ready,   // TODO: заменить на актуальное
             Title = "Команда Открыть НазваниеМеста",
             Description = "Команда Открыть место через ShellExecute.")
     public static EnumProcedureResult CommandOpen(
