@@ -513,13 +513,15 @@ public class SettingProcedures
         // Поэтому надо здесь его перехватить, вывести в лог и на консоль, и погасить, вернув EnumProcedureResult.Error.
         try
         {
-            // вывести в лог тестовое сообщение о начале процедуры
-            String str = String.format("Начата процедура %s(\"%s\")", currentProcedureTitle, args.getByIndex(0).get_ArgumentValue());
-            engine.AddMessageToConsoleAndLog(str, EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.SubsystemEvent_Procedure, EnumLogMsgState.OK);
+
             // 1. Извлечь из аргумента название Настройки
             String settingTitle;
             FuncArgument arg = args.getByIndex(0);
             settingTitle = arg.get_ArgumentQueryValue().trim();// берем сырой текст аргумента из запроса
+            // вывести в лог тестовое сообщение о начале процедуры
+            String str = String.format("Начата процедура %s(\"%s\")", currentProcedureTitle, settingTitle);
+            engine.AddMessageToConsoleAndLog(str, EnumDialogConsoleColor.Сообщение, EnumLogMsgClass.SubsystemEvent_Procedure, EnumLogMsgState.OK);
+            
             engine.get_OperatorConsole().PrintTextLine(String.format("Название изменяемой Настройки: \"%s\"", settingTitle), EnumDialogConsoleColor.Сообщение);
 
             //проверить признак того, что вместо названия Настройки движком было подставлено название зарегистрированного места

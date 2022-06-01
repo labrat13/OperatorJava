@@ -650,7 +650,7 @@ public class PlaceProcedures
             engine.get_OperatorConsole().PrintEmptyLine();
             engine.get_OperatorConsole().PrintTextLine("2. Словоформы Места", EnumDialogConsoleColor.Сообщение);
             // - вывести текущее значение
-            stmp = String.format("Текущие словоформы: \"%s\"", place.get_Description());
+            stmp = String.format("Текущие словоформы: \"%s\"", place.get_Synonim());
             engine.get_OperatorConsole().PrintTextLine(stmp, EnumDialogConsoleColor.Сообщение);
             // - запросить изменение
             // Если пользователь ответит Да, надо запросить новое значение.
