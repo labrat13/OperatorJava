@@ -2,7 +2,8 @@
 Java-1.8 version of myOperator for Linux 
 
 Оператор версия 1.0 для Linux c Java OpenJDK 1.8
-Скачать: https://github.com/labrat13/OperatorJava/releases/tag/OperatorJavaLinux-v1.0
+
+(Скачать: https://github.com/labrat13/OperatorJava/releases/tag/OperatorJavaLinux-v1.0 )
 
 Это консоль для выполнения текстовых запросов пользователя на естественном русском языке.
 С помощью этой консоли пользователь может выполнять предварительно определенные действия на компьютере.
