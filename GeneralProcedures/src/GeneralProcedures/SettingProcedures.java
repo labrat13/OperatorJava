@@ -928,7 +928,7 @@ public class SettingProcedures
      *            Engine object.
      * @param outResult
      *            Result title string shell object.
-     * @param proc
+     * @param sett
      *            Change Setting object.
      * @return Function returns EnumProcedureResult.Success if success; EnumProcedureResult.CancelledByUser if cancelled.
      * @throws Exception
